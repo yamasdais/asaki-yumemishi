@@ -1,7 +1,7 @@
 PROGRAMS=sample0
 CXX=g++ 
 CXXFLAGS=-O -std=c++14 -Wall -Wextra -g
-INCLUDES=-I../main/include
+INCLUDES=-I../src/main/include
 LDFLAGS=-std=c++14
 
 SRCS=$(shell ls *.cxx)
@@ -14,7 +14,7 @@ DEPS=$(SRCS:.cxx=.dep)
 all: $(PROGRAMS)
 
 clean:
-	/bin/rm -f *.o $(PROGRAMS)
+	/bin/rm -f *.o *.dep $(PROGRAMS)
 
 depend : $(DEPS)
 

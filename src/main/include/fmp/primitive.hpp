@@ -1,5 +1,37 @@
-#if !defined(UUID_2EAC0BFA_977A_4474_BCBE_66EF548CE53D)
-#define UUID_2EAC0BFA_977A_4474_BCBE_66EF548CE53D
+#if !defined(FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D)
+#define FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D
+
+#include <type_traits>
+
+// tags
+namespace fmp {
+
+struct t_type : public std::true_type {
+};
+
+struct nil_type : public std::false_type {
+};
+
+struct unit_type {
+};
+
+struct undefined_type {
+};
+
+// operator
+template <typename, typename>
+struct eq : public nil_type {
+  using apply = nil_type;
+};
+
+template <typename T>
+struct eq<T, T> : public t_type {
+  using apply = t_type;
+};
+
+} // namespace fmp
+
+#include <fmp/detail/sequence.hpp>
 
 namespace fmp {
 
@@ -10,20 +42,28 @@ struct cons {
   using cdr_type = D;
 };
 
+template <typename... T>
+struct sequence {
+  using type = sequence<T...>;
+  constexpr static size_t size = sizeof...(T);
+};
+
 template <typename T, T V>
 struct value : public std::integral_constant<T, V> {
   using type = value<T, V>;
 };
 
-template <typename T>
-struct any {
-  using type = any<T>;
-  using value_type = T;
-};
+// monoid
+template <template <class, class> typename Unite,
+          typename Unity>
+struct monoid {
+  using unity = Unity;
 
+  template <typename LType, typename RType = unity>
+  using unite = typename Unite<LType, RType>::apply;
+};
 
 }
 
-#endif /* UUID_2EAC0BFA_977A_4474_BCBE_66EF548CE53D */
-#include <type_traits>
+#endif /* FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D */
 
