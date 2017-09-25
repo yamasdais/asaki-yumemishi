@@ -47,7 +47,11 @@ void test_order() {
             << fmp::type_size<fmp::type_size_min>::size << std::endl;
   std::cout << "sizeof max_type_size: "
             << fmp::type_size<fmp::type_size_max>::size << std::endl;
-  std::cout << "LT: " << (int)fmp::order::LT << std::endl;
+  std::cout << "LT: " << (int)fmp::order_lt::value << std::endl;
+  std::cout << "EQ: " << fmp::type_size<fmp::type_size_max>::equals<fmp::type_size_max>()
+            << std::endl;
+  std::cout << "less_than: " << fmp::type_size<fmp::type_size_min>::less_than<int>() << std::endl;
+  std::cout << "greater_than: " << fmp::type_size<fmp::type_size_max>::greater_than<char>() << std::endl;
 }
 
 void test_eq() {
