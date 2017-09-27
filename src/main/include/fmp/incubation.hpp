@@ -7,15 +7,21 @@
 
 namespace fmp {
 
-enum struct ordering {
+enum ordering {
   LT = -1,
   EQ = 0,
   GT = 1
 };
 
-using order_lt = std::integral_constant<ordering, ordering::LT>;
-using order_eq = std::integral_constant<ordering, ordering::EQ>;
-using order_gt = std::integral_constant<ordering, ordering::GT>;
+struct order_lt
+  : public std::integral_constant<ordering, ordering::LT> {
+};
+struct order_eq
+  : public std::integral_constant<ordering, ordering::EQ> {
+};
+struct order_gt
+  : public std::integral_constant<ordering, ordering::GT> {
+};
 
 template <typename T>
 struct type_size {
@@ -62,6 +68,33 @@ struct type_size<type_size_max> {
   using greater_than = t_type;
 };
 
+template <template <class...> typename F>
+struct cmp {
+  template <typename A0, typename A1>
+  using apply = std::conditional_t<
+    F<A0>::template less_than<A1>::value,
+    order_lt,
+    std::conditional_t<
+      F<A0>::template equals<A1>::value,
+      order_eq,
+      order_gt
+    >
+  >;
+};
+
+template <template <class...> typename F,
+          typename A0, typename A1>
+struct compare : public std::conditional_t<
+  F<A0>::template less_than<A1>::value,
+    order_lt,
+    std::conditional_t<
+      F<A0>::template equals<A1>::value,
+      order_eq,
+      order_gt
+    >
+  >
+{
+};
 
 namespace detail { // fmp::detail
 
@@ -69,11 +102,6 @@ template <template <class...> typename F,
           typename... A>
 struct curried {
   using type = F<A...>;
-};
-
-template <template <class...> typename F>
-struct curried<F> {
-  using type = F<>;
 };
 
 } // end of fmp::detail
@@ -89,6 +117,9 @@ struct curry {
 
   template <typename... P>
   using apply = typename detail::curried<F, A..., P...>::type;
+
+  template <typename... Adds>
+  using currying = curry<F, A..., Adds...>;
 };
 
 }
