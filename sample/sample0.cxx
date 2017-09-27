@@ -1,4 +1,5 @@
 #include <iostream>
+#include <typeinfo>
 #include <type_traits>
 #include <limits>
 
@@ -41,6 +42,7 @@ void test_monoid() {
 //  static_assert(std::is_same<wider_monoid::unite<int>, int>(),
 //                "unite with unity");
   std::cout << cmp_monoid::unite<int>::value << std::endl;
+  std::cout << typeid(cmp_monoid).name() << std::endl;
 }
 
 void test_order() {
