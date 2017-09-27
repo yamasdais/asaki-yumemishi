@@ -46,6 +46,15 @@ template <typename... T>
 struct sequence {
   using type = sequence<T...>;
   constexpr static size_t size = sizeof...(T);
+
+  using head = typename detail::head_impl<T...>::apply;
+  using tail = typename detail::head_impl<T...>::template tail<sequence>;
+
+  template <typename... A>
+  using append = sequence<T..., A...>;
+
+  template <typename... A>
+  using prepend = sequence<A..., T...>;
 };
 
 template <typename T, T V>

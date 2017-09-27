@@ -63,11 +63,21 @@ void test_eq() {
 
 }
 
+
+void test_curry() {
+  using fmp::curry;
+  using c0 = curry<std::is_same, int>;
+  using c1 = c0::apply<int>;
+  std::cout << "c0 curried params:" << c0::value << std::endl;
+  std::cout << "curry<is_same, int>::apply<int>:" << c1() << std::endl;
+}
+
 int main(int , char**)
 {
   test_eq();
   test_order();
   test_monoid();
+  test_curry();
   
   return 0;
 }

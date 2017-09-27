@@ -63,6 +63,34 @@ struct type_size<type_size_max> {
 };
 
 
+namespace detail { // fmp::detail
+
+template <template <class...> typename F,
+          typename... A>
+struct curried {
+  using type = F<A...>;
+};
+
+template <template <class...> typename F>
+struct curried<F> {
+  using type = F<>;
+};
+
+} // end of fmp::detail
+
+
+template <template <class...> typename F,
+          typename... A>
+struct curry {
+  using args = sequence<A...>;
+  constexpr static size_t value = sizeof...(A);
+
+  using type = detail::curried<F, A...>;
+
+  template <typename... P>
+  using apply = typename detail::curried<F, A..., P...>::type;
+};
+
 }
 
 #endif /* if not defined 'FMP_9A43C54B_27BD_4BB1_9404_B22FE8FBB243' */

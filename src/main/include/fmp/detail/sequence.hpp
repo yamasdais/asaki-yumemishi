@@ -17,6 +17,11 @@ struct head_impl<Head, Tail...> {
   using tail = Holder<Tail...>;
 };
 
+template <>
+struct head_impl<> {
+  using apply = nil_type;
+};
+
 #if defined(__cpp_nested_namespace_definitions)
 } /* namespace fmp::detail */
 #else
