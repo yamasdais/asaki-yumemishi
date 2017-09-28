@@ -6,12 +6,11 @@
 #endif // c++ version check
 
 #include <typeinfo>
+#include <type_traits>
 #include <memory>
 #include <utility>
 #include <cstdlib>
 
-template <typename Ty>
-auto demangle(Ty);
 
 class Demangler {
  public:
@@ -33,24 +32,15 @@ class Demangler {
   {
   }
 
-  template <typename Ty>
-  inline Demangler(Ty val)
-    : Demangler{typeid(val), 0}
-  {
-  }
-
   inline operator const char*() const noexcept {
     return name.get();
   }
-
-  template <typename Ty>
-  friend auto demangle(Ty);
 };
 
 
 template <typename Ty>
-inline auto demangle(Ty obj) {
-  return std::move(Demangler{obj}.name);
+inline auto demangle() {
+  return std::move(Demangler{typeid(Ty)});
 }
 
 #endif /* UUID_29B974E6_2A8A_4B56_B0D5_6B885825F24A */

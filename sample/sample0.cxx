@@ -6,6 +6,8 @@
 #include <fmp.hpp>
 #include <fmp/incubation.hpp>
 
+#include "sample.hpp"
+
 struct mtest0 : public fmp::monoid<fmp::eq, fmp::value<int, 0>> {
 };
 
@@ -42,7 +44,8 @@ void test_monoid() {
 //  static_assert(std::is_same<wider_monoid::unite<int>, int>(),
 //                "unite with unity");
   std::cout << cmp_monoid::unite<int>::value << std::endl;
-  std::cout << typeid(cmp_monoid).name() << std::endl;
+  auto dem = demangle<cmp_monoid>();
+  std::cout << "demangle:" << dem << std::endl;
 }
 
 void test_order() {

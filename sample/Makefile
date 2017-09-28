@@ -25,6 +25,6 @@ depend : $(DEPS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
 
 sample0: sample0.o sample_lib.o
-	$(CXX) $(LDFLAGS) -o $@ $<
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)
