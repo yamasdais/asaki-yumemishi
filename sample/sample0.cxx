@@ -44,8 +44,10 @@ void test_monoid() {
 //  static_assert(std::is_same<wider_monoid::unite<int>, int>(),
 //                "unite with unity");
   std::cout << cmp_monoid::unite<int>::value << std::endl;
-  auto dem = demangle<cmp_monoid>();
-   std::cout << "demangle:" << demangle<cmp_monoid>() << std::endl;
+  //auto dem = demangle<cmp_monoid>();
+  std::cout << "demangle: " << demangle<cmp_monoid>() << std::endl;
+
+  std::cout << "demangle obj: " << demangle(std::cout) << std::endl;
 }
 
 void test_order() {
