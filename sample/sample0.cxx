@@ -45,7 +45,7 @@ void test_monoid() {
 //                "unite with unity");
   std::cout << cmp_monoid::unite<int>::value << std::endl;
   auto dem = demangle<cmp_monoid>();
-  std::cout << "demangle:" << dem << std::endl;
+   std::cout << "demangle:" << demangle<cmp_monoid>() << std::endl;
 }
 
 void test_order() {
