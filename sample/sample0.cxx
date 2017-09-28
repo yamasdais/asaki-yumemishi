@@ -8,9 +8,22 @@
 
 #include "sample.hpp"
 
+void test_quote() {
+  using q0 = fmp::quote<int>;
+  std::cout << "Quote::type: " << demangle<q0::type>() << std::endl;
+  std::cout << "Unquote: " << demangle<q0::unquote>() << std::endl;
+}
+
+void test_value() {
+  using namespace fmp;
+  using val0 = fmp::value<int, 0>;
+  static_assert(val0() == 0, "val0() == 0");
+}
+
 struct mtest0 : public fmp::monoid<fmp::eq, fmp::value<int, 0>> {
 };
 
+// monoid test
 template <typename T0, typename T1>
 struct type_size_wider0 {
   using apply = std::conditional_t<(sizeof(T0) < sizeof(T1)),
@@ -20,16 +33,6 @@ struct type_size_wider0 {
 template <typename T0, typename T1>
 struct type_size_comparator : public fmp::compare<fmp::type_size, T0, T1> {
 };
-
-//typedef char max_size_type[std::numeric_limits<size_t>::max()];
-//using max_size_type = char[std::numeric_limits<size_t>::max()];
-
-
-void test_value() {
-  using namespace fmp;
-  using val0 = fmp::value<int, 0>;
-  static_assert(val0() == 0, "val0() == 0");
-}
 
 void test_monoid() {
   using wider_type = type_size_wider0<char, long>;
@@ -50,6 +53,7 @@ void test_monoid() {
   std::cout << "demangle obj: " << demangle(std::cout) << std::endl;
 }
 
+// order test
 void test_order() {
   std::cout << "sizeof min_type_size: "
             << fmp::type_size<fmp::type_size_min>::size << std::endl;
@@ -100,6 +104,7 @@ void test_curry() {
 
 int main(int , char**)
 {
+  test_quote();
   test_eq();
   test_order();
   test_monoid();

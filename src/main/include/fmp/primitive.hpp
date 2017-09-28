@@ -18,6 +18,8 @@ struct unit_type {
 struct undefined_type {
 };
 
+
+
 // operator
 template <typename, typename>
 struct eq : public nil_type {
@@ -27,6 +29,13 @@ struct eq : public nil_type {
 template <typename T>
 struct eq<T, T> : public t_type {
   using apply = t_type;
+};
+
+// simple type
+template <typename T>
+struct quote {
+  using type = quote<T>;
+  using unquote = T;
 };
 
 } // namespace fmp
