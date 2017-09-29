@@ -79,7 +79,7 @@ struct monoid {
   using unity = Unity;
 
   template <typename LType, typename RType = unity>
-  using unite = Unite<Domain<LType>, Domain<RType>>;
+  using unite = typename Unite<Domain<LType>, Domain<RType>>::type;
 };
 
 }

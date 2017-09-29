@@ -32,19 +32,19 @@ template <typename T>
 struct type_size {
   constexpr static size_t size = sizeof(T);
 
-  template <typename A0>
+  template <typename Other>
   using equals = std::conditional_t<
-    (sizeof(T) == sizeof(A0)),
+    (size == Other::size),
     std::true_type, std::false_type>;
 
-  template <typename A0>
+  template <typename Other>
   using less_than = std::conditional_t<
-    (sizeof(T) < sizeof(A0)),
+    (size < Other::size),
     std::true_type, std::false_type>;
 
-  template <typename A0>
+  template <typename Other>
   using greater_than = std::conditional_t<
-    (sizeof(T) > sizeof(A0)),
+    (size > Other::size),
     std::true_type, std::false_type>;
 };
 
@@ -99,7 +99,7 @@ struct cmp {
 
 template <template <class...> typename F,
           typename A0, typename A1>
-struct compare : public std::conditional_t<
+struct compare : public fmp::derived<std::conditional_t<
   F<A0>::template less_than<A1>::value,
     order_lt,
     std::conditional_t<
@@ -108,6 +108,7 @@ struct compare : public std::conditional_t<
       order_gt
     >
   >
+>
 {
 };
 

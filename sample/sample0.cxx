@@ -29,9 +29,22 @@ void test_value() {
 
 
 // monoid test
+#if 0
 template <typename T0, typename T1>
 struct type_size_comparator : public fmp::compare<fmp::type_size, T0, T1> {
 };
+#endif
+
+template <typename T0, typename T1>
+using type_size_comparator = fmp::derived<fmp::compare<fmp::type_size, T0, T1>>;
+
+template <typename T0, typename T1>
+using cmp0 = fmp::derived<
+  std::conditional_t<
+    T0::template less_than<T1>::value,
+    T1, T0
+  >
+>;
 
 template <typename T0, typename T1>
 struct larger : public fmp::derived<std::conditional_t<
@@ -54,8 +67,13 @@ void test_monoid() {
     fmp::type_size, larger, fmp::type_size_min
     >;
   std::cout << "max_monoid: " << demangle<max_monoid>() << std::endl;
-  std::cout << "monoid::op => " << demangle<max_monoid::unite<int, char>::type>()
+  std::cout << "monoid::op => " << demangle<max_monoid::unite<char, long long>>()
             << std::endl;
+//  std::cout << "tsc => " << demangle<type_size_comparator<int, long>::type::type>() << std::endl;
+  using l0 = larger<fmp::type_size<char>, fmp::type_size<long>>;
+  std::cout << "larger => " << demangle<l0::type>() << std::endl;
+  using c0 = cmp0<fmp::type_size<char>, fmp::type_size<long>>;
+  std::cout << "c0 => " << demangle<c0::type>() << std::endl;
 }
 #if 0
 template <typename T0, typename T1>
@@ -94,11 +112,11 @@ void test_order() {
   std::cout << "LT: " << fmp::order_lt() << std::endl;
   std::cout << "EQ: " << fmp::type_size<fmp::type_size_max>::equals<fmp::type_size_max>()
             << std::endl;
-  std::cout << "less_than: " << fmp::type_size<fmp::type_size_min>::less_than<int>() << std::endl;
-  std::cout << "greater_than: " << fmp::type_size<fmp::type_size_max>::greater_than<char>() << std::endl;
+  std::cout << "less_than: " << fmp::type_size<fmp::type_size_min>::less_than<fmp::type_size<int>>() << std::endl;
+  std::cout << "greater_than: " << fmp::type_size<fmp::type_size_max>::greater_than<fmp::type_size<char>>() << std::endl;
 
-  using c0 = fmp::cmp<fmp::type_size>::apply<int, int>;
-  using c1 = fmp::compare<fmp::type_size, char, int>;
+  using c0 = fmp::cmp<fmp::type_size>::apply<fmp::type_size<int>, fmp::type_size<int>>;
+  using c1 = fmp::compare<fmp::type_size, fmp::type_size<char>, fmp::type_size<int>>;
   std::cout << "compare: " << c1() << std::endl;
 }
 
