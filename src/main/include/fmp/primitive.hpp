@@ -6,11 +6,13 @@
 // tags
 namespace fmp {
 
+#if 0
 struct t_type : public std::true_type {
 };
 
 struct nil_type : public std::false_type {
 };
+#endif
 
 struct unit_type {
 };
@@ -22,13 +24,11 @@ struct undefined_type {
 
 // operator
 template <typename, typename>
-struct eq : public nil_type {
-  using apply = nil_type;
+struct eq : public std::false_type {
 };
 
 template <typename T>
-struct eq<T, T> : public t_type {
-  using apply = t_type;
+struct eq<T, T> : public std::true_type {
 };
 
 // simple type

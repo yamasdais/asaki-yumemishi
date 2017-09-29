@@ -19,7 +19,7 @@ struct head_impl<Head, Tail...> {
 
 template <>
 struct head_impl<> {
-  using apply = nil_type;
+  using apply = undefined_type;
 };
 
 #if defined(__cpp_nested_namespace_definitions)

@@ -33,13 +33,19 @@ struct type_size {
   constexpr static size_t size = sizeof(T);
 
   template <typename A0>
-  using equals = std::conditional_t<(sizeof(T) == sizeof(A0)), t_type, nil_type>;
+  using equals = std::conditional_t<
+    (sizeof(T) == sizeof(A0)),
+    std::true_type, std::false_type>;
 
   template <typename A0>
-  using less_than = std::conditional_t<(sizeof(T) < sizeof(A0)), t_type, nil_type>;
+  using less_than = std::conditional_t<
+    (sizeof(T) < sizeof(A0)),
+    std::true_type, std::false_type>;
 
   template <typename A0>
-  using greater_than = std::conditional_t<(sizeof(T) > sizeof(A0)), t_type, nil_type>;
+  using greater_than = std::conditional_t<
+    (sizeof(T) > sizeof(A0)),
+    std::true_type, std::false_type>;
 };
 
 struct type_size_min {};
@@ -50,13 +56,15 @@ struct type_size<type_size_min> {
   constexpr static size_t size = 0ul;
 
   template <typename A0>
-  using equals = std::conditional_t<std::is_same<type_size_min, A0>::value, t_type, nil_type>;
+  using equals = std::conditional_t<
+    std::is_same<type_size_min, A0>::value,
+    std::true_type, std::false_type>;
 
   template <typename A0>
-  using less_than = t_type;
+  using less_than = std::true_type;
 
   template <typename A0>
-  using greater_than = nil_type;
+  using greater_than = std::false_type;
 };
 
 template <>
@@ -64,13 +72,15 @@ struct type_size<type_size_max> {
   constexpr static size_t size = std::numeric_limits<size_t>::max();
 
   template <typename A0>
-  using equals = std::conditional_t<std::is_same<type_size_max, A0>::value, t_type, nil_type>;
+  using equals = std::conditional_t<
+    std::is_same<type_size_max, A0>::value,
+    std::true_type, std::false_type>;
 
   template <typename A0>
-  using less_than = nil_type;
+  using less_than = std::false_type;
 
   template <typename A0>
-  using greater_than = t_type;
+  using greater_than = std::true_type;
 };
 
 template <template <class...> typename F>
