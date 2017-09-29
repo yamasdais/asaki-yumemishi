@@ -72,13 +72,14 @@ struct value : public std::integral_constant<T, V> {
 };
 
 // monoid
-template <template <class, class> typename Unite,
+template <template <class> typename Domain,
+          template <class, class> typename Unite,
           typename Unity>
 struct monoid {
   using unity = Unity;
 
   template <typename LType, typename RType = unity>
-  using unite = Unite<LType, RType>;
+  using unite = Unite<Domain<LType>, Domain<RType>>;
 };
 
 }

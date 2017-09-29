@@ -14,29 +14,61 @@ void test_quote() {
   std::cout << "Unquote: " << demangle<q0::unquote>() << std::endl;
 }
 
+void test_derived() {
+  using q0 = fmp::quote<int>;
+  using d0 = fmp::derived<q0>;
+
+  std::cout << "derived: " << demangle<d0::type>() << std::endl;
+}
+
 void test_value() {
   using namespace fmp;
   using val0 = fmp::value<int, 0>;
   static_assert(val0() == 0, "val0() == 0");
 }
 
-struct mtest0 : public fmp::monoid<fmp::eq, fmp::value<int, 0>> {
-};
 
 // monoid test
+template <typename T0, typename T1>
+struct type_size_comparator : public fmp::compare<fmp::type_size, T0, T1> {
+};
+
+template <typename T0, typename T1>
+struct larger : public fmp::derived<std::conditional_t<
+  (type_size_comparator<T0, T1>::value == fmp::order_lt::value),
+  T1,
+  T0
+    >>
+{
+};
+
+struct m_test0 : public fmp::monoid<
+  fmp::type_size, larger, fmp::type_size_min
+  >
+{
+};
+
+void test_monoid() {
+  /// simpler way to define concrete monoid
+  using max_monoid = fmp::monoid<
+    fmp::type_size, larger, fmp::type_size_min
+    >;
+  std::cout << "max_monoid: " << demangle<max_monoid>() << std::endl;
+  std::cout << "monoid::op => " << demangle<max_monoid::unite<int, char>::type>()
+            << std::endl;
+}
+#if 0
 template <typename T0, typename T1>
 struct type_size_wider0 {
   using apply = std::conditional_t<(sizeof(T0) < sizeof(T1)),
     T1, T0>;
 };
 
-template <typename T0, typename T1>
-struct type_size_comparator : public fmp::compare<fmp::type_size, T0, T1> {
+
+struct mtest0 : public fmp::monoid<fmp::eq, fmp::value<int, 0>> {
 };
 
 void test_monoid() {
-  using wider_type = type_size_wider0<char, long>;
-
   /// simpler way to define concrete monoid
   using cmp_monoid = fmp::monoid<type_size_comparator, fmp::type_size_min>;
 
@@ -52,7 +84,7 @@ void test_monoid() {
 
   std::cout << "demangle obj: " << demangle(std::cout) << std::endl;
 }
-
+#endif
 // order test
 void test_order() {
   std::cout << "sizeof min_type_size: "
@@ -104,6 +136,7 @@ void test_curry() {
 
 int main(int , char**)
 {
+  test_derived();
   test_quote();
   test_eq();
   test_order();

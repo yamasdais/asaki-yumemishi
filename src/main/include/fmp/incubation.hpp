@@ -7,6 +7,11 @@
 
 namespace fmp {
 
+template <typename T>
+struct derived : public T {
+  using type = T;
+};
+
 enum ordering {
   LT = -1,
   EQ = 0,
