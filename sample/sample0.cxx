@@ -106,9 +106,9 @@ void test_monoid() {
 // order test
 void test_order() {
   std::cout << "sizeof min_type_size: "
-            << fmp::type_size<fmp::type_size_min>::size << std::endl;
+            << fmp::type_size<fmp::type_size_min>::value << std::endl;
   std::cout << "sizeof max_type_size: "
-            << fmp::type_size<fmp::type_size_max>::size << std::endl;
+            << fmp::type_size<fmp::type_size_max>::value << std::endl;
   std::cout << "LT: " << fmp::order_lt() << std::endl;
   std::cout << "EQ: " << fmp::type_size<fmp::type_size_max>::equals<fmp::type_size_max>()
             << std::endl;

@@ -30,21 +30,21 @@ struct order_gt
 
 template <typename T>
 struct type_size {
-  constexpr static size_t size = sizeof(T);
+  constexpr static size_t value = sizeof(T);
 
   template <typename Other>
   using equals = std::conditional_t<
-    (size == Other::size),
+    (value == Other::value),
     std::true_type, std::false_type>;
 
   template <typename Other>
   using less_than = std::conditional_t<
-    (size < Other::size),
+    (value < Other::value),
     std::true_type, std::false_type>;
 
   template <typename Other>
   using greater_than = std::conditional_t<
-    (size > Other::size),
+    (value > Other::value),
     std::true_type, std::false_type>;
 };
 
@@ -53,7 +53,7 @@ struct type_size_max {};
 
 template <>
 struct type_size<type_size_min> {
-  constexpr static size_t size = 0ul;
+  constexpr static size_t value = 0ul;
 
   template <typename A0>
   using equals = std::conditional_t<
@@ -69,7 +69,7 @@ struct type_size<type_size_min> {
 
 template <>
 struct type_size<type_size_max> {
-  constexpr static size_t size = std::numeric_limits<size_t>::max();
+  constexpr static size_t value = std::numeric_limits<size_t>::max();
 
   template <typename A0>
   using equals = std::conditional_t<
