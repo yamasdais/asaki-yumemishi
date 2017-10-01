@@ -30,10 +30,42 @@ struct derived : public T {
 template <typename T>
 using derived_t = typename derived<T>::type;
 
+namespace detail {
+
+struct has_value_impl {
+  template <typename T>
+  static auto check(T*) -> decltype(
+    (T::value == T::value),
+    std::true_type());
+
+  template <typename T>
+  static auto check(...) -> std::false_type;
+};
+
+}
+
+template <typename T>
+using has_value = derived_t<
+  decltype(detail::has_value_impl::check<T>(nullptr))
+>;
+
 
 // operator
 template <bool Cond>
-using bool_type = std::conditional_t<Cond, std::true_type, std::false_type>;
+struct bool_type : public std::conditional_t<
+  Cond, std::true_type, std::false_type
+>
+{
+};
+
+template <typename T>
+struct boolean : public std::enable_if_t<
+  has_value<T>::value,
+  bool_type<T::value>
+>
+{
+};
+
 
 template <typename, typename>
 struct eq : public std::false_type {
@@ -82,25 +114,6 @@ template <typename T, T V>
 struct val : public std::integral_constant<T, V> {
   using type = val<T, V>;
 };
-
-namespace detail {
-
-struct has_value_impl {
-  template <typename T>
-  static auto check(T*) -> decltype(
-    (T::value == T::value),
-    std::true_type());
-
-  template <typename T>
-  static auto check(...) -> std::false_type;
-};
-
-}
-
-template <typename T>
-using has_value = derived_t<
-  decltype(detail::has_value_impl::check<T>(nullptr))
->;
 
 // monoid
 template <template <class> typename Domain,

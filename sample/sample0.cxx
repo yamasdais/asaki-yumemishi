@@ -32,8 +32,30 @@ void test_value() {
   std::cout << std::boolalpha;
   std::cout << "has_val0:" << has_val0() << std::endl;
   std::cout << "has_val1:" << has_val1() << std::endl;
+
+  using b0 = fmp::boolean<std::true_type>;
+  std::cout << "b0:" << b0() << std::endl;
+  std::cout << "b(false):" << fmp::boolean<std::false_type>() << std::endl;
+
+  using can_and_op = fmp::is_and_operatable<has_val0, has_val1>;
+  using cant_and_op = fmp::is_and_operatable<has_val0, int>;
+  std::cout << "and val0, val1: " << can_and_op() << std::endl;
+  std::cout << "and val0, int: " << cant_and_op() << std::endl;
+  
 }
 
+void test_monoid_et() {
+  using et0 = fmp::et;
+
+  std::cout << "MONOID et---" << std::endl;
+  std::cout << "Unity: " << demangle<et0::unity>() << std::endl;
+  std::cout << "et<true, false>:" << demangle<et0::unite<std::true_type, std::false_type>>() << std::endl;
+  std::cout << "et<false, false>:" << demangle<et0::unite<std::false_type, std::false_type>>() << std::endl;
+  std::cout << "et<false, true>:" << demangle<et0::unite<std::false_type, std::true_type>>() << std::endl;
+  std::cout << "et<true, true>:" << demangle<et0::unite<std::true_type, std::true_type>>() << std::endl;
+  std::cout << "et<true>:" << demangle<et0::unite<std::true_type>>() << std::endl;
+  std::cout << "et<false>:" << demangle<et0::unite<std::false_type>>() << std::endl;
+}
 
 // monoid test
 #if 0
@@ -170,6 +192,7 @@ int main(int , char**)
   test_order();
   test_monoid();
   test_curry();
+  test_monoid_et();
   
   return 0;
 }
