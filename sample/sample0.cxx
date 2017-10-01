@@ -23,8 +23,15 @@ void test_derived() {
 
 void test_value() {
   using namespace fmp;
-  using val0 = fmp::value<int, 0>;
+  using val0 = fmp::val<int, 0>;
   static_assert(val0() == 0, "val0() == 0");
+  std::cout << "val::value: " << val0::value << std::endl;
+
+  using has_val0 = has_value<int>;
+  using has_val1 = has_value<val0>;
+  std::cout << std::boolalpha;
+  std::cout << "has_val0:" << has_val0() << std::endl;
+  std::cout << "has_val1:" << has_val1() << std::endl;
 }
 
 
@@ -118,6 +125,8 @@ void test_order() {
   using c0 = fmp::cmp<fmp::type_size>::apply<fmp::type_size<int>, fmp::type_size<int>>;
   using c1 = fmp::compare<fmp::type_size, fmp::type_size<char>, fmp::type_size<int>>;
   std::cout << "compare: " << c1() << std::endl;
+
+  using lt0 = fmp::less_than<fmp::type_size<char>, fmp::type_size<int>>;
 }
 
 void test_eq() {
@@ -154,6 +163,7 @@ void test_curry() {
 
 int main(int , char**)
 {
+  test_value();
   test_derived();
   test_quote();
   test_eq();

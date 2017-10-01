@@ -7,11 +7,6 @@
 
 namespace fmp {
 
-template <typename T>
-struct derived : public T {
-  using type = T;
-};
-
 enum ordering {
   LT = -1,
   EQ = 0,
@@ -95,6 +90,15 @@ struct cmp {
       order_gt
     >
   >;
+};
+
+template <typename A0, typename A1>
+struct less_than;
+
+template <typename A0, typename A1>
+struct less_than : public
+  bool_type<(A0::value < A1::value)>
+{
 };
 
 template <template <class...> typename F,
