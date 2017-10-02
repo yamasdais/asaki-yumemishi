@@ -5,6 +5,7 @@
 
 #include <fmp.hpp>
 #include <fmp/incubation.hpp>
+#include <fmp/operator.hpp>
 
 #include "sample.hpp"
 
@@ -55,6 +56,19 @@ void test_monoid_et() {
   std::cout << "et<true, true>:" << demangle<et0::unite<std::true_type, std::true_type>>() << std::endl;
   std::cout << "et<true>:" << demangle<et0::unite<std::true_type>>() << std::endl;
   std::cout << "et<false>:" << demangle<et0::unite<std::false_type>>() << std::endl;
+}
+
+void test_monoid_uel() {
+  using op0 = fmp::uel;
+
+  std::cout << "MONOID uel---" << std::endl;
+  std::cout << "Unity: " << demangle<op0::unity>() << std::endl;
+  std::cout << "uel<true, false>:" << demangle<op0::unite<std::true_type, std::false_type>>() << std::endl;
+  std::cout << "uel<false, false>:" << demangle<op0::unite<std::false_type, std::false_type>>() << std::endl;
+  std::cout << "uel<false, true>:" << demangle<op0::unite<std::false_type, std::true_type>>() << std::endl;
+  std::cout << "uel<true, true>:" << demangle<op0::unite<std::true_type, std::true_type>>() << std::endl;
+  std::cout << "uel<true>:" << demangle<op0::unite<std::true_type>>() << std::endl;
+  std::cout << "uel<false>:" << demangle<op0::unite<std::false_type>>() << std::endl;
 }
 
 // monoid test
@@ -185,14 +199,15 @@ void test_curry() {
 
 int main(int , char**)
 {
-  test_value();
-  test_derived();
-  test_quote();
-  test_eq();
+  //test_value();
+  //test_derived();
+  //test_quote();
+  //test_eq();
   test_order();
   test_monoid();
-  test_curry();
+  //test_curry();
   test_monoid_et();
+  test_monoid_uel();
   
   return 0;
 }

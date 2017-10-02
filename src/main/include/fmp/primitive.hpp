@@ -115,17 +115,6 @@ struct val : public std::integral_constant<T, V> {
   using type = val<T, V>;
 };
 
-// monoid
-template <template <class> typename Domain,
-          template <class, class> typename Unite,
-          typename Unity>
-struct monoid {
-  using unity = Unity;
-
-  template <typename LType, typename RType = unity>
-  using unite = typename Unite<Domain<LType>, Domain<RType>>::type;
-};
-
 }
 
 #endif /* FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D */

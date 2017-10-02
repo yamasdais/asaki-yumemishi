@@ -4,55 +4,19 @@
 #include <limits>
 
 #include <fmp/primitive.hpp>
+#include <fmp/operator.hpp>
 
 namespace fmp {
 
 namespace detail {
 
-struct is_and_operatable_impl {
-  template <typename T0, typename T1>
-  static auto check(T0*, T1*) -> decltype(
-    (T0::value && T1::value),
-    std::true_type()
-  );
-
-  template <typename T0, typename T1>
-  static auto check(...) -> std::false_type;
-};
 
 } // ns: detail
 
-template <typename T0, typename T1>
-using is_and_operatable = derived_t<
-  decltype(detail::is_and_operatable_impl::check<T0, T1>(nullptr, nullptr))
->;
 
 namespace detail {
-template <typename T0, typename T1>
-struct et_impl : std::enable_if_t<
-  is_and_operatable<T0, T1>::value,
-  bool_type<T0::value && T1::value>
->
-{
-};
 
 }
-
-/**
- * 'and' operator ('and' in latin)
- */
-struct et : public monoid<
-  boolean, detail::et_impl, std::true_type
->
-{
-};
-
-/**
- * 'or' operator ('or' in latin)
- */
-template <typename Arg0, typename Arg1>
-struct uel {
-};
 
 enum ordering {
   LT = -1,
