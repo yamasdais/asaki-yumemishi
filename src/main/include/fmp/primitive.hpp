@@ -67,6 +67,7 @@ struct boolean : public std::enable_if_t<
 };
 
 
+#if 0
 template <typename, typename>
 struct eq : public std::false_type {
 };
@@ -74,7 +75,7 @@ struct eq : public std::false_type {
 template <typename T>
 struct eq<T, T> : public std::true_type {
 };
-
+#endif
 // simple type
 template <typename T>
 struct quote {

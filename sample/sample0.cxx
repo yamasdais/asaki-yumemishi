@@ -30,7 +30,7 @@ void test_value() {
 
   using has_val0 = has_value<int>;
   using has_val1 = has_value<val0>;
-  std::cout << std::boolalpha;
+  //std::cout << std::boolalpha;
   std::cout << "has_val0:" << has_val0() << std::endl;
   std::cout << "has_val1:" << has_val1() << std::endl;
 
@@ -78,6 +78,7 @@ struct type_size_comparator : public fmp::compare<fmp::type_size, T0, T1> {
 };
 #endif
 
+#if 0
 template <typename T0, typename T1>
 using type_size_comparator = fmp::derived<fmp::compare<fmp::type_size, T0, T1>>;
 
@@ -118,6 +119,7 @@ void test_monoid() {
   using c0 = cmp0<fmp::type_size<char>, fmp::type_size<long>>;
   std::cout << "c0 => " << demangle<c0::type>() << std::endl;
 }
+#endif
 #if 0
 template <typename T0, typename T1>
 struct type_size_wider0 {
@@ -147,6 +149,7 @@ void test_monoid() {
 }
 #endif
 // order test
+#if 0
 void test_order() {
   std::cout << "sizeof min_type_size: "
             << fmp::type_size<fmp::type_size_min>::value << std::endl;
@@ -164,15 +167,7 @@ void test_order() {
 
   using lt0 = fmp::less_than<fmp::type_size<char>, fmp::type_size<int>>;
 }
-
-void test_eq() {
-  using namespace fmp;
-  static_assert(eq<int, int>::value,
-                "eq<int, int> => true");
-  static_assert(!eq<int, long>::value,
-                "eq<int, long> => false");
-
-}
+#endif
 
 template <typename... A>
 struct noarg;
@@ -197,17 +192,58 @@ void test_curry() {
   std::cout << "n0::value: " << n0::apply<>::value << std::endl;
 }
 
+void test_lt() {
+  using int0 = fmp::val<int, 0>;
+  using int1 = fmp::val<int, 1>;
+  using op = fmp::lt<int0, int1>;
+  std::cout << "LT: 0 < 1: " << demangle<op::type>() << std::endl;
+  std::cout << "LT: 0 < 0: " << demangle<fmp::lt<int0, int0>::type>() << std::endl;
+  std::cout << "LT: 1 < 0: " << demangle<fmp::lt<int1, int0>::type>() << std::endl;
+}
+
+void test_eq() {
+  using int0 = fmp::val<int, 0>;
+  using int1 = fmp::val<int, 1>;
+  using op = fmp::eq<int0, int1>;
+  std::cout << "EQ: 0 op 1: " << demangle<op::type>() << std::endl;
+  std::cout << "EQ: 0 op 0: " << demangle<fmp::eq<int0, int0>::type>() << std::endl;
+  std::cout << "EQ: 1 op 0: " << demangle<fmp::eq<int1, int0>::type>() << std::endl;
+}
+
+void test_gt() {
+  using int0 = fmp::val<int, 0>;
+  using int1 = fmp::val<int, 1>;
+  using op = fmp::gt<int0, int1>;
+  std::cout << "GT: 0 op 1: " << demangle<op::type>() << std::endl;
+  std::cout << "GT: 0 op 0: " << demangle<fmp::gt<int0, int0>::type>() << std::endl;
+  std::cout << "GT: 1 op 0: " << demangle<fmp::gt<int1, int0>::type>() << std::endl;
+}
+
+void test_compare() {
+  using int0 = fmp::val<int, 0>;
+  using int1 = fmp::val<int, 1>;
+  using op = fmp::compare<int0, int1>;
+  
+  std::cout << "CMP: 0 op 1: " << demangle<op::type>() << std::endl;
+  std::cout << "CMP: 0 op 0: " << demangle<fmp::compare<int0, int0>::type>() << std::endl;
+  std::cout << "CMP: 1 op 0: " << demangle<fmp::compare<int1, int0>::type>() << std::endl;
+}
+
 int main(int , char**)
 {
+  std::cout << std::boolalpha;
   //test_value();
   //test_derived();
   //test_quote();
-  //test_eq();
-  test_order();
-  test_monoid();
+  //test_order();
+  //test_monoid();
   //test_curry();
-  test_monoid_et();
-  test_monoid_uel();
+  //test_monoid_et();
+  //test_monoid_uel();
+  test_lt();
+  test_eq();
+  test_gt();
+  test_compare();
   
   return 0;
 }

@@ -18,21 +18,6 @@ namespace detail {
 
 }
 
-enum ordering {
-  LT = -1,
-  EQ = 0,
-  GT = 1
-};
-
-struct order_lt
-  : public std::integral_constant<ordering, ordering::LT> {
-};
-struct order_eq
-  : public std::integral_constant<ordering, ordering::EQ> {
-};
-struct order_gt
-  : public std::integral_constant<ordering, ordering::GT> {
-};
 
 template <typename T>
 struct type_size {
@@ -112,6 +97,7 @@ struct less_than : public
 {
 };
 
+#if 0
 template <template <class...> typename F,
           typename A0, typename A1>
 struct compare : public fmp::derived<std::conditional_t<
@@ -126,6 +112,7 @@ struct compare : public fmp::derived<std::conditional_t<
 >
 {
 };
+#endif
 
 namespace detail { // fmp::detail
 
