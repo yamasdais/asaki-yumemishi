@@ -20,6 +20,8 @@ struct unit_type {
 struct undefined_type {
 };
 
+struct nothing {
+};
 
 // utility
 template <typename T>
