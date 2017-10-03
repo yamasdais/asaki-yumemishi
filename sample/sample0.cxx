@@ -42,7 +42,7 @@ void test_value() {
   using cant_and_op = fmp::is_and_operatable<has_val0, int>;
   std::cout << "and val0, val1: " << can_and_op() << std::endl;
   std::cout << "and val0, int: " << cant_and_op() << std::endl;
-  
+
 }
 
 void test_monoid_et() {
@@ -50,12 +50,12 @@ void test_monoid_et() {
 
   std::cout << "MONOID et---" << std::endl;
   std::cout << "Unity: " << demangle<et0::unity>() << std::endl;
-  std::cout << "et<true, false>:" << demangle<et0::unite<std::true_type, std::false_type>>() << std::endl;
-  std::cout << "et<false, false>:" << demangle<et0::unite<std::false_type, std::false_type>>() << std::endl;
-  std::cout << "et<false, true>:" << demangle<et0::unite<std::false_type, std::true_type>>() << std::endl;
-  std::cout << "et<true, true>:" << demangle<et0::unite<std::true_type, std::true_type>>() << std::endl;
-  std::cout << "et<true>:" << demangle<et0::unite<std::true_type>>() << std::endl;
-  std::cout << "et<false>:" << demangle<et0::unite<std::false_type>>() << std::endl;
+  std::cout << "et<true, false>:" << demangle<et0::op<std::true_type, std::false_type>>() << std::endl;
+  std::cout << "et<false, false>:" << demangle<et0::op<std::false_type, std::false_type>>() << std::endl;
+  std::cout << "et<false, true>:" << demangle<et0::op<std::false_type, std::true_type>>() << std::endl;
+  std::cout << "et<true, true>:" << demangle<et0::op<std::true_type, std::true_type>>() << std::endl;
+  std::cout << "et<true>:" << demangle<et0::op<std::true_type>>() << std::endl;
+  std::cout << "et<false>:" << demangle<et0::op<std::false_type>>() << std::endl;
 }
 
 void test_monoid_uel() {
@@ -63,12 +63,12 @@ void test_monoid_uel() {
 
   std::cout << "MONOID uel---" << std::endl;
   std::cout << "Unity: " << demangle<op0::unity>() << std::endl;
-  std::cout << "uel<true, false>:" << demangle<op0::unite<std::true_type, std::false_type>>() << std::endl;
-  std::cout << "uel<false, false>:" << demangle<op0::unite<std::false_type, std::false_type>>() << std::endl;
-  std::cout << "uel<false, true>:" << demangle<op0::unite<std::false_type, std::true_type>>() << std::endl;
-  std::cout << "uel<true, true>:" << demangle<op0::unite<std::true_type, std::true_type>>() << std::endl;
-  std::cout << "uel<true>:" << demangle<op0::unite<std::true_type>>() << std::endl;
-  std::cout << "uel<false>:" << demangle<op0::unite<std::false_type>>() << std::endl;
+  std::cout << "uel<true, false>:" << demangle<op0::op<std::true_type, std::false_type>>() << std::endl;
+  std::cout << "uel<false, false>:" << demangle<op0::op<std::false_type, std::false_type>>() << std::endl;
+  std::cout << "uel<false, true>:" << demangle<op0::op<std::false_type, std::true_type>>() << std::endl;
+  std::cout << "uel<true, true>:" << demangle<op0::op<std::true_type, std::true_type>>() << std::endl;
+  std::cout << "uel<true>:" << demangle<op0::op<std::true_type>>() << std::endl;
+  std::cout << "uel<false>:" << demangle<op0::op<std::false_type>>() << std::endl;
 }
 
 // monoid test
@@ -111,7 +111,7 @@ void test_monoid() {
     fmp::type_size, larger, fmp::type_size_min
     >;
   std::cout << "max_monoid: " << demangle<max_monoid>() << std::endl;
-  std::cout << "monoid::op => " << demangle<max_monoid::unite<char, long long>>()
+  std::cout << "monoid::op => " << demangle<max_monoid::op<char, long long>>()
             << std::endl;
 //  std::cout << "tsc => " << demangle<type_size_comparator<int, long>::type::type>() << std::endl;
   using l0 = larger<fmp::type_size<char>, fmp::type_size<long>>;
@@ -139,9 +139,9 @@ void test_monoid() {
   static_assert(std::is_same<wider_type::apply, long>(),
                 "wider");
 
-//  static_assert(std::is_same<wider_monoid::unite<int>, int>(),
-//                "unite with unity");
-  std::cout << cmp_monoid::unite<int>::value << std::endl;
+//  static_assert(std::is_same<wider_monoid::op<int>, int>(),
+//                "op with unity");
+  std::cout << cmp_monoid::op<int>::value << std::endl;
   //auto dem = demangle<cmp_monoid>();
   std::cout << "demangle: " << demangle<cmp_monoid>() << std::endl;
 
@@ -184,7 +184,7 @@ void test_curry() {
   using c2 = c0::currying<long>;
 
   using n0 = curry<noarg>;
-  
+
   std::cout << "c0 curried params:" << c0::value << std::endl;
   std::cout << "curry<is_same, int>::apply<int>:" << c1() << std::endl;
   std::cout << "c0::currying<long>: " << c2::apply<>() << std::endl;
@@ -207,6 +207,12 @@ void test_lt() {
   std::cout << "op_i0: " << demangle<op_i0::type>() << std::endl;
   std::cout << "op_i1: " << demangle<op_i1::type>() << std::endl;
   std::cout << "op_i2: " << demangle<op_i2::type>() << std::endl;
+
+  using maxop = fmp::max<fmp::type_size>;
+  using max0 = maxop::op<char, int>;
+  using max1 = fmp::detail::max_impl<int0, int0>;
+  std::cout << "max0: " << demangle<max0::type>() << std::endl;
+  std::cout << "max1: " << demangle<max1::type>() << std::endl;
 }
 
 void test_eq() {
@@ -238,10 +244,14 @@ void test_compare() {
   using int0 = fmp::val<int, 0>;
   using int1 = fmp::val<int, 1>;
   using op = fmp::compare<int0, int1>;
-  
+
   std::cout << "CMP: 0 op 1: " << demangle<op::type>() << std::endl;
   std::cout << "CMP: 0 op 0: " << demangle<fmp::compare<int0, int0>::type>() << std::endl;
   std::cout << "CMP: 1 op 0: " << demangle<fmp::compare<int1, int0>::type>() << std::endl;
+}
+
+
+void test_max() {
 }
 
 int main(int , char**)
@@ -253,12 +263,12 @@ int main(int , char**)
   //test_order();
   //test_monoid();
   //test_curry();
-  //test_monoid_et();
+  test_monoid_et();
   //test_monoid_uel();
   test_lt();
   test_eq();
   test_gt();
   test_compare();
-  
+
   return 0;
 }

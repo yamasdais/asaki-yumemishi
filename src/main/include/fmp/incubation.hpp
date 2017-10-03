@@ -21,6 +21,7 @@ namespace detail {
 
 template <typename T>
 struct type_size {
+  using type = T;
   constexpr static size_t value = sizeof(T);
 
   template <typename Other>

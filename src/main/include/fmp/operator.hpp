@@ -9,20 +9,51 @@ namespace fmp {
 
 // monoid
 template <template <class> typename Domain,
-          template <class, class> typename Unite,
+          template <class, class> typename Op,
           typename Unity>
 struct monoid {
   using unity = Unity;
 
   template <typename LType, typename RType = unity>
-  using unite = typename Unite<Domain<LType>, Domain<RType>>::type;
+  using op = typename Op<Domain<LType>, Domain<RType>>::type;
 };
 
 
 template <typename T0, typename T1>
-using is_and_operatable = derived_t<
+struct is_and_operatable : public derived_t<
   decltype(detail::is_and_operatable_impl::check<T0, T1>(nullptr, nullptr))
->;
+>
+{
+};
+
+template <typename T0, typename T1>
+struct is_or_operatable : public derived_t<
+  decltype(detail::is_or_operatable_impl::check<T0, T1>(nullptr, nullptr))
+>
+{
+};
+
+template <typename T0, typename T1>
+struct is_lt_operatable : public derived_t<
+  decltype(detail::is_lt_operatable_impl::check<T0, T1>(nullptr, nullptr))
+>
+{
+};
+
+template <typename T0, typename T1>
+struct is_eq_operatable : public derived_t<
+  decltype(detail::is_eq_operatable_impl::check<T0, T1>(nullptr, nullptr))
+>
+{
+};
+
+template <typename T0, typename T1>
+struct is_gt_operatable : public derived_t<
+  decltype(detail::is_gt_operatable_impl::check<T0, T1>(nullptr, nullptr))
+>
+{
+};
+
 
 /**
  * 'and' operator ('and' in latin. because of c++ reserved word)
@@ -145,7 +176,12 @@ struct gt<Domain<infinity_upper>, Domain<infinity_lower>>
 {
 };
 
-
+template <template <class> typename Domain>
+struct max : public monoid<
+  Domain, detail::max_impl, infinity_lower
+>
+{
+};
 
 }
 

@@ -3,7 +3,34 @@
 
 #include <fmp/primitive.hpp>
 
-namespace fmp { namespace detail {
+namespace fmp {
+
+// forward declarations in 'operator.hpp'
+template <typename T0, typename T1>
+struct is_and_operatable;
+
+template <typename T0, typename T1>
+struct is_or_operatable;
+
+template <typename T0, typename T1>
+struct is_lt_operatable;
+
+template <typename T0, typename T1>
+struct is_eq_operatable;
+
+template <typename T0, typename T1>
+struct is_gt_operatable;
+
+template <typename T0, typename T1>
+struct lt;
+
+template <typename T0, typename T1>
+struct eq;
+
+template <typename T0, typename T1>
+struct gt;
+
+namespace detail {
 
 // operator and
 struct is_and_operatable_impl {
@@ -19,7 +46,7 @@ struct is_and_operatable_impl {
 
 template <typename T0, typename T1>
 struct op_and_impl : std::enable_if_t<
-  decltype(is_and_operatable_impl::check<T0, T1>(nullptr, nullptr))::value,
+  is_and_operatable<T0, T1>::value,
   bool_type<T0::value && T1::value>
 >
 {
@@ -38,8 +65,8 @@ struct is_or_operatable_impl {
 };
 
 template <typename T0, typename T1>
-struct op_or_impl : std::enable_if_t<
-  decltype(is_or_operatable_impl::check<T0, T1>(nullptr, nullptr))::value,
+struct op_or_impl : public std::enable_if_t<
+  is_or_operatable<T0, T1>::value,
   bool_type<T0::value || T1::value>
 >
 {
@@ -58,8 +85,8 @@ struct is_lt_operatable_impl {
 };
 
 template <typename T0, typename T1>
-struct op_lt_impl : std::enable_if_t<
-  decltype(is_lt_operatable_impl::check<T0, T1>(nullptr, nullptr))::value,
+struct op_lt_impl : public std::enable_if_t<
+  is_lt_operatable<T0, T1>::value,
   bool_type<(T0::value < T1::value)>
 >
 {
@@ -77,8 +104,8 @@ struct is_eq_operatable_impl {
 };
 
 template <typename T0, typename T1>
-struct op_eq_impl : std::enable_if_t<
-  decltype(is_eq_operatable_impl::check<T0, T1>(nullptr, nullptr))::value,
+struct op_eq_impl : public std::enable_if_t<
+  is_eq_operatable<T0, T1>::value,
   bool_type<(T0::value == T1::value)>
 >
 {
@@ -96,9 +123,18 @@ struct is_gt_operatable_impl {
 };
 
 template <typename T0, typename T1>
-struct op_gt_impl : std::enable_if_t<
-  decltype(is_gt_operatable_impl::check<T0, T1>(nullptr, nullptr))::value,
+struct op_gt_impl : public std::enable_if_t<
+  is_gt_operatable<T0, T1>::value,
   bool_type<(T0::value > T1::value)>
+>
+{
+};
+
+// max implementation
+template <typename T0, typename T1>
+struct max_impl : public std::enable_if_t <
+  is_lt_operatable<T0, T1>::value,
+  derived<std::conditional_t<lt<T0, T1>::value, T1, T0>>
 >
 {
 };
