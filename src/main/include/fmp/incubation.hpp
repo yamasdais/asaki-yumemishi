@@ -1,8 +1,6 @@
 #if !defined(FMP_9A43C54B_27BD_4BB1_9404_B22FE8FBB243)
 #define FMP_9A43C54B_27BD_4BB1_9404_B22FE8FBB243
 
-#include <limits>
-
 #include <fmp/primitive.hpp>
 #include <fmp/operator.hpp>
 
@@ -40,80 +38,6 @@ struct type_size {
     std::true_type, std::false_type>;
 };
 
-struct type_size_min {};
-struct type_size_max {};
-
-template <>
-struct type_size<type_size_min> {
-  constexpr static size_t value = 0ul;
-
-  template <typename A0>
-  using equals = std::conditional_t<
-    std::is_same<type_size_min, A0>::value,
-    std::true_type, std::false_type>;
-
-  template <typename A0>
-  using less_than = std::true_type;
-
-  template <typename A0>
-  using greater_than = std::false_type;
-};
-
-template <>
-struct type_size<type_size_max> {
-  constexpr static size_t value = std::numeric_limits<size_t>::max();
-
-  template <typename A0>
-  using equals = std::conditional_t<
-    std::is_same<type_size_max, A0>::value,
-    std::true_type, std::false_type>;
-
-  template <typename A0>
-  using less_than = std::false_type;
-
-  template <typename A0>
-  using greater_than = std::true_type;
-};
-
-template <template <class...> typename F>
-struct cmp {
-  template <typename A0, typename A1>
-  using apply = std::conditional_t<
-    F<A0>::template less_than<A1>::value,
-    order_lt,
-    std::conditional_t<
-      F<A0>::template equals<A1>::value,
-      order_eq,
-      order_gt
-    >
-  >;
-};
-
-template <typename A0, typename A1>
-struct less_than;
-
-template <typename A0, typename A1>
-struct less_than : public
-  bool_type<(A0::value < A1::value)>
-{
-};
-
-#if 0
-template <template <class...> typename F,
-          typename A0, typename A1>
-struct compare : public fmp::derived<std::conditional_t<
-  F<A0>::template less_than<A1>::value,
-    order_lt,
-    std::conditional_t<
-      F<A0>::template equals<A1>::value,
-      order_eq,
-      order_gt
-    >
-  >
->
-{
-};
-#endif
 
 namespace detail { // fmp::detail
 

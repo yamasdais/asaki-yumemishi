@@ -50,12 +50,12 @@ void test_monoid_et() {
 
   std::cout << "MONOID et---" << std::endl;
   std::cout << "Unity: " << demangle<et0::unity>() << std::endl;
-  std::cout << "et<true, false>:" << demangle<et0::op<std::true_type, std::false_type>>() << std::endl;
-  std::cout << "et<false, false>:" << demangle<et0::op<std::false_type, std::false_type>>() << std::endl;
-  std::cout << "et<false, true>:" << demangle<et0::op<std::false_type, std::true_type>>() << std::endl;
-  std::cout << "et<true, true>:" << demangle<et0::op<std::true_type, std::true_type>>() << std::endl;
-  std::cout << "et<true>:" << demangle<et0::op<std::true_type>>() << std::endl;
-  std::cout << "et<false>:" << demangle<et0::op<std::false_type>>() << std::endl;
+  std::cout << "et<true, false>:" << demangle<et0::op_t<std::true_type, std::false_type>>() << std::endl;
+  std::cout << "et<false, false>:" << demangle<et0::op_t<std::false_type, std::false_type>>() << std::endl;
+  std::cout << "et<false, true>:" << demangle<et0::op_t<std::false_type, std::true_type>>() << std::endl;
+  std::cout << "et<true, true>:" << demangle<et0::op_t<std::true_type, std::true_type>>() << std::endl;
+  std::cout << "et<true>:" << demangle<et0::op_t<std::true_type>>() << std::endl;
+  std::cout << "et<false>:" << demangle<et0::op_t<std::false_type>>() << std::endl;
 }
 
 void test_monoid_uel() {
@@ -63,111 +63,13 @@ void test_monoid_uel() {
 
   std::cout << "MONOID uel---" << std::endl;
   std::cout << "Unity: " << demangle<op0::unity>() << std::endl;
-  std::cout << "uel<true, false>:" << demangle<op0::op<std::true_type, std::false_type>>() << std::endl;
-  std::cout << "uel<false, false>:" << demangle<op0::op<std::false_type, std::false_type>>() << std::endl;
-  std::cout << "uel<false, true>:" << demangle<op0::op<std::false_type, std::true_type>>() << std::endl;
-  std::cout << "uel<true, true>:" << demangle<op0::op<std::true_type, std::true_type>>() << std::endl;
-  std::cout << "uel<true>:" << demangle<op0::op<std::true_type>>() << std::endl;
-  std::cout << "uel<false>:" << demangle<op0::op<std::false_type>>() << std::endl;
+  std::cout << "uel<true, false>:" << demangle<op0::op_t<std::true_type, std::false_type>>() << std::endl;
+  std::cout << "uel<false, false>:" << demangle<op0::op_t<std::false_type, std::false_type>>() << std::endl;
+  std::cout << "uel<false, true>:" << demangle<op0::op_t<std::false_type, std::true_type>>() << std::endl;
+  std::cout << "uel<true, true>:" << demangle<op0::op_t<std::true_type, std::true_type>>() << std::endl;
+  std::cout << "uel<true>:" << demangle<op0::op_t<std::true_type>>() << std::endl;
+  std::cout << "uel<false>:" << demangle<op0::op_t<std::false_type>>() << std::endl;
 }
-
-// monoid test
-#if 0
-template <typename T0, typename T1>
-struct type_size_comparator : public fmp::compare<fmp::type_size, T0, T1> {
-};
-#endif
-
-#if 0
-template <typename T0, typename T1>
-using type_size_comparator = fmp::derived<fmp::compare<fmp::type_size, T0, T1>>;
-
-template <typename T0, typename T1>
-using cmp0 = fmp::derived<
-  std::conditional_t<
-    T0::template less_than<T1>::value,
-    T1, T0
-  >
->;
-
-template <typename T0, typename T1>
-struct larger : public fmp::derived<std::conditional_t<
-  (type_size_comparator<T0, T1>::value == fmp::order_lt::value),
-  T1,
-  T0
-    >>
-{
-};
-
-struct m_test0 : public fmp::monoid<
-  fmp::type_size, larger, fmp::type_size_min
-  >
-{
-};
-
-void test_monoid() {
-  /// simpler way to define concrete monoid
-  using max_monoid = fmp::monoid<
-    fmp::type_size, larger, fmp::type_size_min
-    >;
-  std::cout << "max_monoid: " << demangle<max_monoid>() << std::endl;
-  std::cout << "monoid::op => " << demangle<max_monoid::op<char, long long>>()
-            << std::endl;
-//  std::cout << "tsc => " << demangle<type_size_comparator<int, long>::type::type>() << std::endl;
-  using l0 = larger<fmp::type_size<char>, fmp::type_size<long>>;
-  std::cout << "larger => " << demangle<l0::type>() << std::endl;
-  using c0 = cmp0<fmp::type_size<char>, fmp::type_size<long>>;
-  std::cout << "c0 => " << demangle<c0::type>() << std::endl;
-}
-#endif
-#if 0
-template <typename T0, typename T1>
-struct type_size_wider0 {
-  using apply = std::conditional_t<(sizeof(T0) < sizeof(T1)),
-    T1, T0>;
-};
-
-
-struct mtest0 : public fmp::monoid<fmp::eq, fmp::value<int, 0>> {
-};
-
-void test_monoid() {
-  /// simpler way to define concrete monoid
-  using cmp_monoid = fmp::monoid<type_size_comparator, fmp::type_size_min>;
-
-  static_assert(mtest0::unity() == 0, "mtest0::unity() == 0");
-  static_assert(std::is_same<wider_type::apply, long>(),
-                "wider");
-
-//  static_assert(std::is_same<wider_monoid::op<int>, int>(),
-//                "op with unity");
-  std::cout << cmp_monoid::op<int>::value << std::endl;
-  //auto dem = demangle<cmp_monoid>();
-  std::cout << "demangle: " << demangle<cmp_monoid>() << std::endl;
-
-  std::cout << "demangle obj: " << demangle(std::cout) << std::endl;
-}
-#endif
-// order test
-#if 0
-void test_order() {
-  std::cout << "sizeof min_type_size: "
-            << fmp::type_size<fmp::type_size_min>::value << std::endl;
-  std::cout << "sizeof max_type_size: "
-            << fmp::type_size<fmp::type_size_max>::value << std::endl;
-  std::cout << "LT: " << fmp::order_lt() << std::endl;
-  std::cout << "EQ: " << fmp::type_size<fmp::type_size_max>::equals<fmp::type_size_max>()
-            << std::endl;
-  std::cout << "less_than: " << fmp::type_size<fmp::type_size_min>::less_than<fmp::type_size<int>>() << std::endl;
-  std::cout << "greater_than: " << fmp::type_size<fmp::type_size_max>::greater_than<fmp::type_size<char>>() << std::endl;
-
-  using c0 = fmp::cmp<fmp::type_size>::apply<fmp::type_size<int>, fmp::type_size<int>>;
-  using c1 = fmp::compare<fmp::type_size, fmp::type_size<char>, fmp::type_size<int>>;
-  std::cout << "compare: " << c1() << std::endl;
-
-  using lt0 = fmp::less_than<fmp::type_size<char>, fmp::type_size<int>>;
-}
-#endif
 
 template <typename... A>
 struct noarg;
@@ -248,9 +150,9 @@ void test_compare() {
 void test_max() {
   using int0 = fmp::val<int, 0>;
   using maxop = fmp::max<fmp::type_size>;
-  using max0 = maxop::op<char, int>;
-  using max1 = maxop::op<int0, int0>;
-  using max2 = maxop::op<char>;
+  using max0 = maxop::op_t<char, int>;
+  using max1 = maxop::op_t<int0, int0>;
+  using max2 = maxop::op_t<char>;
   std::cout << "max0: " << demangle<max0::type>() << std::endl;
   std::cout << "max1: " << demangle<max1::type>() << std::endl;
   std::cout << "max2: " << demangle<max2::type>() << std::endl;
@@ -259,9 +161,9 @@ void test_max() {
 void test_min() {
   using int0 = fmp::val<int, 0>;
   using minop = fmp::min<fmp::type_size>;
-  using min0 = minop::op<char, int>;
-  using min1 = minop::op<int0, int0>;
-  using min2 = minop::op<char>;
+  using min0 = minop::op_t<char, int>;
+  using min1 = minop::op_t<int0, int0>;
+  using min2 = minop::op_t<char>;
   using gt0 = fmp::gt<fmp::type_size<char>, fmp::type_size<fmp::infinity_upper>>;
   std::cout << "gt0: " << demangle<gt0::type>() << std::endl;
   std::cout << "min0: " << demangle<min0::type>() << std::endl;

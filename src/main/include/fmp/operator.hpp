@@ -15,7 +15,10 @@ struct monoid {
   using unity = Unity;
 
   template <typename LType, typename RType = unity>
-  using op = typename Op<Domain<LType>, Domain<RType>>::type;
+  using op = Op<Domain<LType>, Domain<RType>>;
+
+  template <typename LType, typename RType = unity>
+  using op_t = typename Op<Domain<LType>, Domain<RType>>::type;
 };
 
 
