@@ -1,0 +1,38 @@
+libgtestsrcdir = /usr/src/gtest/src
+libgtest_CXXFLAGS = -I$(libgtestsrcdir) -I$(libgtestsrcdir)/.. \
+	-DGTEST_USE_OWN_TR1_TUPLE=1 -Wno-unused-private-field
+
+PROGRAMS=basic_test
+CXX=g++
+CXXFLAGS=-O -std=c++14 -Wall -Wextra -g
+INCLUDES=-I../main/include -I.
+LDFLAGS=-std=c++14 -L. -lgtest -lpthread
+
+SRCS=$(shell ls *.cxx)
+OBJS=$(SRCS:.cxx=.o)
+DEPS=$(SRCS:.cxx=.dep)
+
+.SUFFIXES: .cxx
+.PHONY: all clean depend
+
+all: $(PROGRAMS)
+
+clean:
+	/bin/rm -f *.o *.dep $(PROGRAMS) libgtest.a
+
+depend : $(DEPS)
+
+%.dep: %.cxx
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -MM $(CPPFLAGS) $< > $@
+
+.cxx.o:
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
+
+
+libgtest.a: fmp_test.o
+	$(CXX) $(libgtest_CXXFLAGS) -o gtest-all.o -c $(libgtestsrcdir)/gtest-all.cc
+	$(CXX) $(libgtest_CXXFLAGS) -o gtest-main.o -c $(libgtestsrcdir)/gtest_main.cc
+	ar rcs $@ gtest-all.o gtest-main.o fmp_test.o
+
+basic_test: basic_test.o libgtest.a
+	$(CXX) $(LDFLAGS) -o $@ $^
