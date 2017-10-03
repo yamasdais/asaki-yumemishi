@@ -196,15 +196,17 @@ void test_lt() {
   using int0 = fmp::val<int, 0>;
   using int1 = fmp::val<int, 1>;
   using op = fmp::lt<int0, int1>;
-  using op_i = fmp::lt<fmp::type_size<fmp::infinite_lower>, fmp::type_size<char>>;
-  using op_i0 = fmp::lt<fmp::type_size<fmp::infinite_lower>, fmp::type_size<fmp::infinite_lower>>;
-  using op_i1= fmp::lt<fmp::type_size<long>, fmp::type_size<fmp::infinite_lower>>;
+  using op_i = fmp::lt<fmp::type_size<fmp::infinity_lower>, fmp::type_size<char>>;
+  using op_i0 = fmp::lt<fmp::type_size<fmp::infinity_lower>, fmp::type_size<fmp::infinity_lower>>;
+  using op_i1= fmp::lt<fmp::type_size<long>, fmp::type_size<fmp::infinity_lower>>;
+  using op_i2= fmp::lt<fmp::type_size<fmp::infinity_lower>, fmp::type_size<fmp::infinity_upper>>;
   std::cout << "LT: 0 < 1: " << demangle<op::type>() << std::endl;
   std::cout << "LT: 0 < 0: " << demangle<fmp::lt<int0, int0>::type>() << std::endl;
   std::cout << "LT: 1 < 0: " << demangle<fmp::lt<int1, int0>::type>() << std::endl;
   std::cout << "op_i: " << demangle<op_i::type>() << std::endl;
   std::cout << "op_i0: " << demangle<op_i0::type>() << std::endl;
   std::cout << "op_i1: " << demangle<op_i1::type>() << std::endl;
+  std::cout << "op_i2: " << demangle<op_i2::type>() << std::endl;
 }
 
 void test_eq() {
@@ -220,9 +222,16 @@ void test_gt() {
   using int0 = fmp::val<int, 0>;
   using int1 = fmp::val<int, 1>;
   using op = fmp::gt<int0, int1>;
+  using op_i = fmp::gt<fmp::type_size<fmp::infinity_lower>, fmp::type_size<char>>;
+  using op_i0 = fmp::gt<fmp::type_size<fmp::infinity_lower>, fmp::type_size<fmp::infinity_lower>>;
+  using op_i1= fmp::gt<fmp::type_size<long>, fmp::type_size<fmp::infinity_lower>>;
+
   std::cout << "GT: 0 op 1: " << demangle<op::type>() << std::endl;
   std::cout << "GT: 0 op 0: " << demangle<fmp::gt<int0, int0>::type>() << std::endl;
   std::cout << "GT: 1 op 0: " << demangle<fmp::gt<int1, int0>::type>() << std::endl;
+  std::cout << "op_i: " << demangle<op_i::type>() << std::endl;
+  std::cout << "op_i0: " << demangle<op_i0::type>() << std::endl;
+  std::cout << "op_i1: " << demangle<op_i1::type>() << std::endl;
 }
 
 void test_compare() {

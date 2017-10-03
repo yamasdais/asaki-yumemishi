@@ -42,13 +42,6 @@ struct uel : public monoid<
 {
 };
 
-// tags
-struct infinite_upper {
-};
-
-struct infinite_lower {
-};
-
 /**
  * 'less than' operator
  */
@@ -100,26 +93,58 @@ struct compare : public std::conditional_t<
 
 template <template <class> typename Domain,
           typename Arg>
-struct lt<Domain<infinite_lower>, Domain<Arg>> : public std::enable_if_t<
-  !std::is_same<Arg, infinite_lower>::value,
-  std::true_type
+struct lt<Domain<infinity_lower>, Domain<Arg>> : public std::conditional_t<
+  std::is_same<Arg, infinity_lower>::value,
+  std::false_type, std::true_type
   >
 {
 };
 
 template <template <class> typename Domain>
-struct lt<Domain<infinite_lower>, Domain<infinite_lower>> : public std::false_type
+struct lt<Domain<infinity_lower>, Domain<infinity_upper>>
+  : public std::true_type
+{
+};
+
+template <template <class> typename Domain>
+struct lt<Domain<infinity_upper>, Domain<infinity_lower>>
+  : public std::false_type
 {
 };
 
 template <template <class> typename Domain,
           typename Arg>
-struct lt<Domain<Arg>, Domain<infinite_lower>> : public std::enable_if_t<
-  !std::is_same<Arg, infinite_lower>::value,
-  std::false_type
+struct gt<Domain<infinity_lower>, Domain<Arg>> : public std::false_type
+{
+};
+
+template <template <class> typename Domain,
+          typename Arg>
+struct lt<Domain<infinity_upper>, Domain<Arg>> : public std::false_type
+{
+};
+
+template <template <class> typename Domain,
+          typename Arg>
+struct gt<Domain<Arg>, Domain<infinity_upper>> : public std::conditional_t<
+  std::is_same<Arg, infinity_upper>::value,
+  std::false_type, std::true_type
   >
 {
 };
+
+template <template <class> typename Domain>
+struct gt<Domain<infinity_lower>, Domain<infinity_upper>>
+  : public std::false_type
+{
+};
+
+template <template <class> typename Domain>
+struct gt<Domain<infinity_upper>, Domain<infinity_lower>>
+  : public std::true_type
+{
+};
+
 
 
 }

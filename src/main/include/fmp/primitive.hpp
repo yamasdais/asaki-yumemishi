@@ -23,6 +23,18 @@ struct undefined_type {
 struct nothing {
 };
 
+/**
+ * tag for upper infinity +∞ (U+221E)
+ */
+struct infinity_upper {
+};
+
+/**
+ * tag for lower infinity -∞ (U+221E)
+ */
+struct infinity_lower {
+};
+
 // utility
 template <typename T>
 struct derived : public T {
