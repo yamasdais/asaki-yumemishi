@@ -159,7 +159,7 @@ template <template <class> typename Domain,
           typename Arg>
 struct gt<Domain<Arg>, Domain<infinity_upper>> : public std::conditional_t<
   std::is_same<Arg, infinity_upper>::value,
-  std::false_type, std::true_type
+  std::true_type, std::false_type
   >
 {
 };
@@ -179,6 +179,13 @@ struct gt<Domain<infinity_upper>, Domain<infinity_lower>>
 template <template <class> typename Domain>
 struct max : public monoid<
   Domain, detail::max_impl, infinity_lower
+>
+{
+};
+
+template <template <class> typename Domain>
+struct min : public monoid<
+  Domain, detail::min_impl, infinity_upper
 >
 {
 };

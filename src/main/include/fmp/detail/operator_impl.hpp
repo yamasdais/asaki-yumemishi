@@ -132,13 +132,21 @@ struct op_gt_impl : public std::enable_if_t<
 
 // max implementation
 template <typename T0, typename T1>
-struct max_impl : public std::enable_if_t <
+struct max_impl : public std::enable_if_t<
   is_lt_operatable<T0, T1>::value,
   derived<std::conditional_t<lt<T0, T1>::value, T1, T0>>
 >
 {
 };
 
+// min implementation
+template <typename T0, typename T1>
+struct min_impl : public std::enable_if_t<
+  is_gt_operatable<T0, T1>::value,
+  derived<std::conditional_t<gt<T0, T1>::value, T1, T0>>
+>
+{
+};
 
 } /* ns: detail */ } /* ns: fmp */
 

@@ -207,12 +207,6 @@ void test_lt() {
   std::cout << "op_i0: " << demangle<op_i0::type>() << std::endl;
   std::cout << "op_i1: " << demangle<op_i1::type>() << std::endl;
   std::cout << "op_i2: " << demangle<op_i2::type>() << std::endl;
-
-  using maxop = fmp::max<fmp::type_size>;
-  using max0 = maxop::op<char, int>;
-  using max1 = fmp::detail::max_impl<int0, int0>;
-  std::cout << "max0: " << demangle<max0::type>() << std::endl;
-  std::cout << "max1: " << demangle<max1::type>() << std::endl;
 }
 
 void test_eq() {
@@ -252,6 +246,27 @@ void test_compare() {
 
 
 void test_max() {
+  using int0 = fmp::val<int, 0>;
+  using maxop = fmp::max<fmp::type_size>;
+  using max0 = maxop::op<char, int>;
+  using max1 = maxop::op<int0, int0>;
+  using max2 = maxop::op<char>;
+  std::cout << "max0: " << demangle<max0::type>() << std::endl;
+  std::cout << "max1: " << demangle<max1::type>() << std::endl;
+  std::cout << "max2: " << demangle<max2::type>() << std::endl;
+}
+
+void test_min() {
+  using int0 = fmp::val<int, 0>;
+  using minop = fmp::min<fmp::type_size>;
+  using min0 = minop::op<char, int>;
+  using min1 = minop::op<int0, int0>;
+  using min2 = minop::op<char>;
+  using gt0 = fmp::gt<fmp::type_size<char>, fmp::type_size<fmp::infinity_upper>>;
+  std::cout << "gt0: " << demangle<gt0::type>() << std::endl;
+  std::cout << "min0: " << demangle<min0::type>() << std::endl;
+  std::cout << "min1: " << demangle<min1::type>() << std::endl;
+  std::cout << "min2: " << demangle<min2::type>() << std::endl;
 }
 
 int main(int , char**)
@@ -269,6 +284,8 @@ int main(int , char**)
   test_eq();
   test_gt();
   test_compare();
+  test_max();
+  test_min();
 
   return 0;
 }
