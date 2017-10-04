@@ -8,6 +8,8 @@
 
 #include <type_traits>
 
+#include <fmp/detail/check_impl.hpp>
+
 // tags
 namespace fmp {
 
@@ -49,19 +51,6 @@ struct derived : public T {
 template <typename T>
 using derived_t = typename derived<T>::type;
 
-namespace detail {
-
-struct has_value_impl {
-  template <typename T>
-  static auto check(T*) -> decltype(
-    (T::value == T::value),
-    std::true_type());
-
-  template <typename T>
-  static auto check(...) -> std::false_type;
-};
-
-}
 
 template <typename T>
 using has_value = derived_t<
