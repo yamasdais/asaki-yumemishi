@@ -15,9 +15,9 @@ namespace fmp {
 struct t_type : public std::true_type {
 };
 
+#endif
 struct nil_type : public std::false_type {
 };
-#endif
 
 struct unit_type {
 };
@@ -86,15 +86,6 @@ struct boolean : public std::enable_if_t<
 };
 
 
-#if 0
-template <typename, typename>
-struct eq : public std::false_type {
-};
-
-template <typename T>
-struct eq<T, T> : public std::true_type {
-};
-#endif
 // simple type
 template <typename T>
 struct quote {
@@ -105,6 +96,7 @@ struct quote {
 } // namespace fmp
 
 #include <fmp/detail/sequence.hpp>
+#include <fmp/detail/fold.hpp>
 
 namespace fmp {
 

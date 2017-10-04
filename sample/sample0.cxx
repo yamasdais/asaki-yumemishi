@@ -176,6 +176,20 @@ void test_min() {
   std::cout << "min2: " << demangle<min2::type>() << std::endl;
 }
 
+void test_foldl() {
+  using namespace fmp;
+  using fold0 = foldl<cons, nil_type, int, long long>;
+
+  std::cout << "foldl0:" << demangle<fold0::type>() << std::endl;
+}
+
+void test_foldr() {
+  using namespace fmp;
+  using fold0 = foldr<cons, nil_type, int, long long>;
+
+  std::cout << "foldr0:" << demangle<fold0::type>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -193,6 +207,8 @@ int main(int , char**)
   test_compare();
   test_max();
   test_min();
+  test_foldl();
+  test_foldr();
 
   return 0;
 }

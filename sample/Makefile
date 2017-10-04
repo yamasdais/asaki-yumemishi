@@ -14,9 +14,12 @@ DEPS=$(SRCS:.cxx=.dep)
 all: $(PROGRAMS)
 
 clean:
-	/bin/rm -f *.o *.dep $(PROGRAMS)
+	/bin/rm -f *.o *.dep $(PROGRAMS) .depend
 
 depend : $(DEPS)
+.depend:
+	touch .depend
+$(DEPS) : .depend
 
 %.dep: %.cxx
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -MM $(CPPFLAGS) $< > $@

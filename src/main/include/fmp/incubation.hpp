@@ -13,8 +13,19 @@ namespace fmp {
 
 namespace detail {
 
-
 } // ns: detail
+
+template <template <class A0, class A1> typename F,
+          typename Acc, typename... T>
+struct foldl {
+  using type = typename detail::foldl_elem<F, Acc, T...>::type;
+};
+
+template <template <class A0, class A1> typename F,
+          typename Acc, typename... T>
+struct foldr {
+  using type = typename detail::foldr_elem<F, Acc, T...>::type;
+};
 
 
 namespace detail {
