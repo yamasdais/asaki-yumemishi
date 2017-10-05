@@ -67,6 +67,12 @@ using has_type = derived_t<
   decltype(detail::has_type_impl::check<T>(nullptr))
 >;
 
+template <template <class...> typename F,
+          typename... A>
+using can_apply = derived_t<
+  decltype(detail::can_apply_impl::check<F, A...>(nullptr))
+>;
+
 
 // operator
 template <bool Cond>
@@ -90,6 +96,17 @@ template <typename T>
 struct quote {
   using type = quote<T>;
   using unquote = T;
+};
+
+template <typename T>
+struct negate;
+
+template <>
+struct negate<std::true_type> : public std::false_type {
+};
+
+template <>
+struct negate<std::false_type> : public std::true_type {
 };
 
 } // namespace fmp
@@ -119,6 +136,7 @@ struct sequence {
 
   template <typename... A>
   using prepend = sequence<A..., T...>;
+
 };
 
 template <typename T, T V>

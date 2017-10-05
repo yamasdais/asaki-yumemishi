@@ -27,6 +27,16 @@ struct has_type_impl {
   static auto check(...) noexcept -> std::false_type;
 };
 
+struct can_apply_impl {
+  template <template <class...> typename F,
+            typename... A>
+  static auto check(typename F<A...>::type*) noexcept -> std::true_type;
+
+  template <template <class...> typename F,
+            typename... A>
+  static auto check(...) noexcept -> std::false_type;
+};
+
 } /* ns: fmp::detail */
 
 } /* ns: fmp */

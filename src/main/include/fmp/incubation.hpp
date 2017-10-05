@@ -76,7 +76,7 @@ struct curry {
   using args = sequence<A...>;
   constexpr static size_t value = sizeof...(A);
 
-  using type = detail::curried<F, A...>;
+//  using type = detail::curried<F, A...>;
 
   template <typename... P>
   using apply = typename detail::curried<F, A..., P...>::type;
@@ -85,10 +85,40 @@ struct curry {
   using currying = curry<F, A..., Adds...>;
 };
 
+template <template <class...> typename F,
+          typename... A>
+struct apply : public std::conditional_t<
+  can_apply<F, A...>::value,
+  derived<typename F<A...>::type>,
+  curry<F, A...>
+>
+{
+};
+
+
+template <template <class> typename F,
+          template <class...> typename G,
+          typename... A>
+struct compose : public std::conditional_t<
+  has_type<G<A...>>::value,
+  derived<typename G<A...>::type>,
+  curry<G, A...>
+> {
+};
+
 template <template <class> typename F>
 struct functor {
   template <typename T>
   using map = F<T>;
+};
+
+template <template <class> typename F,
+          typename T>
+struct map;
+
+template <template <class> typename F,
+          typename... A>
+struct map<F, sequence<A...>> {
 };
 
 }

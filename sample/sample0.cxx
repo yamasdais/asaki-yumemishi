@@ -190,6 +190,17 @@ void test_foldr() {
   std::cout << "foldr0:" << demangle<fold0::type>() << std::endl;
 }
 
+void apply_sample() {
+  using namespace fmp;
+  using int0 = val<int, 0>;
+  using h0 = has_type<int0>;
+  using n0 = negate<h0>;
+  using c0 = can_apply<negate>;
+  using a0 = apply<negate, h0>;
+
+  std::cout << "n0:" << demangle<c0>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -209,6 +220,7 @@ int main(int , char**)
   test_min();
   test_foldl();
   test_foldr();
+  apply_sample();
 
   return 0;
 }
