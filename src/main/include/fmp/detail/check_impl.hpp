@@ -11,12 +11,20 @@ namespace detail {
 
 struct has_value_impl {
   template <typename T>
-  static auto check(T*) -> decltype(
+  static auto check(T*) noexcept -> decltype(
     (T::value == T::value),
     std::true_type());
 
   template <typename T>
-  static auto check(...) -> std::false_type;
+  static auto check(...) noexcept -> std::false_type;
+};
+
+struct has_type_impl {
+  template <typename T>
+  static auto check(typename T::type*) noexcept -> std::true_type;
+
+  template <typename T>
+  static auto check(...) noexcept -> std::false_type;
 };
 
 } /* ns: fmp::detail */

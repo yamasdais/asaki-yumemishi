@@ -44,6 +44,11 @@ struct infinity_lower {
 
 // utility
 template <typename T>
+struct id {
+  using type = T;
+};
+
+template <typename T>
 struct derived : public T {
   using type = T;
 };
@@ -55,6 +60,11 @@ using derived_t = typename derived<T>::type;
 template <typename T>
 using has_value = derived_t<
   decltype(detail::has_value_impl::check<T>(nullptr))
+>;
+
+template <typename T>
+using has_type = derived_t<
+  decltype(detail::has_type_impl::check<T>(nullptr))
 >;
 
 

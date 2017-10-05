@@ -30,6 +30,10 @@ struct foldr {
 
 namespace detail {
 
+template <template <class> typename F,
+          typename... T>
+struct map_impl;
+
 }
 
 
@@ -79,6 +83,12 @@ struct curry {
 
   template <typename... Adds>
   using currying = curry<F, A..., Adds...>;
+};
+
+template <template <class> typename F>
+struct functor {
+  template <typename T>
+  using map = F<T>;
 };
 
 }

@@ -48,6 +48,8 @@ struct foldr_elem<F, Acc> {
   using type = Acc;
 };
 
+struct is_foldable {
+};
 
 } /* ns: fmp::detail */
 
