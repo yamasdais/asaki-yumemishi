@@ -82,6 +82,7 @@ struct noarg;
 template <>
 struct noarg<> {
   constexpr static int value = 43;
+  using type = std::true_type;
 };
 
 void test_curry() {
@@ -190,15 +191,23 @@ void test_foldr() {
   std::cout << "foldr0:" << demangle<fold0::type>() << std::endl;
 }
 
+
 void apply_sample() {
   using namespace fmp;
   using int0 = val<int, 0>;
   using h0 = has_type<int0>;
-  using n0 = negate<h0>;
-  using c0 = can_apply<negate>;
   using a0 = apply<negate, h0>;
+  using c2 = apply<noarg>::type;
+  using a1 = negate<h0>;
+  using a3 = apply<std::is_same, int0>::type;
+//  using a4 = a3::apply<int0>::type;
+  using a4 = apply<a3::template apply, int0>::type;
 
-  std::cout << "n0:" << demangle<c0>() << std::endl;
+  std::cout << "c2:" << demangle<c2::type>() << std::endl;
+  std::cout << "a0:" << demangle<a0::type>() << std::endl;
+  std::cout << "a1:" << demangle<a1::type>() << std::endl;
+  std::cout << "a3:" << demangle<a3>() << std::endl;
+  std::cout << "a4:" << demangle<a4>() << std::endl;
 }
 
 int main(int , char**)

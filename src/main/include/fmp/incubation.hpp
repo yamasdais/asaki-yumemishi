@@ -85,16 +85,30 @@ struct curry {
   using currying = curry<F, A..., Adds...>;
 };
 
+
+namespace detail {
+
+
+struct apply_impl {
+  template <template <class...> typename F,
+            typename... A>
+  static auto get(typename F<A...>::type*) noexcept -> typename F<A...>::type;
+
+  template <template <class...> typename F,
+            typename... A>
+  static auto get(...) noexcept -> curry<F, A...>;
+
+};
+
+}
+
 template <template <class...> typename F,
           typename... A>
-struct apply : public std::conditional_t<
-  can_apply<F, A...>::value,
-  derived<typename F<A...>::type>,
-  curry<F, A...>
+struct apply : public derived<
+  decltype(detail::apply_impl::get<F, A...>(nullptr))
 >
 {
 };
-
 
 template <template <class> typename F,
           template <class...> typename G,
