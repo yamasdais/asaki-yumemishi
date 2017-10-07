@@ -61,64 +61,14 @@ struct type_size {
 
 namespace detail { // fmp::detail
 
-template <template <class...> typename F,
-          typename... A>
-struct curried {
-  using type = F<A...>;
-};
-
 } // end of fmp::detail
 
-
-template <template <class...> typename F,
-          typename... A>
-struct curry {
-  using args = sequence<A...>;
-  constexpr static size_t value = sizeof...(A);
-
-//  using type = detail::curried<F, A...>;
-
-  template <typename... P>
-  using apply = typename detail::curried<F, A..., P...>::type;
-
-  template <typename... Adds>
-  using currying = curry<F, A..., Adds...>;
-};
 
 
 namespace detail {
 
 
-struct apply_impl {
-  template <template <class...> typename F,
-            typename... A>
-  static auto get(typename F<A...>::type*) noexcept -> typename F<A...>::type;
-
-  template <template <class...> typename F,
-            typename... A>
-  static auto get(...) noexcept -> curry<F, A...>;
-
-};
-
 }
-
-template <template <class...> typename F,
-          typename... A>
-struct apply : public derived<
-  decltype(detail::apply_impl::get<F, A...>(nullptr))
->
-{
-};
-
-template <template <class> typename F,
-          template <class...> typename G,
-          typename... A>
-struct compose : public std::conditional_t<
-  has_type<G<A...>>::value,
-  derived<typename G<A...>::type>,
-  curry<G, A...>
-> {
-};
 
 template <template <class> typename F>
 struct functor {
@@ -133,6 +83,16 @@ struct map;
 template <template <class> typename F,
           typename... A>
 struct map<F, sequence<A...>> {
+};
+
+template <template <class> typename F,
+          template <class...> typename G,
+          typename... A>
+struct compose : public std::conditional_t<
+  has_type<G<A...>>::value,
+  derived<typename G<A...>::type>,
+  curry<G, A...>
+> {
 };
 
 }

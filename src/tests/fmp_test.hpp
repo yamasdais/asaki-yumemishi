@@ -70,6 +70,7 @@ inline auto demangle(const Ty& obj) {
 
 // gtest utilities
 
+// Boolean test
 template <typename T>
 struct BoolTest : public ::testing::Test {
   // concept declarations of type T
@@ -95,5 +96,24 @@ TYPED_TEST_P(BoolTest, CheckBoolean) {
 REGISTER_TYPED_TEST_CASE_P(BoolTest, CheckBoolean);
 
 
+// Type test
+template <typename T>
+struct TypeTest : public ::testing::Test {
+  // concept declarations of type T
+  using expected_type = typename T::first_type;
+  using actual_type = typename T::second_type;
+};
+
+TYPED_TEST_CASE_P(TypeTest);
+
+TYPED_TEST_P(TypeTest, CheckType) {
+  bool is_same = std::is_same<
+    typename TypeParam::first_type,
+    typename TypeParam::second_type
+    >::value;
+  ASSERT_TRUE(is_same);
+}
+
+REGISTER_TYPED_TEST_CASE_P(TypeTest, CheckType);
 
 #endif /* UUID_29B974E6_2A8A_4B56_B0D5_6B885825F24A */

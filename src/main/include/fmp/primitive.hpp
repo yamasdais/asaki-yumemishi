@@ -109,10 +109,17 @@ template <>
 struct negate<std::false_type> : public std::true_type {
 };
 
+
+
+
 } // namespace fmp
+
+#include <fmp/curry.hpp>
+#include <fmp/apply.hpp>
 
 #include <fmp/detail/sequence.hpp>
 #include <fmp/detail/fold.hpp>
+#include <fmp/detail/apply_impl.hpp>
 
 namespace fmp {
 
@@ -144,7 +151,7 @@ struct val : public std::integral_constant<T, V> {
   using type = val<T, V>;
 };
 
-}
+} /* ns: fmp */
 
 #endif /* FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D */
 
