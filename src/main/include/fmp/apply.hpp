@@ -19,6 +19,10 @@ struct apply : public derived<
 {
 };
 
+template <template <class...> typename F,
+          typename... A>
+using apply_t = typename apply<F, A...>::type;
+
 } /* ns: fmp */
 
 #endif /* FMP_F8907122_D4B7_450C_8476_597F69F19BFD */

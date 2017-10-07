@@ -32,7 +32,7 @@ INSTANTIATE_TYPED_TEST_CASE_P(HasType, BoolTest, HasTypeTarget);
 
 // ApplyType
 using ApplyTypeTarget = ::testing::Types<
-  p<true_type, apply<std::is_same, nothing, nothing>>
+  p<true_type, apply_t<std::is_same, nothing, nothing>>
 >;
 
 INSTANTIATE_TYPED_TEST_CASE_P(ApplyType, TypeTest, ApplyTypeTarget);
