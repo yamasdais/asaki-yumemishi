@@ -16,6 +16,8 @@
 #include <utility>
 #include <cstdlib>
 
+#include <gtest/gtest.h>
+
 class Demangler {
  public:
 
@@ -64,5 +66,34 @@ template <typename Ty>
 inline auto demangle(const Ty& obj) {
   return std::move(Demangler{typeid(obj)});
 }
+
+
+// gtest utilities
+
+template <typename T>
+struct BoolTest : public ::testing::Test {
+  // concept declarations of type T
+  using expected_type = typename T::first_type;
+  using actual_type = typename T::second_type;
+  static_assert(std::is_same<typename expected_type::value_type, bool>::value,
+                "first_type must be a bool");
+  static_assert(std::is_same<typename actual_type::value_type, bool>::value,
+                "second_type must be a bool");
+};
+
+TYPED_TEST_CASE_P(BoolTest);
+
+TYPED_TEST_P(BoolTest, CheckBoolean) {
+  bool actual = typename TypeParam::second_type();
+  if (typename TypeParam::first_type()) {
+    ASSERT_TRUE(actual);
+  } else {
+    ASSERT_FALSE(actual);
+  }
+}
+
+REGISTER_TYPED_TEST_CASE_P(BoolTest, CheckBoolean);
+
+
 
 #endif /* UUID_29B974E6_2A8A_4B56_B0D5_6B885825F24A */

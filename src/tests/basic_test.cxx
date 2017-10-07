@@ -1,26 +1,21 @@
-#include <gtest/gtest.h>
 #include <iostream>
+#include <utility>
+
+#include <gtest/gtest.h>
 
 #include <fmp/primitive.hpp>
 
 #include <fmp_test.hpp>
 
-template <typename T>
-void assert_true_bool()
-{
-  ASSERT_TRUE(T());
-}
+using HasValueTarget = ::testing::Types<
+  std::pair<std::true_type, fmp::has_value<fmp::val<int, 0>>>
+>;
 
-TEST(BasicTest, HasValue) {
-  using namespace fmp;
-  using exp0 = has_value<val<int, 0>>;
-  ASSERT_TRUE(exp0());
-}
+INSTANTIATE_TYPED_TEST_CASE_P(HasValue, BoolTest, HasValueTarget);
 
-TEST(BasicTest, HasType) {
+using HasTypeTarget = ::testing::Types<
+  std::pair<std::false_type, fmp::has_type<int>>,
+  std::pair<std::true_type, fmp::has_type<fmp::id<int>>>
+>;
 
-  using f0 = fmp::has_type<int>;
-  using t0 = fmp::has_type<fmp::id<int>>;
-  ASSERT_FALSE(f0());
-  ASSERT_TRUE(t0());
-}
+INSTANTIATE_TYPED_TEST_CASE_P(HasType, BoolTest, HasTypeTarget);
