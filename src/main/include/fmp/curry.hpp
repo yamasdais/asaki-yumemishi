@@ -21,6 +21,9 @@ struct curry {
   template <typename... P>
   using apply = typename detail::curried<F, A..., P...>::type;
 
+  template <typename... P>
+  using apply_t = typename apply<P...>::type;
+
   template <typename... Adds>
   using currying = curry<F, A..., Adds...>;
 };

@@ -89,11 +89,13 @@ void test_curry() {
   using fmp::curry;
   using c0 = curry<std::is_same, int>;
   using c1 = c0::apply<int>;
+  using c1t = c0::apply_t<int>;
   using c2 = c0::currying<long>;
 
   using n0 = curry<noarg>;
 
   std::cout << "c0 curried params:" << c0::value << std::endl;
+  std::cout << "c1:" << demangle<c1t>() << std::endl;
   std::cout << "curry<is_same, int>::apply<int>:" << c1() << std::endl;
   std::cout << "c0::currying<long>: " << c2::apply<>() << std::endl;
 
@@ -218,15 +220,15 @@ int main(int , char**)
   //test_quote();
   //test_order();
   //test_monoid();
-  //test_curry();
+  test_curry();
   test_monoid_et();
   //test_monoid_uel();
-  test_lt();
-  test_eq();
-  test_gt();
-  test_compare();
-  test_max();
-  test_min();
+  //test_lt();
+  //test_eq();
+  //test_gt();
+  //test_compare();
+  //test_max();
+  //test_min();
   test_foldl();
   test_foldr();
   apply_sample();
