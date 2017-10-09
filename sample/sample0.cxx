@@ -200,15 +200,28 @@ void apply_sample() {
   using h0 = has_type<int0>;
   using a0 = apply<negate, h0>;
   using c2 = apply<noarg>::type;
+  using c3 = apply<id>::type;
+  using c3c = c3::currying<int>;
+//  using c3d = decltype(detail::apply_impl::get<c3, h0>(nullptr));
+  using t0 = c3::apply<h0>;
+//  using c3a = c3::apply_t<int>;
+  using c3a = apply<c3::apply, int>;
   using a1 = negate<h0>;
+  using a2 = apply<std::is_same>::type;
   using a3 = apply<std::is_same, int0>::type;
-//  using a4 = a3::apply<int0>::type;
-  using a4 = apply<a3::template apply, int0>::type;
+  using a3c = apply<a3::apply, int0>::type;
+  using a4 = a3::apply<int0>::type;
+//  using a3ca = a3c::apply<>;
+//  using a4 = apply<a3::template apply, int0>::type;
 
-  std::cout << "c2:" << demangle<c2::type>() << std::endl;
+  std::cout << "c2:" << demangle<c2>() << std::endl;
+  std::cout << "c3:" << demangle<c3>() << std::endl;
+  std::cout << "c3c:" << demangle<c3c>() << std::endl;
+  std::cout << "c3a:" << demangle<c3a>() << std::endl;
   std::cout << "a0:" << demangle<a0::type>() << std::endl;
   std::cout << "a1:" << demangle<a1::type>() << std::endl;
   std::cout << "a3:" << demangle<a3>() << std::endl;
+  std::cout << "a3c:" << demangle<a3c>() << std::endl;
   std::cout << "a4:" << demangle<a4>() << std::endl;
 }
 

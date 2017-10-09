@@ -13,7 +13,7 @@ namespace fmp {
 
 template <template <class...> typename F,
           typename... A>
-struct apply : public derived<
+struct apply : public id<
   decltype(detail::apply_impl::get<F, A...>(nullptr))
 >
 {
