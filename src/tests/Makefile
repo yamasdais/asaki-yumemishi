@@ -36,3 +36,5 @@ libgtest.a: fmp_test.o
 
 basic_test: basic_test.o libgtest.a
 	$(CXX) $(LDFLAGS) -o $@ $^
+
+include $(DEPS)

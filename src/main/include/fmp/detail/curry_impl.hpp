@@ -9,12 +9,6 @@
 namespace fmp {
 namespace detail {
 
-template <template <class...> typename F,
-          typename... A>
-struct curried {
-  using type = F<A...>;
-};
-
 struct curry_apply_impl {
   template <template <class...> typename F,
             typename... A>

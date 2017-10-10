@@ -28,11 +28,7 @@ struct curry {
 //  using type = detail::curried<F, A...>;
 
   template <typename... P>
-#if 0
-  using apply = typename detail::curried<F, A..., P...>::type;
-#else
   using apply = decltype(detail::curry_apply_impl::get<F, A..., P...>(nullptr));
-#endif
 
   template <typename... P>
   using apply_t = typename apply<P...>::type;

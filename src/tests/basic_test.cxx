@@ -48,9 +48,11 @@ using CurryTypeTarget = ::testing::Types<
   // tests for 1 argument meta-function
   p<false_type, curry<id, false_type>::apply_t<>>,
   p<false_type, curry<id>::apply_t<false_type>>,
-  p<false_type, curry<id>::currying<false_type>::apply_t<>>,
+  p<false_type, curry<id>::apply_t<>::apply_t<false_type>>,
+  p<curry<id, false_type>, curry<id>::currying<false_type>>,
 
   // tests for 2 argument meta-function
+  p<curry<std::is_same, int>, curry<std::is_same>::apply_t<int>>,
   p<std::is_same<int, long>, curry<std::is_same>::apply<int, long>>,
   p<false_type, curry<std::is_same>::apply_t<int, long>>,
   p<std::is_same<int, long>, curry<std::is_same>::currying<>::apply<int, long>>,

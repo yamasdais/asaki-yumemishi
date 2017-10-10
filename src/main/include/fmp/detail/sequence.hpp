@@ -6,11 +6,7 @@
 #if !defined(FMP_0C1960E6_F598_4F31_B57A_FEF339122B20)
 #define FMP_0C1960E6_F598_4F31_B57A_FEF339122B20
 
-#if defined(__cpp_nested_namespace_definitions)
-namespace fmp::detail {
-#else
 namespace fmp { namespace detail {
-#endif
 
 template <typename... T>
 struct head_impl;
@@ -27,10 +23,6 @@ struct head_impl<> {
   using apply = undefined_type;
 };
 
-#if defined(__cpp_nested_namespace_definitions)
-} /* namespace fmp::detail */
-#else
 } /* namespace detail */ } /* namespace fmp */
-#endif
 
 #endif /* if not defined 'FMP_0C1960E6_F598_4F31_B57A_FEF339122B20' */
