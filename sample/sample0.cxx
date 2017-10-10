@@ -203,6 +203,7 @@ void apply_sample() {
   using c3 = apply<id>::type;
   using c3c = c3::currying<int>;
 //  using c3d = decltype(detail::apply_impl::get<c3, h0>(nullptr));
+  using i0 = decltype(detail::curry_apply_impl::get<noarg>(nullptr));
   using t0 = c3::apply<h0>;
 //  using c3a = c3::apply_t<int>;
   using c3a = apply<c3::apply, int>;
@@ -217,8 +218,8 @@ void apply_sample() {
   std::cout << "c2:" << demangle<c2>() << std::endl;
   std::cout << "c3:" << demangle<c3>() << std::endl;
   std::cout << "c3c:" << demangle<c3c>() << std::endl;
-  std::cout << "c3a:" << demangle<c3a>() << std::endl;
-  std::cout << "a0:" << demangle<a0::type>() << std::endl;
+  std::cout << "c3a:" << demangle<c3a::type>() << std::endl;
+  std::cout << "i0:" << demangle<i0>() << std::endl;
   std::cout << "a1:" << demangle<a1::type>() << std::endl;
   std::cout << "a3:" << demangle<a3>() << std::endl;
   std::cout << "a3c:" << demangle<a3c>() << std::endl;

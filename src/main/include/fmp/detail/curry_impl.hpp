@@ -15,6 +15,18 @@ struct curried {
   using type = F<A...>;
 };
 
+struct curry_apply_impl {
+  template <template <class...> typename F,
+            typename... A>
+  static auto get(typename F<A...>::type*) noexcept
+    -> F<A...>;
+
+  template <template <class...> typename F,
+            typename... A>
+  static auto get(...) noexcept
+    -> derived<curry<F, A...>>;
+};
+
 } /* ns: fmp::detail */
 } /* ns: fmp */
 

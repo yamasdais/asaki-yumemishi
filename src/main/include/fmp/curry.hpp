@@ -6,6 +6,15 @@
 #if !defined(FMP_1541E847_B530_48E2_848F_C8CC210691B6)
 #define FMP_1541E847_B530_48E2_848F_C8CC210691B6
 
+namespace fmp {
+
+// forward declaration
+template <template <class...> typename F,
+          typename... A>
+struct curry;
+
+}
+
 #include <fmp/detail/curry_impl.hpp>
 
 namespace fmp {
@@ -19,7 +28,11 @@ struct curry {
 //  using type = detail::curried<F, A...>;
 
   template <typename... P>
+#if 0
   using apply = typename detail::curried<F, A..., P...>::type;
+#else
+  using apply = decltype(detail::curry_apply_impl::get<F, A..., P...>(nullptr));
+#endif
 
   template <typename... P>
   using apply_t = typename apply<P...>::type;

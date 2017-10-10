@@ -76,6 +76,13 @@ struct functor {
   using map = F<T>;
 };
 
+template <typename... Sig>
+struct foo;
+
+template <template <class> typename F>
+struct foo<curry<F>> {
+};
+
 template <template <class> typename F,
           typename T>
 struct map;
