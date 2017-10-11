@@ -11,20 +11,6 @@
 
 namespace fmp {
 
-#if 0
-template <template <class...> typename F,
-          typename... A>
-struct apply : public id<
-  decltype(detail::apply_impl::get<F, A...>(nullptr))
->
-{
-};
-
-template <template <class...> typename F,
-          typename... A>
-using apply_t = typename apply<F, A...>::type;
-#endif
-
 template <typename T, typename... A>
 struct apply {
   using type = decltype(detail::apply_impl::get<T, A...>(nullptr));
