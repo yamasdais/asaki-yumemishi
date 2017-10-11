@@ -2,7 +2,7 @@ libgtestsrcdir = /usr/src/gtest/src
 libgtest_CXXFLAGS = -I$(libgtestsrcdir) -I$(libgtestsrcdir)/.. \
 	-DGTEST_USE_OWN_TR1_TUPLE=1 -Wno-unused-private-field
 
-PROGRAMS=basic_test
+PROGRAMS=all_test
 CXX=g++
 CXXFLAGS=-O -std=c++14 -Wall -Wextra -g
 INCLUDES=-I../main/include -I.
@@ -34,7 +34,7 @@ libgtest.a: fmp_test.o
 	$(CXX) $(libgtest_CXXFLAGS) -o gtest-main.o -c $(libgtestsrcdir)/gtest_main.cc
 	ar rcs $@ gtest-all.o gtest-main.o fmp_test.o
 
-basic_test: basic_test.o libgtest.a
+all_test: basic_test.o curry_test.o libgtest.a
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)

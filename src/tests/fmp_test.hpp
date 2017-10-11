@@ -116,4 +116,22 @@ TYPED_TEST_P(TypeTest, CheckType) {
 
 REGISTER_TYPED_TEST_CASE_P(TypeTest, CheckType);
 
+// short hand
+template <typename T0, typename T1>
+using p = std::pair<T0, T1>;
+
+using true_type = std::true_type;
+using false_type = std::false_type;
+
+// Class that takes template template parameter,
+template <typename... A>
+struct noarg;
+
+// but without any argument only
+template <>
+struct noarg<> {
+  constexpr static int value = 43;
+  using type = std::true_type;
+};
+
 #endif /* UUID_29B974E6_2A8A_4B56_B0D5_6B885825F24A */
