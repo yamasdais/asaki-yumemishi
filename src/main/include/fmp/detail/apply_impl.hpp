@@ -10,6 +10,7 @@
 namespace fmp {
 namespace detail {
 
+#if 0
 struct apply_impl {
   template <template <class...> typename F,
             typename... A>
@@ -20,6 +21,15 @@ struct apply_impl {
             typename... A>
   static auto get(...) noexcept
     -> curry<F, A...>;
+
+};
+#endif
+
+struct apply_impl {
+  template <typename T,
+            typename... A>
+  static auto get(typename T::template apply<A...>*) noexcept
+    -> typename T::template apply<A...>::type;
 
 };
 

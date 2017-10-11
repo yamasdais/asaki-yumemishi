@@ -196,6 +196,7 @@ void test_foldr() {
 
 void apply_sample() {
   using namespace fmp;
+#if 0
   using int0 = val<int, 0>;
   using h0 = has_type<int0>;
   using a0 = apply<negate, h0>;
@@ -224,6 +225,13 @@ void apply_sample() {
   std::cout << "a3:" << demangle<a3>() << std::endl;
   std::cout << "a3c:" << demangle<a3c>() << std::endl;
   std::cout << "a4:" << demangle<a4>() << std::endl;
+#endif
+  using c0 = curry<std::is_same>;
+  using a0 = apply<c0, int>::type;
+  using a1 = apply_t<a0, char>;
+
+  std::cout << "a0:" << demangle<a0>() << std::endl;
+  std::cout << "a1:" << demangle<a1>() << std::endl;
 }
 
 int main(int , char**)

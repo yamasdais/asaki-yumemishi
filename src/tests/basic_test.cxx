@@ -70,7 +70,10 @@ INSTANTIATE_TYPED_TEST_CASE_P(CurryType, TypeTest, CurryTypeTarget);
 
 // ApplyType
 using ApplyTypeTarget = ::testing::Types<
+#if 0
   p<true_type, apply_t<std::is_same, nothing, nothing>>
+#endif
+  p<true_type, apply_t<curry<std::is_same, nothing>, nothing>>
 >;
 
 INSTANTIATE_TYPED_TEST_CASE_P(ApplyType, TypeTest, ApplyTypeTarget);
