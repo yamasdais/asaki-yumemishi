@@ -24,10 +24,3 @@ using HasTypeTarget = ::testing::Types<
 >;
 
 INSTANTIATE_TYPED_TEST_CASE_P(HasType, BoolTest, HasTypeTarget);
-
-// ApplyType
-using ApplyTypeTarget = ::testing::Types<
-  p<true_type, apply_t<curry<std::is_same, nothing>, nothing>>
->;
-
-INSTANTIATE_TYPED_TEST_CASE_P(ApplyType, TypeTest, ApplyTypeTarget);
