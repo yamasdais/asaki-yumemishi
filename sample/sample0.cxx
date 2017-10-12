@@ -204,6 +204,19 @@ void apply_sample() {
   std::cout << "a1:" << demangle<a1>() << std::endl;
 }
 
+void compose_sample() {
+  using namespace fmp;
+  using f0 = curry<negate>;
+  using g0 = curry<std::is_same>;
+
+  using c0 = compose<f0, g0>;
+  using r0 = c0::apply_t<int>;
+  using r1 = apply_t<r0, int>;
+
+  std::cout << "compose r0:" << demangle<r0>() << std::endl;
+  std::cout << "compose r1:" << demangle<r1>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -224,6 +237,7 @@ int main(int , char**)
   test_foldl();
   test_foldr();
   apply_sample();
+  compose_sample();
 
   return 0;
 }
