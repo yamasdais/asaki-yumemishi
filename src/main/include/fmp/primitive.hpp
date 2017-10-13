@@ -116,6 +116,7 @@ struct negate<std::false_type> : public std::true_type {
 
 #include <fmp/curry.hpp>
 #include <fmp/apply.hpp>
+#include <fmp/compose.hpp>
 
 #include <fmp/detail/sequence.hpp>
 #include <fmp/detail/fold.hpp>

@@ -92,31 +92,11 @@ template <template <class> typename F,
 struct map<F, sequence<A...>> {
 };
 
-template <typename F, typename G>
-struct compose;
 
 namespace detail {
 
-template <typename F, typename G>
-struct compose_apply_impl {
-  using type = typename F::template apply_t<G>;
-};
-
-template <typename F, template <class...> typename G, typename... A>
-struct compose_apply_impl<F, curry<G, A...>> {
-  using type = compose<F, curry<G, A...>>;
-};
 
 }
-
-template <typename F, typename G>
-struct compose {
-  template <typename... A>
-  using apply = detail::compose_apply_impl<F, apply_t<G, A...>>;
-
-  template <typename... A>
-  using apply_t = typename apply<A...>::type;
-};
 
 }
 
