@@ -35,7 +35,6 @@ void test_value() {
 
   using has_val0 = has_value<int>;
   using has_val1 = has_value<val0>;
-  //std::cout << std::boolalpha;
   std::cout << "has_val0:" << has_val0() << std::endl;
   std::cout << "has_val1:" << has_val1() << std::endl;
 
@@ -200,8 +199,12 @@ void apply_sample() {
   using a0 = apply<c0, int>::type;
   using a1 = apply_t<a0, char>;
 
+  using t0 = has_apply<a1>;
+  using e0 = apply<a1>; // cause assertion error if instantiate
+
   std::cout << "a0:" << demangle<a0>() << std::endl;
   std::cout << "a1:" << demangle<a1>() << std::endl;
+  std::cout << "t0:" << demangle<t0>() << std::endl;
 }
 
 void compose_sample() {
@@ -226,7 +229,7 @@ int main(int , char**)
   //test_order();
   //test_monoid();
   test_curry();
-  test_monoid_et();
+  //test_monoid_et();
   //test_monoid_uel();
   //test_lt();
   //test_eq();

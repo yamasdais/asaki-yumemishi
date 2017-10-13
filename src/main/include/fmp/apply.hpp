@@ -13,8 +13,9 @@ namespace fmp {
 
 template <typename T, typename... A>
 struct apply {
+  static_assert(has_apply<T>::value,
+                "apply<T>: T must have apply<A...> member typename");
   using type = decltype(detail::apply_impl::get<T, A...>(nullptr));
-
 };
 
 template <typename T, typename... A>

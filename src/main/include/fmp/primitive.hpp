@@ -8,8 +8,6 @@
 
 #include <type_traits>
 
-#include <fmp/detail/check_impl.hpp>
-
 // tags
 namespace fmp {
 
@@ -56,41 +54,6 @@ struct derived : public T {
 template <typename T>
 using derived_t = typename derived<T>::type;
 
-
-template <typename T>
-using has_value = derived_t<
-  decltype(detail::has_value_impl::check<T>(nullptr))
->;
-
-template <typename T>
-using has_type = derived_t<
-  decltype(detail::has_type_impl::check<T>(nullptr))
->;
-
-template <template <class...> typename F,
-          typename... A>
-using can_apply = derived_t<
-  decltype(detail::can_apply_impl::check<F, A...>(nullptr))
->;
-
-
-// operator
-template <bool Cond>
-struct bool_type : public std::conditional_t<
-  Cond, std::true_type, std::false_type
->
-{
-};
-
-template <typename T>
-struct boolean : public std::enable_if_t<
-  has_value<T>::value,
-  bool_type<T::value>
->
-{
-};
-
-
 // simple type
 template <typename T>
 struct quote {
@@ -109,10 +72,9 @@ template <>
 struct negate<std::false_type> : public std::true_type {
 };
 
-
-
-
 } // namespace fmp
+
+#include <fmp/check.hpp>
 
 #include <fmp/curry.hpp>
 #include <fmp/apply.hpp>
@@ -123,6 +85,21 @@ struct negate<std::false_type> : public std::true_type {
 #include <fmp/detail/apply_impl.hpp>
 
 namespace fmp {
+
+template <bool Cond>
+struct bool_type : public std::conditional_t<
+  Cond, std::true_type, std::false_type
+>
+{
+};
+
+template <typename T>
+struct boolean : public std::enable_if_t<
+  has_value<T>::value,
+  bool_type<T::value>
+>
+{
+};
 
 template <typename A, typename D>
 struct cons {

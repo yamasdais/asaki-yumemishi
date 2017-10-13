@@ -16,6 +16,10 @@ struct apply_impl {
   static auto get(typename T::template apply<A...>*) noexcept
     -> typename T::template apply<A...>::type;
 
+  template <typename,
+            typename... A>
+  static auto get(...) noexcept
+    -> nothing;
 };
 
 
