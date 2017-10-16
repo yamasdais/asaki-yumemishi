@@ -40,21 +40,21 @@ INSTANTIATE_TYPED_TEST_CASE_P(ApplyType, TypeTest, ApplyTypeTarget);
 
 using ApplyFuncTypeTarget = ::testing::Types<
   // no arg
-  p<true_type, apply_f<noarg>::type>,
-  p<true_type, apply_f_t<noarg>>,
+  p<true_type, applyf<noarg>::type>,
+  p<true_type, applyf_t<noarg>>,
 
   // 1 arg
-  p<curry<id>, apply_f_t<id>>,
-  p<v0, apply_t<apply_f_t<id>, v0>>,
-  p<v0, apply_f_t<id, v0>>,
+  p<curry<id>, applyf_t<id>>,
+  p<v0, apply_t<applyf_t<id>, v0>>,
+  p<v0, applyf_t<id, v0>>,
 
   // 2 args
-  p<curry<std::is_same>, apply_f_t<std::is_same>>,
-  p<curry<std::is_same, nothing>, apply_t<apply_f_t<std::is_same>, nothing>>,
-  p<curry<std::is_same, nothing>, apply_t<apply_f_t<std::is_same, nothing>>>,
-  p<true_type, apply_f_t<std::is_same, nothing, nothing>>,
-  p<false_type, apply_f_t<std::is_same, nothing, int>>,
-  p<true_type, apply_t<apply_f_t<std::is_same, nothing>, nothing>>,
-  p<false_type, apply_t<apply_f_t<std::is_same, nothing>, v0>>
+  p<curry<std::is_same>, applyf_t<std::is_same>>,
+  p<curry<std::is_same, nothing>, apply_t<applyf_t<std::is_same>, nothing>>,
+  p<curry<std::is_same, nothing>, apply_t<applyf_t<std::is_same, nothing>>>,
+  p<true_type, applyf_t<std::is_same, nothing, nothing>>,
+  p<false_type, applyf_t<std::is_same, nothing, int>>,
+  p<true_type, apply_t<applyf_t<std::is_same, nothing>, nothing>>,
+  p<false_type, apply_t<applyf_t<std::is_same, nothing>, v0>>
   >;
 INSTANTIATE_TYPED_TEST_CASE_P(ApplyFuncType, TypeTest, ApplyFuncTypeTarget);

@@ -23,12 +23,12 @@ using apply_t = typename apply<T, A...>::type;
 
 template <template <class...> typename F,
           typename... A>
-struct apply_f : public apply<curry<F, A...>> {
+struct applyf : public apply<curry<F, A...>> {
 };
 
 template <template <class...> typename F,
           typename... A>
-using apply_f_t = typename apply_f<F, A...>::type;
+using applyf_t = typename applyf<F, A...>::type;
 
 } /* ns: fmp */
 
