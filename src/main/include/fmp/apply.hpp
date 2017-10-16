@@ -14,12 +14,21 @@ namespace fmp {
 template <typename T, typename... A>
 struct apply {
   static_assert(has_apply<T>::value,
-                "apply<T>: T must have apply<A...> member typename");
+                "apply<T>: The T must have apply<A...> member typename");
   using type = decltype(detail::apply_impl::get<T, A...>(nullptr));
 };
 
 template <typename T, typename... A>
 using apply_t = typename apply<T, A...>::type;
+
+template <template <class...> typename F,
+          typename... A>
+struct apply_f : public apply<curry<F, A...>> {
+};
+
+template <template <class...> typename F,
+          typename... A>
+using apply_f_t = typename apply_f<F, A...>::type;
 
 } /* ns: fmp */
 

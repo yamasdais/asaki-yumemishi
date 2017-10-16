@@ -23,6 +23,12 @@ namespace fmp {
 
 template <typename F, typename G>
 struct compose {
+  static_assert(has_apply<F>::value,
+                "compose<F, G>: The F must have apply<A...> member typename");
+
+  static_assert(has_apply<G>::value,
+                "compose<F, G>: The G must have apply<A...> member typename");
+
   template <typename... A>
   using apply = detail::compose_apply_impl<F, apply_t<G, A...>>;
 
