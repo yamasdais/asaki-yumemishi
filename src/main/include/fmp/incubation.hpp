@@ -8,6 +8,7 @@
 
 #include <fmp/primitive.hpp>
 #include <fmp/operator.hpp>
+#include <fmp/sequence.hpp>
 
 namespace fmp {
 
@@ -74,22 +75,6 @@ template <template <class> typename F>
 struct functor {
   template <typename T>
   using map = F<T>;
-};
-
-template <typename... Sig>
-struct foo;
-
-template <template <class> typename F>
-struct foo<curry<F>> {
-};
-
-template <template <class> typename F,
-          typename T>
-struct map;
-
-template <template <class> typename F,
-          typename... A>
-struct map<F, sequence<A...>> {
 };
 
 

@@ -6,6 +6,7 @@
 #if !defined(FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D)
 #define FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D
 
+#include <utility>
 #include <type_traits>
 
 // tags
@@ -80,7 +81,6 @@ struct negate<std::false_type> : public std::true_type {
 #include <fmp/apply.hpp>
 #include <fmp/compose.hpp>
 
-#include <fmp/detail/sequence.hpp>
 #include <fmp/detail/fold.hpp>
 #include <fmp/detail/apply_impl.hpp>
 
@@ -108,25 +108,16 @@ struct cons {
   using cdr_type = D;
 };
 
-template <typename... T>
-struct sequence {
-  using type = sequence<T...>;
-  constexpr static size_t size = sizeof...(T);
-
-  using head = typename detail::head_impl<T...>::apply;
-  using tail = typename detail::head_impl<T...>::template tail<sequence>;
-
-  template <typename... A>
-  using append = sequence<T..., A...>;
-
-  template <typename... A>
-  using prepend = sequence<A..., T...>;
-
-};
-
 template <typename T, T V>
 struct val : public std::integral_constant<T, V> {
   using type = val<T, V>;
+  using value_type = T;
+};
+
+template <typename T>
+struct valtype {
+  template <T V>
+  using let = val<T, V>;
 };
 
 } /* ns: fmp */

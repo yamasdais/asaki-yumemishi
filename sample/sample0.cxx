@@ -220,6 +220,19 @@ void compose_sample() {
   std::cout << "compose r1:" << demangle<r1>() << std::endl;
 }
 
+void test_valtype() {
+  using namespace fmp;
+  using vt0 = valtype<int>;
+  using v0 = valtype<int>::template let<0>;
+  using v1 = vt0::let<1>;
+  using v2 = vt0::let<2>;
+
+  std::cout << "--valtype--" << std::endl;
+  std::cout << "v0: " << demangle<v0>() << std::endl;
+  std::cout << "v1: " << demangle<v1>() << std::endl;
+  std::cout << "v2: " << demangle<v2>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -241,6 +254,7 @@ int main(int , char**)
   test_foldr();
   apply_sample();
   compose_sample();
+  test_valtype();
 
   return 0;
 }
