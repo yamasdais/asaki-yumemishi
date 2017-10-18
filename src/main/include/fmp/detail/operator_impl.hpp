@@ -37,6 +37,26 @@ struct gt;
 
 namespace detail {
 
+// monoid unity
+struct has_unity_impl {
+  template <typename T>
+  static auto check(typename T::unity*) -> std::true_type;
+
+  template <typename T>
+  static auto check(...) -> std::false_type;
+};
+
+// monoid unite
+struct has_unite_impl {
+  template <typename T>
+  static auto check(typename T::template unite<
+                    typename T::unity,
+                    typename T::unity>*) -> std::true_type;
+
+  template <typename T>
+  static auto check(...) -> std::false_type;
+};
+
 // operator and
 struct is_and_operatable_impl {
   template <typename T0, typename T1>

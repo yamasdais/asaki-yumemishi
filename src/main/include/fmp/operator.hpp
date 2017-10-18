@@ -14,18 +14,52 @@ namespace fmp {
 
 // monoid
 template <template <class> typename Domain,
-          template <class, class> typename Op,
+          template <class, class> typename Unite,
           typename Unity>
 struct monoid {
   using unity = Unity;
 
-  template <typename LType, typename RType = unity>
-  using op = Op<Domain<LType>, Domain<RType>>;
+  template <typename LType, typename RType>
+  using unite = Unite<Domain<LType>, Domain<RType>>;
 
-  template <typename LType, typename RType = unity>
-  using op_t = typename Op<Domain<LType>, Domain<RType>>::type;
+  template <typename LType, typename RType>
+  using unite_t = typename unite<LType, RType>::type;
 };
 
+
+// monoid unity
+
+template <typename T>
+using has_unity = derived_t<
+  decltype(detail::has_unity_impl::check<T>(nullptr))
+>;
+
+template <typename T>
+struct unity {
+  static_assert(has_unity<T>::value,
+                "unity<T>: 'T' must have a typename 'unity' member");
+  using type = typename T::unity;
+};
+
+template <typename T>
+using unity_t = typename unity<T>::type;
+
+// monoid unite
+template <typename T>
+using has_unite = derived_t<
+  decltype(detail::has_unite_impl::check<T>(nullptr))
+>;
+
+template <typename T, typename L, typename R>
+struct unite {
+  static_assert(has_unite<T>::value,
+                "unite<T,L,R>: 'T' must have a template 'unite<L, R>' member");
+
+  using type = typename T::template unite_t<L, R>;
+};
+
+template <typename T, typename L, typename R>
+using unite_t = typename unite<T, L, R>::type;
 
 template <typename T0, typename T1>
 struct is_and_operatable : public derived_t<
