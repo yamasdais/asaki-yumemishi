@@ -116,9 +116,44 @@ TYPED_TEST_P(TypeTest, CheckType) {
 
 REGISTER_TYPED_TEST_CASE_P(TypeTest, CheckType);
 
+// Value Test
+template <typename T, T V, typename A>
+struct value_test_param {
+  using expected_type = T;
+  constexpr static T value = V;
+  using actual_type = A;
+};
+
+template <typename T>
+struct ValueTest : public ::testing::Test {
+  // concept declarations of type T
+  using expected_type = typename T::expected_type;
+  using actual_type = typename T::actual_type;
+};
+
+TYPED_TEST_CASE_P(ValueTest);
+
+TYPED_TEST_P(ValueTest, CheckValue) {
+  bool type_eq = std::is_same<
+    typename TypeParam::expected_type,
+    typename TypeParam::actual_type::value_type
+    >::value;
+  ASSERT_TRUE(type_eq) << "Type mismatched";
+
+  auto expected = TypeParam::value;
+  auto actual = TypeParam::actual_type::value;
+
+  ASSERT_EQ(expected, actual) << "Value mismatched";
+}
+
+REGISTER_TYPED_TEST_CASE_P(ValueTest, CheckValue);
+
 // short hand
 template <typename T0, typename T1>
 using p = std::pair<T0, T1>;
+
+template <typename T, T V, typename A>
+using v = value_test_param<T, V, A>;
 
 using true_type = std::true_type;
 using false_type = std::false_type;
