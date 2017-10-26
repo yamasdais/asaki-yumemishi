@@ -7,6 +7,7 @@
 #define FMP_174E3523_C237_4B3A_87D4_E995AF774952
 
 #include <fmp/primitive.hpp>
+#include <fmp/operators_fwd.hpp>
 
 #include <fmp/detail/operator_impl.hpp>
 
@@ -14,9 +15,12 @@ namespace fmp {
 
 // monoid
 template <template <class> typename Domain,
-          template <class, class> typename Unite,
+//          template <class, class> typename Unite,
           typename Unity>
 struct monoid {
+  template <typename T>
+  using domain_type = Domain<T>;
+#if 0
   using unity = Unity;
 
   template <typename LType, typename RType>
@@ -24,8 +28,8 @@ struct monoid {
 
   template <typename LType, typename RType>
   using unite_t = typename unite<LType, RType>::type;
+#endif
 };
-
 
 // monoid unity
 
@@ -34,15 +38,18 @@ using has_unity = derived_t<
   decltype(detail::has_unity_impl::check<T>(nullptr))
 >;
 
-template <typename T>
+template <
+  template <class...> typename Monoid
+>
 struct unity {
-  static_assert(has_unity<T>::value,
-                "unity<T>: 'T' must have a typename 'unity' member");
-  using type = typename T::unity;
+  using type = typename monoid_trait<Monoid>::unity;
 };
 
-template <typename T>
-using unity_t = typename unity<T>::type;
+template <
+  template <class...> typename Monoid
+>
+using unity_t = typename unity<Monoid>::type;
+
 
 // monoid unite
 template <typename T>
@@ -50,16 +57,26 @@ using has_unite = derived_t<
   decltype(detail::has_unite_impl::check<T>(nullptr))
 >;
 
-template <typename T, typename L, typename R>
-struct unite {
-  static_assert(has_unite<T>::value,
-                "unite<T,L,R>: 'T' must have a template 'unite<L, R>' member");
-
-  using type = typename T::template unite_t<L, R>;
+#if 0
+template <template <class> typename F,
+          typename A0, typename A1>
+struct unite<F<A0>, F<A1>> {
+  using type = std::enable_if_t<has_unite<F<A0>>::value,
+                                typename F<A0>::template unite<A1>::type>;
+};
+#else
+template <
+  template <class...> typename Monoid,
+  typename A0, typename A1
+>
+struct unite<Monoid<A0>, Monoid<A1>> {
+//  using type = typename A0::template unite_t<A1>;
+  using type = typename monoid_trait<Monoid>::template unite<A0, A1>;
 };
 
-template <typename T, typename L, typename R>
-using unite_t = typename unite<T, L, R>::type;
+#endif
+template <typename A0, typename A1>
+using unite_t = typename unite<A0, A1>::type;
 
 template <typename T0, typename T1>
 struct is_and_operatable : public derived_t<
@@ -96,16 +113,22 @@ struct is_gt_operatable : public derived_t<
 {
 };
 
-
 /**
  * 'and' operator ('and' in latin. because of c++ reserved word)
  */
-struct et : public monoid<
-  boolean, detail::op_and_impl, std::true_type
->
+template <typename Param>
+struct et
 {
+  using type = typename boolean<Param>::type;
 };
 
+template <>
+struct monoid_trait<et>
+  : public detail::monoid_impl<et, std::true_type, detail::op_and_impl> {
+};
+
+
+#if 0
 /**
  * 'or' operator ('or' in latin. because of c++ reserved word)
  */
@@ -114,6 +137,7 @@ struct uel : public monoid<
 >
 {
 };
+#endif
 
 /**
  * 'less than' operator
@@ -218,6 +242,7 @@ struct gt<Domain<infinity_upper>, Domain<infinity_lower>>
 {
 };
 
+#if 0
 template <template <class> typename Domain>
 struct max : public monoid<
   Domain, detail::max_impl, infinity_lower
@@ -231,7 +256,7 @@ struct min : public monoid<
 >
 {
 };
-
+#endif
 }
 
 #endif /* if not defined 'FMP_174E3523_C237_4B3A_87D4_E995AF774952' */

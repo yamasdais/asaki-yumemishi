@@ -51,29 +51,41 @@ void test_value() {
 
 void test_unity() {
   using namespace fmp;
+#if 0
   using et0 = fmp::et;
   //using e0 = unity<int>; // ::type instantiation causes assertion error
 
   std::cout << "---Unity---" << std::endl;
   std::cout << "unity::type:" << demangle<unity<et0>::type>() << std::endl;
   std::cout << "unity_t:" << demangle<unity_t<et0>>() << std::endl;
+#endif
 };
 
 void test_unite() {
   using namespace fmp;
-  using et0 = fmp::et;
+  using et0 = fmp::et<std::true_type>;
+  //using et1 = fmp::et<int>::type;
 
   std::cout << "---Unite---" << std::endl;
+#if 0
   std::cout << "has_unite:" << has_unite<et0>::value << std::endl;
   std::cout << "unite<true, false>: "
             << demangle<unite_t<et0, std::true_type, std::false_type>>()
             << std::endl;
+#endif
 }
 
 void test_monoid_et() {
-  using et0 = fmp::et;
-
+  using et0 = fmp::et<std::true_type>;
+  using ett0 = fmp::monoid_trait<fmp::et>;
+  using et_u = fmp::unity_t<fmp::et>;
+  using et_unite = fmp::unite_t<et0, et_u>;
   std::cout << "MONOID et---" << std::endl;
+  std::cout << "et<true_type>=" << demangle<et0>() << std::endl;
+  std::cout << "monoid_trait<et>=" << demangle<ett0>() << std::endl;
+  std::cout << "monoid_trait<et>::unity=" << demangle<et_u>() << std::endl;
+  std::cout << "unite<et0, unite>=" << demangle<et_unite>() << std::endl;
+#if 0
   std::cout << "Unity: " << demangle<et0::unity>() << std::endl;
   std::cout << "et<true, false>:" << demangle<et0::unite_t<std::true_type, std::false_type>>() << std::endl;
   std::cout << "et<false, false>:" << demangle<et0::unite_t<std::false_type, std::false_type>>() << std::endl;
@@ -81,11 +93,12 @@ void test_monoid_et() {
   std::cout << "et<true, true>:" << demangle<et0::unite_t<std::true_type, std::true_type>>() << std::endl;
 //  std::cout << "et<true>:" << demangle<et0::unite_t<std::true_type>>() << std::endl;
 //  std::cout << "et<false>:" << demangle<et0::unite_t<std::false_type>>() << std::endl;
+#endif
 }
 
 void test_monoid_uel() {
+#if 0
   using op0 = fmp::uel;
-
   std::cout << "MONOID uel---" << std::endl;
   std::cout << "Unity: " << demangle<op0::unity>() << std::endl;
   std::cout << "uel<true, false>:" << demangle<op0::unite_t<std::true_type, std::false_type>>() << std::endl;
@@ -94,6 +107,7 @@ void test_monoid_uel() {
   std::cout << "uel<true, true>:" << demangle<op0::unite_t<std::true_type, std::true_type>>() << std::endl;
 //  std::cout << "uel<true>:" << demangle<op0::unite_t<std::true_type>>() << std::endl;
 //  std::cout << "uel<false>:" << demangle<op0::unite_t<std::false_type>>() << std::endl;
+#endif
 }
 
 template <typename... A>
@@ -176,6 +190,7 @@ void test_compare() {
 
 
 void test_max() {
+#if 0
   using int0 = fmp::val<int, 0>;
   using maxop = fmp::max<fmp::type_size>;
   using max0 = maxop::unite_t<char, int>;
@@ -184,10 +199,12 @@ void test_max() {
   std::cout << "max0: " << demangle<max0::type>() << std::endl;
   std::cout << "max1: " << demangle<max1::type>() << std::endl;
 //  std::cout << "max2: " << demangle<max2::type>() << std::endl;
+#endif
 }
 
 void test_min() {
   using int0 = fmp::val<int, 0>;
+#if 0
   using minop = fmp::min<fmp::type_size>;
   using min0 = minop::unite_t<char, int>;
   using min1 = minop::unite_t<int0, int0>;
@@ -197,6 +214,7 @@ void test_min() {
   std::cout << "min0: " << demangle<min0::type>() << std::endl;
   std::cout << "min1: " << demangle<min1::type>() << std::endl;
 //  std::cout << "min2: " << demangle<min2::type>() << std::endl;
+#endif
 }
 
 void test_foldl() {
@@ -254,6 +272,15 @@ void test_valtype() {
   std::cout << "v2: " << demangle<v2>() << std::endl;
 }
 
+void test_sequence() {
+  using s0 = fmp::sequence<int, char>;
+  using s1 = fmp::sequence<float, double>;
+
+  using r0 = fmp::append_t<s0, s1>;
+  std::cout << "--sequence--" << std::endl;
+  std::cout << "r0:" << demangle<r0>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -263,13 +290,13 @@ int main(int , char**)
   //test_order();
   //test_monoid();
   test_curry();
-  //test_monoid_et();
+  test_monoid_et();
   //test_monoid_uel();
   //test_lt();
   //test_eq();
   //test_gt();
   //test_compare();
-  //test_max();
+  test_max();
   //test_min();
   test_foldl();
   test_foldr();
@@ -278,6 +305,8 @@ int main(int , char**)
   test_valtype();
   test_unity();
   test_unite();
+
+  test_sequence();
 
   return 0;
 }

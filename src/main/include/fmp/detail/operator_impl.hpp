@@ -7,35 +7,23 @@
 #define FMP_9F9BE7D4_BB83_4900_9AC3_7BB8B33BC7F9
 
 #include <fmp/primitive.hpp>
+#include <fmp/operators_fwd.hpp>
 
 namespace fmp {
 
-// forward declarations in 'operator.hpp'
-template <typename T0, typename T1>
-struct is_and_operatable;
-
-template <typename T0, typename T1>
-struct is_or_operatable;
-
-template <typename T0, typename T1>
-struct is_lt_operatable;
-
-template <typename T0, typename T1>
-struct is_eq_operatable;
-
-template <typename T0, typename T1>
-struct is_gt_operatable;
-
-template <typename T0, typename T1>
-struct lt;
-
-template <typename T0, typename T1>
-struct eq;
-
-template <typename T0, typename T1>
-struct gt;
-
 namespace detail {
+
+template <
+  template <class...> typename Monoid,
+  typename Unity,
+  template <class, class> typename Unite
+>
+struct monoid_impl {
+  using unity = Monoid<Unity>;
+
+  template <typename A0, typename A1>
+  using unite = typename Unite<A0, A1>::type;
+};
 
 // monoid unity
 struct has_unity_impl {
