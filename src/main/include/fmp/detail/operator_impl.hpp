@@ -7,6 +7,7 @@
 #define FMP_9F9BE7D4_BB83_4900_9AC3_7BB8B33BC7F9
 
 #include <fmp/primitive.hpp>
+#include <fmp/apply.hpp>
 #include <fmp/operators_fwd.hpp>
 
 namespace fmp {
@@ -23,6 +24,7 @@ struct monoid_default {
 
   template <typename A0, typename A1>
   using unite = typename Unite<A0, A1>::type;
+  // using unite = apply_t
 };
 
 // monoid unity
@@ -57,6 +59,7 @@ struct is_and_operatable_impl {
   static auto check(...) -> std::false_type;
 };
 
+#if 0
 template <typename T0, typename T1>
 struct op_and_impl : std::enable_if_t<
   is_and_operatable<T0, T1>::value,
@@ -64,12 +67,42 @@ struct op_and_impl : std::enable_if_t<
 >
 {
 };
+#endif
 
 template <typename T0, typename T1>
 struct op_and_impl0 : public derived<
   bool_type<T0::type::value && T1::type::value>
 >
 {
+};
+
+// operator
+template <template <class> typename OP>
+struct monoid_unite_impl;
+
+
+// operatable?
+template <template <class> typename T>
+struct is_bin_op_impl;
+
+// all
+template <>
+struct is_bin_op_impl<all> {
+  template <typename T0, typename T1>
+  static auto check(all<T0>*, all<T1>*) -> decltype(
+    (T0::type::value && T1::type::value),
+    std::true_type()
+  );
+
+  template <typename T0, typename T1>
+  static auto check(...) -> std::false_type;
+};
+
+template <>
+struct monoid_unite_impl<all> {
+  template <typename A0, typename A1>
+  using apply = typename bool_type<A0::type::value && A1::type::value>::type;
+
 };
 
 // operator or

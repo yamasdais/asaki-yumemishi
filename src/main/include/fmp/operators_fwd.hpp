@@ -50,6 +50,17 @@ struct unity;
 template <typename A0, typename A1>
 struct unite;
 
+template <typename Param>
+struct all;
+
+template <template <class> typename OP,
+          typename A0, typename A1>
+struct is_monoid;
+
+template <template <class> typename OP,
+          typename A0, typename A1>
+using is_monoid_t = typename is_monoid<OP, A0, A1>::type;
+
 } /* ns: fmp */
 
 #endif /* FMP_75C387D6_1FA4_4127_8D87_1CE30C829668 */

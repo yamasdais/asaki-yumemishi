@@ -52,7 +52,7 @@ void test_value() {
 void test_unity() {
   using namespace fmp;
 #if 0
-  using et0 = fmp::et;
+  using et0 = fmp::all;
   //using e0 = unity<int>; // ::type instantiation causes assertion error
 
   std::cout << "---Unity---" << std::endl;
@@ -63,7 +63,7 @@ void test_unity() {
 
 void test_unite() {
   using namespace fmp;
-  using et0 = fmp::et<std::true_type>;
+  using et0 = fmp::all<std::true_type>;
   //using et1 = fmp::et<int>::type;
 
   std::cout << "---Unite---" << std::endl;
@@ -76,9 +76,9 @@ void test_unite() {
 }
 
 void test_monoid_et() {
-  using et0 = fmp::et<std::true_type>;
-  using ett0 = fmp::monoid_trait<fmp::et>;
-  using et_u = fmp::unity_t<fmp::et>;
+  using et0 = fmp::all<std::true_type>;
+  using ett0 = fmp::monoid_trait<fmp::all>;
+  using et_u = fmp::unity_t<fmp::all>;
   using et_unite = fmp::unite_t<et0, et_u>;
   std::cout << "MONOID et---" << std::endl;
   std::cout << "et<true_type>=" << demangle<et0>() << std::endl;
@@ -296,6 +296,18 @@ void test_sequence() {
   std::cout << "unite<s0, s1>=" << demangle<sunite>() << std::endl;
 }
 
+void test_is_operatable() {
+  using namespace fmp;
+
+  using ett = all<std::true_type>;
+  using etf = all<std::false_type>;
+  using can_op = is_monoid_t<all, ett, int>;
+  using et_op = detail::monoid_unite_impl<all>::apply<ett, etf>;
+
+  std::cout << "pred: " << demangle<can_op>() << std::endl;
+  std::cout << "op: " << demangle<et_op>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -321,6 +333,7 @@ int main(int , char**)
   test_unity();
   test_unite();
 
+  test_is_operatable();
   test_sequence();
   test_cons();
 

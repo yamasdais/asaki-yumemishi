@@ -117,14 +117,24 @@ struct is_gt_operatable : public derived_t<
  * 'and' operator ('and' in latin. because of c++ reserved word)
  */
 template <typename Param>
-struct et
+struct all
 {
   using type = typename boolean<Param>::type;
 };
 
+template <typename A0, typename A1>
+struct is_monoid<all, A0, A1> : public derived_t<
+  decltype(detail::is_bin_op_impl<all>::check<A0, A1>(nullptr, nullptr))
+>
+{
+};
+
 template <>
-struct monoid_trait<et>
-  : public detail::monoid_default<et, std::true_type, detail::op_and_impl0> {
+struct monoid_trait<all> : public detail::monoid_default<
+  all,
+  std::true_type,
+  detail::monoid_unite_impl<all>::apply
+> {
 };
 
 
