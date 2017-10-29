@@ -219,18 +219,29 @@ void test_min() {
 
 void test_foldl() {
   using namespace fmp;
-  using fold0 = foldl<cons, nil_type, int, long long>;
+//  using fold0 = foldl<cons, nil_type, int, long long>;
 
-  std::cout << "foldl0:" << demangle<fold0::type>() << std::endl;
+//  std::cout << "foldl0:" << demangle<fold0::type>() << std::endl;
 }
 
 void test_foldr() {
   using namespace fmp;
-  using fold0 = foldr<cons, nil_type, int, long long>;
+//  using fold0 = foldr<cons, nil_type, int, long long>;
 
-  std::cout << "foldr0:" << demangle<fold0::type>() << std::endl;
+//  std::cout << "foldr0:" << demangle<fold0::type>() << std::endl;
 }
 
+void test_cons() {
+  using namespace fmp;
+
+  using c0 = unity_t<cons>;
+  using c1 = cons<int>;
+  using c2 = unite_t<c1, c1>;
+
+  std::cout << "cons<>: " << demangle<c0>() << std::endl;
+  std::cout << "cons<c1>: " << demangle<c1>() << std::endl;
+  std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
+};
 
 void apply_sample() {
   using namespace fmp;
@@ -275,10 +286,14 @@ void test_valtype() {
 void test_sequence() {
   using s0 = fmp::sequence<int, char>;
   using s1 = fmp::sequence<float, double>;
+  using su = fmp::unity_t<fmp::sequence>;
+  using sunite = fmp::unite_t<s0, s1>;
 
   using r0 = fmp::append_t<s0, s1>;
   std::cout << "--sequence--" << std::endl;
   std::cout << "r0:" << demangle<r0>() << std::endl;
+  std::cout << "unity<sequence>=" << demangle<su>() << std::endl;
+  std::cout << "unite<s0, s1>=" << demangle<sunite>() << std::endl;
 }
 
 int main(int , char**)
@@ -307,6 +322,7 @@ int main(int , char**)
   test_unite();
 
   test_sequence();
+  test_cons();
 
   return 0;
 }

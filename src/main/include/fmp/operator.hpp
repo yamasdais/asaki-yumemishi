@@ -71,7 +71,7 @@ template <
 >
 struct unite<Monoid<A0>, Monoid<A1>> {
 //  using type = typename A0::template unite_t<A1>;
-  using type = typename monoid_trait<Monoid>::template unite<A0, A1>;
+  using type = typename monoid_trait<Monoid>::template unite<Monoid<A0>, Monoid<A1>>;
 };
 
 #endif
@@ -124,7 +124,7 @@ struct et
 
 template <>
 struct monoid_trait<et>
-  : public detail::monoid_impl<et, std::true_type, detail::op_and_impl> {
+  : public detail::monoid_default<et, std::true_type, detail::op_and_impl0> {
 };
 
 

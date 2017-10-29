@@ -18,7 +18,7 @@ template <
   typename Unity,
   template <class, class> typename Unite
 >
-struct monoid_impl {
+struct monoid_default {
   using unity = Monoid<Unity>;
 
   template <typename A0, typename A1>
@@ -61,6 +61,13 @@ template <typename T0, typename T1>
 struct op_and_impl : std::enable_if_t<
   is_and_operatable<T0, T1>::value,
   bool_type<T0::value && T1::value>
+>
+{
+};
+
+template <typename T0, typename T1>
+struct op_and_impl0 : public derived<
+  bool_type<T0::type::value && T1::type::value>
 >
 {
 };

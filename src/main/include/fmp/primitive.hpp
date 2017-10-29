@@ -81,6 +81,8 @@ struct negate<std::false_type> : public std::true_type {
 #include <fmp/apply.hpp>
 #include <fmp/compose.hpp>
 
+#include <fmp/list.hpp>
+
 #include <fmp/detail/fold.hpp>
 #include <fmp/detail/apply_impl.hpp>
 
@@ -101,12 +103,14 @@ struct boolean : public std::enable_if_t<
 {
 };
 
+#if 0
 template <typename A, typename D>
 struct cons {
   using type = cons<A, D>;
   using car_type = A;
   using cdr_type = D;
 };
+#endif
 
 template <typename T, T V>
 struct val : public std::integral_constant<T, V> {
