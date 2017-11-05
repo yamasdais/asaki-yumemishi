@@ -52,19 +52,6 @@ using unity_t = typename unity<Monoid>::type;
 
 
 // monoid unite
-template <typename T>
-using has_unite = derived_t<
-  decltype(detail::has_unite_impl::check<T>(nullptr))
->;
-
-#if 0
-template <template <class> typename F,
-          typename A0, typename A1>
-struct unite<F<A0>, F<A1>> {
-  using type = std::enable_if_t<has_unite<F<A0>>::value,
-                                typename F<A0>::template unite<A1>::type>;
-};
-#else
 template <
   template <class...> typename Monoid,
   typename A0, typename A1
@@ -74,7 +61,7 @@ struct unite<Monoid<A0>, Monoid<A1>> {
   using type = typename monoid_trait<Monoid>::template unite<Monoid<A0>, Monoid<A1>>;
 };
 
-#endif
+
 template <typename A0, typename A1>
 using unite_t = typename unite<A0, A1>::type;
 

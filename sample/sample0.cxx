@@ -236,11 +236,18 @@ void test_cons() {
 
   using c0 = unity_t<cons>;
   using c1 = cons<int>;
+  using ac0 = curry<cons, int>;
+  using c1_0 = apply_t<ac0, cons<>>;
   using c2 = unite_t<c1, c1>;
+  using car_0t = car_t<c1>;
 
-  std::cout << "cons<>: " << demangle<c0>() << std::endl;
-  std::cout << "cons<c1>: " << demangle<c1>() << std::endl;
+  std::cout << "cons<>: " << demangle<c0::type>() << std::endl;
+  std::cout << "cons<c1>: " << demangle<c1::type>() << std::endl;
+  std::cout << "cons<c1> = cons?:" <<  demangle<is_cons<c0>>() << std::endl;
+  std::cout << "cons<c1_0>: " << demangle<c1_0::type>() << std::endl;
   std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
+  std::cout << "car<c1>:=" << demangle<car<c1>>() << std::endl;
+  std::cout << "car_t<c1>:=" << demangle<car_t<c1>>() << std::endl;
 };
 
 void apply_sample() {

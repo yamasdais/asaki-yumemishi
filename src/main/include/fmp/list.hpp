@@ -7,11 +7,9 @@
 #define FMP_2BC27905_2899_4653_A5E0_521DC13A65AB
 
 #include <fmp/operators_fwd.hpp>
+#include <fmp/detail/list_impl.hpp>
 
 namespace fmp {
-
-template <typename A = nil_type, typename D = nil_type>
-struct cons;
 
 template <typename A, typename D>
 struct cons {
@@ -19,6 +17,33 @@ struct cons {
   using car_type = A;
   using cdr_type = D;
 };
+
+template <>
+struct cons<nil_type, nil_type> {
+  using type = nil_type;
+  using car_type = nil_type;
+  using cdr_type = nil_type;
+};
+
+template <typename A>
+struct cons<A, cons<nil_type, nil_type>> {
+  using type = cons<A, nil_type>;
+  using car_type = A;
+  using cdr_type = nil_type;
+};
+
+template <typename T>
+using is_cons = derived_t<
+  decltype(detail::is_cons_impl::check<T>(nullptr))
+>;
+
+template <typename T>
+using car = id<std::enable_if_t<
+                 is_cons<T>::value,
+                 typename T::car_type>>;
+
+template <typename T>
+using car_t = typename car<T>::type;
 
 #if 0
 template <>
@@ -38,7 +63,7 @@ struct monoid_trait<cons> {
   using unity = cons<>;
 
   template <typename A0, typename A1>
-  using unite = cons<typename A0::car_type, 
+  using unite = cons<typename A0::car_type,
                      cons<typename A1::car_type, typename A1::cdr_type>>;
 };
 #endif
