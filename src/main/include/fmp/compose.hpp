@@ -23,10 +23,10 @@ namespace fmp {
 
 template <typename F, typename G>
 struct compose {
-  static_assert(has_apply<F>::value,
+  static_assert(has_apply<F>::value && is_curried_v<F>,
                 "compose<F, G>: The F must have apply<A...> member typename");
 
-  static_assert(has_apply<G>::value,
+  static_assert(has_apply<G>::value && is_curried_v<G>,
                 "compose<F, G>: The G must have apply<A...> member typename");
 
   template <typename... A>

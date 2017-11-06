@@ -335,6 +335,19 @@ void test_flip() {
   std::cout << "snc1: " << demangle<snc1>() << std::endl;
 }
 
+void test_curried() {
+  using namespace fmp;
+
+  std::cout << "CURRIED-----" << std::endl;
+  using c0 = curry<id, int>;
+  using r0 = is_curried<c0>;
+
+  std::cout << "fl0: " << demangle<r0::type>() << std::endl;
+  std::cout << "is_curried_v<c0>: " << is_curried_v<c0> << std::endl;
+  std::cout << "is_curried_v<int>: " << is_curried_v<int> << std::endl;
+  std::cout << "is_curried_v<cons<int,nil>>: " << is_curried_v<cons<int,nil_type>> << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -350,20 +363,21 @@ int main(int , char**)
   //test_eq();
   //test_gt();
   //test_compare();
-  test_max();
+  //test_max();
   //test_min();
-  test_foldl();
-  test_foldr();
-  apply_sample();
+  //test_foldl();
+  //test_foldr();
+  //apply_sample();
   compose_sample();
   test_valtype();
   test_unity();
   test_unite();
 
-  test_is_operatable();
+  //test_is_operatable();
   test_sequence();
   test_cons();
   test_flip();
+  //test_curried();
 
   return 0;
 }

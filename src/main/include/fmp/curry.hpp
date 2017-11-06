@@ -37,6 +37,18 @@ struct curry {
   using currying = curry<F, A..., Adds...>;
 };
 
+template <typename T>
+struct is_curried : public std::false_type {
+};
+
+template <template <class...> typename F,
+          typename... A>
+struct is_curried<curry<F, A...>> : public std::true_type {
+};
+
+template <typename T>
+constexpr bool is_curried_v = is_curried<T>::value;
+
 template <template <class...> typename HF,
           template <class...> typename C,
           typename... A>

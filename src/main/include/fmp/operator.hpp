@@ -125,6 +125,13 @@ struct monoid_trait<all> : public detail::monoid_default<
 };
 
 
+template <typename T>
+struct endo {
+  static_assert(is_curried_v<T>, "endo<T>: expected curry<F> as T");
+  using type = T;
+};
+
+
 #if 0
 /**
  * 'or' operator ('or' in latin. because of c++ reserved word)
