@@ -37,6 +37,12 @@ struct curry {
   using currying = curry<F, A..., Adds...>;
 };
 
+template <template <class...> typename HF,
+          template <class...> typename C,
+          typename... A>
+struct make_curried_hf : public curry<HF, curry<C>, A...> {
+};
+
 } /* ns: fmp */
 
 #endif /* FMP_1541E847_B530_48E2_848F_C8CC210691B6 */

@@ -38,12 +38,23 @@ using is_cons = derived_t<
 >;
 
 template <typename T>
+constexpr bool is_cons_v = is_cons<T>::value;
+
+template <typename T>
 using car = id<std::enable_if_t<
-                 is_cons<T>::value,
+                 is_cons_v<T>,
                  typename T::car_type>>;
 
 template <typename T>
 using car_t = typename car<T>::type;
+
+template <typename T>
+using cdr = id<std::enable_if_t<
+                 is_cons_v<T>,
+                 typename T::cdr_type>>;
+
+template <typename T>
+using cdr_t = typename cdr<T>::type;
 
 #if 0
 template <>

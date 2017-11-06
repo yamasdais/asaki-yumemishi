@@ -3,6 +3,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+#if !defined(FMP_68F8599B_664B_4732_ACCE_7327873F93E1)
+#define FMP_68F8599B_664B_4732_ACCE_7327873F93E1
+
 #include <iostream>
 #include <typeinfo>
 #include <type_traits>
@@ -11,6 +14,7 @@
 #include <fmp.hpp>
 #include <fmp/incubation.hpp>
 #include <fmp/operator.hpp>
+#include <fmp/utils.hpp>
 
 #include "sample.hpp"
 
@@ -243,7 +247,7 @@ void test_cons() {
 
   std::cout << "cons<>: " << demangle<c0::type>() << std::endl;
   std::cout << "cons<c1>: " << demangle<c1::type>() << std::endl;
-  std::cout << "cons<c1> = cons?:" <<  demangle<is_cons<c0>>() << std::endl;
+  std::cout << "cons<c1> = cons?:" << is_cons_v<c0> << std::endl;
   std::cout << "cons<c1_0>: " << demangle<c1_0::type>() << std::endl;
   std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
   std::cout << "car<c1>:=" << demangle<car<c1>>() << std::endl;
@@ -315,6 +319,22 @@ void test_is_operatable() {
   std::cout << "op: " << demangle<et_op>() << std::endl;
 }
 
+void test_flip() {
+  using namespace fmp;
+
+  std::cout << "flip: " << std::endl;
+  using fl0 = curry<flip, curry<cons>>;
+  using fl1 = flipf<cons, nil_type>;
+  using snc0 = apply_t<fl0, nil_type, int>;
+
+  using snc0 = apply_t<fl0, nil_type, int>;
+  using snc1 = apply_t<fl1, int>;
+
+  std::cout << "fl0: " << demangle<fl0>() << std::endl;
+  std::cout << "snc0: " << demangle<snc0>()<< std::endl;
+  std::cout << "snc1: " << demangle<snc1>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -343,6 +363,9 @@ int main(int , char**)
   test_is_operatable();
   test_sequence();
   test_cons();
+  test_flip();
 
   return 0;
 }
+
+#endif /* if not defined 'FMP_68F8599B_664B_4732_ACCE_7327873F93E1' */
