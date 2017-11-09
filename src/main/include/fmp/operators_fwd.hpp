@@ -53,6 +53,9 @@ struct unite;
 template <typename Param>
 struct all;
 
+template <typename T>
+struct endo;
+
 template <template <class> typename OP,
           typename A0, typename A1>
 struct is_monoid;

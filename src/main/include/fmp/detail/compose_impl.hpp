@@ -6,12 +6,15 @@
 #if !defined(FMP_FE8B755E_F036_42E8_BCEA_2CF8653318E8)
 #define FMP_FE8B755E_F036_42E8_BCEA_2CF8653318E8
 
+#include <fmp/apply.hpp>
+
 namespace fmp {
 namespace detail {
 
 template <typename F, typename G>
 struct compose_apply_impl {
-  using type = typename F::template apply_t<G>;
+//  using type = typename F::template apply_t<G>;
+  using type = apply_t<F, G>;
 };
 
 template <typename F, template <class...> typename G, typename... A>

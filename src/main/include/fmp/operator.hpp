@@ -8,6 +8,8 @@
 
 #include <fmp/primitive.hpp>
 #include <fmp/operators_fwd.hpp>
+#include <fmp/curry.hpp>
+#include <fmp/compose.hpp>
 
 #include <fmp/detail/operator_impl.hpp>
 
@@ -15,20 +17,10 @@ namespace fmp {
 
 // monoid
 template <template <class> typename Domain,
-//          template <class, class> typename Unite,
           typename Unity>
 struct monoid {
   template <typename T>
   using domain_type = Domain<T>;
-#if 0
-  using unity = Unity;
-
-  template <typename LType, typename RType>
-  using unite = Unite<Domain<LType>, Domain<RType>>;
-
-  template <typename LType, typename RType>
-  using unite_t = typename unite<LType, RType>::type;
-#endif
 };
 
 // monoid unity
@@ -125,12 +117,23 @@ struct monoid_trait<all> : public detail::monoid_default<
 };
 
 
+/**
+ * Monoid endo
+ */
 template <typename T>
 struct endo {
   static_assert(is_curried_v<T>, "endo<T>: expected curry<F> as T");
   using type = T;
 };
 
+template <>
+struct monoid_trait<endo> : public detail::monoid_default<
+  endo,
+  curry<id>,
+  detail::monoid_unite_impl<endo>::apply
+  >
+{
+};
 
 #if 0
 /**

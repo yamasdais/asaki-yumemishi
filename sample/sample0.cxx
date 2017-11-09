@@ -270,15 +270,20 @@ void apply_sample() {
 
 void compose_sample() {
   using namespace fmp;
-  using f0 = curry<negate>;
-  using g0 = curry<std::is_same>;
+  using f0 = curry<car>;
+  using g0 = curry<cons2>;
 
   using c0 = compose<f0, g0>;
-  using r0 = c0::apply_t<int>;
+  using r0 = apply_t<c0, int>;
   using r1 = apply_t<r0, int>;
 
+  std::cout << "hasapply:" << demangle<f0::template apply<cons<int, char>>>()
+            << std::endl;
+  std::cout << "f0 apply:" << demangle<apply_t<f0, cons<int, char>> >() << std::endl;
+  std::cout << "car<cons2<int, char>>: "
+            << demangle<car_t<cons<int, char>>>()<< std::endl;
   std::cout << "compose r0:" << demangle<r0>() << std::endl;
-  std::cout << "compose r1:" << demangle<r1>() << std::endl;
+  std::cout << "compose r1:" << demangle<apply_t<f0, cons<int, int>>>() << std::endl;
 }
 
 void test_valtype() {
@@ -348,6 +353,20 @@ void test_curried() {
   std::cout << "is_curried_v<cons<int,nil>>: " << is_curried_v<cons<int,nil_type>> << std::endl;
 }
 
+void test_endo() {
+  using namespace fmp;
+
+  std::cout << "ENDO-----" << std::endl;
+  using e0 = endo<curry<cons2>>;
+  using ue0 = unite_t<endo<curry<car>>, e0>;
+  using re0 = apply_t<ue0, int, char>;
+
+  std::cout << "endo:" << demangle<e0>() << std::endl;
+  std::cout << "unity:" << demangle<unity_t<endo>>() << std::endl;
+  std::cout << "unite:" << demangle<ue0>() << std::endl;
+  std::cout << "apply:" << demangle<re0>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -374,10 +393,11 @@ int main(int , char**)
   test_unite();
 
   //test_is_operatable();
-  test_sequence();
-  test_cons();
-  test_flip();
+  //test_sequence();
+  //test_cons();
+  //test_flip();
   //test_curried();
+  test_endo();
 
   return 0;
 }

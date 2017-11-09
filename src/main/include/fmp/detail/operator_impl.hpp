@@ -105,6 +105,18 @@ struct monoid_unite_impl<all> {
 
 };
 
+// endo
+template <>
+struct monoid_unite_impl<endo> {
+  template <typename A0, typename A1>
+  using apply = apply<compose<typename A0::type, typename A1::type>>;
+};
+
+template <typename A0, typename A1>
+struct endo_unite_impl {
+  using type = A0;
+};
+
 // operator or
 struct is_or_operatable_impl {
   template <typename T0, typename T1>

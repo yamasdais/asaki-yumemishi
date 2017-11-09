@@ -18,6 +18,11 @@ struct cons {
   using cdr_type = D;
 };
 
+template <typename A, typename D>
+struct cons2 {
+  using type = cons<A, D>;
+};
+
 template <>
 struct cons<nil_type, nil_type> {
   using type = nil_type;
@@ -41,17 +46,19 @@ template <typename T>
 constexpr bool is_cons_v = is_cons<T>::value;
 
 template <typename T>
-using car = id<std::enable_if_t<
-                 is_cons_v<T>,
-                 typename T::car_type>>;
+struct car {
+  static_assert(is_cons_v<T>, "car<T>: T must be a cons");
+  using type = typename T::car_type;
+};
 
 template <typename T>
 using car_t = typename car<T>::type;
 
 template <typename T>
-using cdr = id<std::enable_if_t<
-                 is_cons_v<T>,
-                 typename T::cdr_type>>;
+struct cdr {
+  static_assert(is_cons_v<T>, "cdr<T>: T must be a cons");
+  using type = typename T::cdr_type;
+};
 
 template <typename T>
 using cdr_t = typename cdr<T>::type;
