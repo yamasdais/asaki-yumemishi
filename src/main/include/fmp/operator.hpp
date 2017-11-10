@@ -50,7 +50,7 @@ template <
 >
 struct unite<Monoid<A0>, Monoid<A1>> {
 //  using type = typename A0::template unite_t<A1>;
-  using type = typename monoid_trait<Monoid>::template unite<Monoid<A0>, Monoid<A1>>;
+  using type = Monoid<typename monoid_trait<Monoid>::template unite<Monoid<A0>, Monoid<A1>>>;
 };
 
 
@@ -122,7 +122,7 @@ struct monoid_trait<all> : public detail::monoid_default<
  */
 template <typename T>
 struct endo {
-  static_assert(is_curried_v<T>, "endo<T>: expected curry<F> as T");
+  //static_assert(is_curried_v<T>, "endo<T>: expected curry<F> as T");
   using type = T;
 };
 

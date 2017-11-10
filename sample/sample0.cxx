@@ -359,7 +359,7 @@ void test_endo() {
   std::cout << "ENDO-----" << std::endl;
   using e0 = endo<curry<cons2>>;
   using ue0 = unite_t<endo<curry<car>>, e0>;
-  using re0 = apply_t<ue0, int, char>;
+  using re0 = apply_t<ue0::type, int, char>;
 
   std::cout << "endo:" << demangle<e0>() << std::endl;
   std::cout << "unity:" << demangle<unity_t<endo>>() << std::endl;
