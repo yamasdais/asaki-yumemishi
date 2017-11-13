@@ -6,7 +6,7 @@
 #if !defined(FMP_2BC27905_2899_4653_A5E0_521DC13A65AB)
 #define FMP_2BC27905_2899_4653_A5E0_521DC13A65AB
 
-#include <fmp/operators_fwd.hpp>
+#include <fmp/monoid_fwd.hpp>
 #include <fmp/detail/list_impl.hpp>
 
 namespace fmp {
@@ -37,12 +37,6 @@ struct cons<A, cons<nil_type, nil_type>> {
   using cdr_type = nil_type;
 };
 
-#if 0
-template <typename T>
-using is_cons = derived_t<
-  decltype(detail::is_cons_impl::check<T>(nullptr))
->;
-#endif
 template <typename T>
 struct is_cons : public std::false_type {
 };

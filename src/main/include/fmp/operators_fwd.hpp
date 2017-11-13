@@ -39,31 +39,6 @@ struct append;
 template <typename A0, typename A1>
 using append_t = typename append<A0, A1>::type;
 
-// monoid base
-template <template <class...> typename Monoid>
-struct monoid_trait;
-
-
-template <template <class...> typename Monoid>
-struct unity;
-
-template <typename A0, typename A1>
-struct unite;
-
-template <typename Param>
-struct all;
-
-template <typename T>
-struct endo;
-
-template <template <class> typename OP,
-          typename A0, typename A1>
-struct is_monoid;
-
-template <template <class> typename OP,
-          typename A0, typename A1>
-using is_monoid_t = typename is_monoid<OP, A0, A1>::type;
-
 } /* ns: fmp */
 
 #endif /* FMP_75C387D6_1FA4_4127_8D87_1CE30C829668 */

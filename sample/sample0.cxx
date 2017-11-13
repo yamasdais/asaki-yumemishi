@@ -14,6 +14,7 @@
 #include <fmp.hpp>
 #include <fmp/incubation.hpp>
 #include <fmp/operator.hpp>
+#include <fmp/monoid.hpp>
 #include <fmp/utils.hpp>
 
 #include "sample.hpp"
