@@ -239,15 +239,15 @@ void test_cons() {
   using namespace fmp;
 
   using c0 = unity_t<cons>;
-  using c1 = cons<int>;
+  using c1 = cons<int, nil_type>;
   using ac0 = curry<cons, int>;
-  using c1_0 = apply_t<ac0, cons<>>;
-  using c2 = unite_t<c1, c1>;
+  using c1_0 = apply_t<ac0, empty<cons>::type>;
+  using c2 = unite<c1, c1>;
   using car_0t = car_t<c1>;
 
-  std::cout << "cons<>: " << demangle<c0::type>() << std::endl;
+  std::cout << "unity<cons>: " << demangle<c0>() << std::endl;
   std::cout << "cons<c1>: " << demangle<c1::type>() << std::endl;
-  std::cout << "cons<c1> = cons?:" << is_cons_v<c0> << std::endl;
+  std::cout << "cons<c1>==cons?: " << is_cons_v<c0> << std::endl;
   std::cout << "cons<c1_0>: " << demangle<c1_0::type>() << std::endl;
   std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
   std::cout << "car<c1>:=" << demangle<car<c1>>() << std::endl;
@@ -394,7 +394,7 @@ int main(int , char**)
 
   //test_is_operatable();
   //test_sequence();
-  //test_cons();
+  test_cons();
   //test_flip();
   //test_curried();
   test_endo();

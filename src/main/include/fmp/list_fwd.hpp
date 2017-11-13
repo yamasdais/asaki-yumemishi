@@ -6,10 +6,17 @@
 #if !defined(FMP_382BA56B_E8C6_468A_B8F4_AB848AF0D3D2)
 #define FMP_382BA56B_E8C6_468A_B8F4_AB848AF0D3D2
 
+#include <fmp/primitive.hpp>
+
 namespace fmp {
 
-template <typename A = nil_type, typename D = nil_type>
+template <typename A, typename D = nil_type>
 struct cons;
+
+template <>
+struct empty<cons> {
+  using type = cons<nil_type>;
+};
 
 } /* ns: fmp */
 

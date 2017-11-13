@@ -29,6 +29,10 @@ struct undefined_type {
 struct nothing {
 };
 
+template <template <class...> typename T>
+struct empty {
+};
+
 /**
  * tag for upper infinity +∞ (U+221E)
  */

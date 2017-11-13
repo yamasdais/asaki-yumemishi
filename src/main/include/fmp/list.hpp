@@ -37,10 +37,19 @@ struct cons<A, cons<nil_type, nil_type>> {
   using cdr_type = nil_type;
 };
 
+#if 0
 template <typename T>
 using is_cons = derived_t<
   decltype(detail::is_cons_impl::check<T>(nullptr))
 >;
+#endif
+template <typename T>
+struct is_cons : public std::false_type {
+};
+
+template <typename A0, typename A1>
+struct is_cons<cons<A0, A1>> : public std::true_type {
+};
 
 template <typename T>
 constexpr bool is_cons_v = is_cons<T>::value;
@@ -63,22 +72,10 @@ struct cdr {
 template <typename T>
 using cdr_t = typename cdr<T>::type;
 
-#if 0
-template <>
-struct unity<cons> {
-  using type = cons<>;
-};
-
-template <typename A0_A, typename A0_D, typename A1_A, typename A1_D>
-struct unite<cons<A0_A, A0_D>, cons<A1_A, A1_D>> {
-  using type = cons<A0_A, cons<A1_A, A1_D>>;
-};
-#endif
-
 #if 1
 template <>
 struct monoid_trait<cons> {
-  using unity = cons<>;
+  using unity = typename empty<cons>::type;
 
   template <typename A0, typename A1>
   using unite = cons<typename A0::car_type,
