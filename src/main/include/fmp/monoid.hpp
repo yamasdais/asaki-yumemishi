@@ -7,6 +7,8 @@
 #define FMP_7D240F6E_E2FC_4A9D_AAAC_D40F96A23903
 
 #include <fmp/monoid_fwd.hpp>
+#include <fmp/detail/monoid_impl.hpp>
+#include <fmp/check.hpp>
 
 namespace fmp {
 
@@ -32,11 +34,12 @@ using unity_t = typename unity<Monoid>::type;
 // monoid unite
 template <
   template <class...> typename Monoid,
-  typename A0, typename A1
+  typename... A0, typename... A1
 >
-struct unite<Monoid<A0>, Monoid<A1>> {
-//  using type = typename A0::template unite_t<A1>;
-  using type = Monoid<typename monoid_trait<Monoid>::template unite<Monoid<A0>, Monoid<A1>>>;
+struct unite<Monoid<A0...>, Monoid<A1...>> {
+  using type = Monoid<
+    typename monoid_trait<Monoid>::template unite<Monoid<A0...>, Monoid<A1...>>
+  >;
 };
 
 
@@ -73,7 +76,7 @@ struct monoid_trait<all> : public detail::monoid_default<
  */
 template <typename T>
 struct endo {
-  //static_assert(is_curried_v<T>, "endo<T>: expected curry<F> as T");
+  static_assert(has_apply_v<T>, "endo<T>: expected type that has apply<>");
   using type = T;
 };
 

@@ -14,39 +14,6 @@ namespace fmp {
 
 namespace detail {
 
-template <
-  template <class...> typename Monoid,
-  typename Unity,
-  template <class, class> typename Unite
->
-struct monoid_default {
-  using unity = Monoid<Unity>;
-
-  template <typename A0, typename A1>
-  using unite = typename Unite<A0, A1>::type;
-  // using unite = apply_t
-};
-
-// monoid unity
-struct has_unity_impl {
-  template <typename T>
-  static auto check(typename T::unity*) -> std::true_type;
-
-  template <typename T>
-  static auto check(...) -> std::false_type;
-};
-
-// monoid unite
-struct has_unite_impl {
-  template <typename T>
-  static auto check(typename T::template unite<
-                    typename T::unity,
-                    typename T::unity>*) -> std::true_type;
-
-  template <typename T>
-  static auto check(...) -> std::false_type;
-};
-
 // operator and
 struct is_and_operatable_impl {
   template <typename T0, typename T1>
@@ -76,9 +43,6 @@ struct op_and_impl0 : public derived<
 {
 };
 
-// operator
-template <template <class> typename OP>
-struct monoid_unite_impl;
 
 
 // operatable?
@@ -96,25 +60,6 @@ struct is_bin_op_impl<all> {
 
   template <typename T0, typename T1>
   static auto check(...) -> std::false_type;
-};
-
-template <>
-struct monoid_unite_impl<all> {
-  template <typename A0, typename A1>
-  using apply = typename bool_type<A0::type::value && A1::type::value>::type;
-
-};
-
-// endo
-template <>
-struct monoid_unite_impl<endo> {
-  template <typename A0, typename A1>
-  using apply = apply<compose<typename A0::type, typename A1::type>>;
-};
-
-template <typename A0, typename A1>
-struct endo_unite_impl {
-  using type = A0;
 };
 
 // operator or

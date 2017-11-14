@@ -31,6 +31,9 @@ using has_apply = derived_t<
   decltype(detail::has_apply_impl::check<T>(nullptr))
 >;
 
+template <typename T>
+constexpr bool has_apply_v = has_apply<T>::value;
+
 } /* ns: fmp */
 
 #endif /* if not defined 'FMP_7F01D58B_9578_452E_9552_DF92574AFA5D' */
