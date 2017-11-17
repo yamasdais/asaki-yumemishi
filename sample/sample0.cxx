@@ -243,14 +243,14 @@ void test_cons() {
   using c1 = cons<int, nil_type>;
   using ac0 = curry<cons, int>;
   using c1_0 = apply_t<ac0, empty<cons>::type>;
-  using c2 = unite<c1, c1>;
+  using c2 = unite_t<c1, c1>;
   using car_0t = car_t<c1>;
 
   std::cout << "unity<cons>: " << demangle<c0>() << std::endl;
   std::cout << "cons<c1>: " << demangle<c1::type>() << std::endl;
   std::cout << "cons<c1>==cons?: " << is_cons_v<c0> << std::endl;
   std::cout << "cons<c1_0>: " << demangle<c1_0::type>() << std::endl;
-  std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
+  //std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
   std::cout << "car<c1>:=" << demangle<car<c1>>() << std::endl;
   std::cout << "car_t<c1>:=" << demangle<car_t<c1>>() << std::endl;
 };
@@ -358,14 +358,15 @@ void test_endo() {
   using namespace fmp;
 
   std::cout << "ENDO-----" << std::endl;
-  using e0 = endo<curry<cons2>>;
-  using ue0 = unite_t<endo<curry<car>>, e0>;
-  using re0 = apply_t<ue0::type, int, char>;
+  using e0 = endo<curry<all>>;
+  using ue0 = unite_t<endo<curry<negate>>, e0>;
+  using re0 = apply_t<ue0, std::true_type>;
 
+  std::cout << "unity<endo>:" << demangle<unity_t<endo>>() << std::endl;
   std::cout << "endo:" << demangle<e0>() << std::endl;
-  std::cout << "unity:" << demangle<unity_t<endo>>() << std::endl;
+  std::cout << "apply:" << demangle<apply_t<e0, std::true_type>>() << std::endl;
   std::cout << "unite:" << demangle<ue0>() << std::endl;
-  std::cout << "apply:" << demangle<re0>() << std::endl;
+  std::cout << "apply compose:" << demangle<re0>() << std::endl;
 }
 
 int main(int , char**)

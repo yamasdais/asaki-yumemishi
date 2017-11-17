@@ -15,7 +15,7 @@ struct cons;
 
 template <>
 struct empty<cons> {
-  using type = cons<nil_type>;
+  using type = cons<nil_type, nil_type>;
 };
 
 } /* ns: fmp */

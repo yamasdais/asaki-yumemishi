@@ -7,6 +7,7 @@
 #define FMP_7D240F6E_E2FC_4A9D_AAAC_D40F96A23903
 
 #include <fmp/monoid_fwd.hpp>
+#include <fmp/apply.hpp>
 #include <fmp/detail/monoid_impl.hpp>
 #include <fmp/check.hpp>
 
@@ -78,6 +79,9 @@ template <typename T>
 struct endo {
   static_assert(has_apply_v<T>, "endo<T>: expected type that has apply<>");
   using type = T;
+
+  template <typename... A0>
+  using apply = apply_t<T, A0...>;
 };
 
 template <>
