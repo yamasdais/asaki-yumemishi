@@ -39,9 +39,8 @@ template <
   typename... A0, typename... A1
 >
 struct unite<Monoid<A0...>, Monoid<A1...>> {
-  using type = Monoid<
-    typename monoid_trait<Monoid>::template unite<Monoid<A0...>, Monoid<A1...>>
-  >;
+  using type = typename monoid_trait<Monoid>::template unite<
+    Monoid<A0...>, Monoid<A1...>>;
 };
 
 

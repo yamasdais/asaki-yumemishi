@@ -70,14 +70,6 @@ struct monoid_trait<cons> : public detail::monoid_default<
 {
 };
 
-
-template <>
-template <typename... A0, typename... A1>
-struct unite<cons<A0...>, cons<A1...>> {
-  using type = monoid_trait<cons>::template unite<cons<A0...>, cons<A1...>>;
-};
-
-
 } /* ns: fmp */
 
 #endif /* if not defined 'FMP_2BC27905_2899_4653_A5E0_521DC13A65AB' */

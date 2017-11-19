@@ -52,7 +52,7 @@ struct has_unite_impl {
 template <>
 struct monoid_unite_impl<all> {
   template <typename A0, typename A1>
-  using apply = typename bool_type<A0::type::value && A1::type::value>::type;
+  using apply = all<typename bool_type<A0::type::value && A1::type::value>::type>;
 
 };
 
@@ -60,7 +60,7 @@ struct monoid_unite_impl<all> {
 template <>
 struct monoid_unite_impl<endo> {
   template <typename A0, typename A1>
-  using apply = id<compose<typename A0::type, typename A1::type>>;
+  using apply = endo<compose<typename A0::type, typename A1::type>>;
 };
 
 } /* ns: detail */ } /* ns: fmp */
