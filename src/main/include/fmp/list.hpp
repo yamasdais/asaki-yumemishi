@@ -71,12 +71,6 @@ struct monoid_trait<cons> : public detail::monoid_default<
 };
 
 
-/*
- * I think this spacialization is not needed.
- * But unite<cons> doesn't use the 
- * detail::monoid_unite_impl<cons>::apply<cons<..>, cons<...>> as I expected.
- * I hope this specialization is removed.
- */
 template <>
 template <typename... A0, typename... A1>
 struct unite<cons<A0...>, cons<A1...>> {
