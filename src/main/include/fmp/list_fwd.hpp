@@ -10,7 +10,7 @@
 
 namespace fmp {
 
-template <typename A, typename D = nil_type>
+template <typename A, typename D>
 struct cons;
 
 template <>

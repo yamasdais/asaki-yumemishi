@@ -6,7 +6,7 @@
 #if !defined(FMP_2BC27905_2899_4653_A5E0_521DC13A65AB)
 #define FMP_2BC27905_2899_4653_A5E0_521DC13A65AB
 
-#include <fmp/monoid_fwd.hpp>
+#include <fmp/monoid.hpp>
 #include <fmp/detail/list_impl.hpp>
 
 namespace fmp {
@@ -16,11 +16,6 @@ struct cons {
   using type = cons<A, D>;
   using car_type = A;
   using cdr_type = D;
-};
-
-template <typename A, typename D>
-struct cons2 {
-  using type = cons<A, D>;
 };
 
 template <>
@@ -66,24 +61,27 @@ struct cdr {
 template <typename T>
 using cdr_t = typename cdr<T>::type;
 
-#if 1
 template <>
-struct monoid_trait<cons> {
-  using unity = typename empty<cons>::type;
-
-  template <typename A0, typename A1>
-  using unite = cons<typename A0::car_type,
-                     cons<typename A1::car_type, typename A1::cdr_type>>;
+struct monoid_trait<cons> : public detail::monoid_default<
+  cons,
+  detail::monoid_unite_impl<cons>::apply,
+  nil_type, nil_type
+  >
+{
 };
-#endif
 
-#if 0
-template <typename A0_0, typename A0_1,
-          typename A1_0, typename A1_1>
-struct unite<cons<A0_0, A0_1>, cons<A1_0, A1_1>> {
-  using type = cons<A0_0, cons<A1_0, A1_1>>;
+
+/*
+ * I think this spacialization is not needed.
+ * But unite<cons> doesn't use the 
+ * detail::monoid_unite_impl<cons>::apply<cons<..>, cons<...>> as I expected.
+ * I hope this specialization is removed.
+ */
+template <>
+template <typename... A0, typename... A1>
+struct unite<cons<A0...>, cons<A1...>> {
+  using type = monoid_trait<cons>::template unite<cons<A0...>, cons<A1...>>;
 };
-#endif
 
 
 } /* ns: fmp */

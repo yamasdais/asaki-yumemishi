@@ -59,6 +59,16 @@ struct derived : public T {
 template <typename T>
 using derived_t = typename derived<T>::type;
 
+template <bool Cond>
+struct bool_type : public std::conditional_t<
+  Cond, std::true_type, std::false_type
+>
+{
+};
+
+template <typename T>
+struct boolean;
+
 // simple type
 template <typename T>
 struct quote {
@@ -91,13 +101,6 @@ struct negate<std::false_type> : public std::true_type {
 #include <fmp/detail/apply_impl.hpp>
 
 namespace fmp {
-
-template <bool Cond>
-struct bool_type : public std::conditional_t<
-  Cond, std::true_type, std::false_type
->
-{
-};
 
 template <typename T>
 struct boolean : public std::enable_if_t<

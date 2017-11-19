@@ -18,11 +18,11 @@ struct monoid_unite_impl;
 
 template <
   template <class...> typename Monoid,
-  typename Unity,
-  template <class, class> typename Unite
+  template <class, class> typename Unite,
+  typename... Unity
 >
 struct monoid_default {
-  using unity = Monoid<Unity>;
+  using unity = Monoid<Unity...>;
 
   template <typename A0, typename A1>
   using unite = typename Unite<A0, A1>::type;

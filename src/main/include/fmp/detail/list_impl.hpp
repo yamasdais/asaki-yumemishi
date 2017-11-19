@@ -7,6 +7,7 @@
 #define FMP_AAAA1AA4_2052_4A5F_ABC9_182D0CB9EA32
 
 #include <fmp/list_fwd.hpp>
+#include <fmp/detail/monoid_impl.hpp>
 
 namespace fmp {
 namespace detail {
@@ -18,6 +19,13 @@ struct is_cons_impl {
 
   template <typename>
   static auto check(...) noexcept -> std::false_type;
+};
+
+template <>
+struct monoid_unite_impl<cons> {
+  template <typename A0, typename A1>
+  using apply = cons<typename A0::car_type,
+                     cons<typename A1::car_type, typename A1::cdr_type>>;
 };
 
 } /* ns: fmp::detail */

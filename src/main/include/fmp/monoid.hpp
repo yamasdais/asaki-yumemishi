@@ -9,6 +9,7 @@
 #include <fmp/monoid_fwd.hpp>
 #include <fmp/apply.hpp>
 #include <fmp/detail/monoid_impl.hpp>
+#include <fmp/detail/operator_impl.hpp>
 #include <fmp/check.hpp>
 
 namespace fmp {
@@ -66,8 +67,8 @@ struct is_monoid<all, A0, A1> : public derived_t<
 template <>
 struct monoid_trait<all> : public detail::monoid_default<
   all,
-  std::true_type,
-  detail::monoid_unite_impl<all>::apply
+  detail::monoid_unite_impl<all>::apply,
+  std::true_type
 > {
 };
 
@@ -87,8 +88,8 @@ struct endo {
 template <>
 struct monoid_trait<endo> : public detail::monoid_default<
   endo,
-  curry<id>,
-  detail::monoid_unite_impl<endo>::apply
+  detail::monoid_unite_impl<endo>::apply,
+  curry<id>
   >
 {
 };

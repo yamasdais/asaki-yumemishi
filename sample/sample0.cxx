@@ -243,6 +243,7 @@ void test_cons() {
   using c1 = cons<int, nil_type>;
   using ac0 = curry<cons, int>;
   using c1_0 = apply_t<ac0, empty<cons>::type>;
+  //using c2_0 = detail::monoid_unite_impl<cons>::template apply<cons<char, double>, c1>;
   using c2 = unite_t<c1, c1>;
   using car_0t = car_t<c1>;
 
@@ -250,7 +251,7 @@ void test_cons() {
   std::cout << "cons<c1>: " << demangle<c1::type>() << std::endl;
   std::cout << "cons<c1>==cons?: " << is_cons_v<c0> << std::endl;
   std::cout << "cons<c1_0>: " << demangle<c1_0::type>() << std::endl;
-  //std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
+  std::cout << "cons<c2>: " << demangle<c2>() << std::endl;
   std::cout << "car<c1>:=" << demangle<car<c1>>() << std::endl;
   std::cout << "car_t<c1>:=" << demangle<car_t<c1>>() << std::endl;
 };
@@ -272,7 +273,7 @@ void apply_sample() {
 void compose_sample() {
   using namespace fmp;
   using f0 = curry<car>;
-  using g0 = curry<cons2>;
+  using g0 = curry<cons>;
 
   using c0 = compose<f0, g0>;
   using r0 = apply_t<c0, int>;
