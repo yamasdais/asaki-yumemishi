@@ -16,6 +16,7 @@ namespace detail {
 
 } // ns: detail
 
+#if 0
 template <template <class A0, class A1> typename F,
           typename Acc, typename... T>
 struct foldl {
@@ -27,13 +28,15 @@ template <template <class A0, class A1> typename F,
 struct foldr {
   using type = typename detail::foldr_elem<F, Acc, T...>::type;
 };
-
+#endif
 
 namespace detail {
 
+#if 0
 template <template <class> typename F,
           typename... T>
 struct map_impl;
+#endif
 
 }
 

@@ -7,7 +7,7 @@
 #define FMP_174E3523_C237_4B3A_87D4_E995AF774952
 
 #include <fmp/primitive.hpp>
-#include <fmp/operators_fwd.hpp>
+#include <fmp/operator_fwd.hpp>
 #include <fmp/curry.hpp>
 #include <fmp/compose.hpp>
 

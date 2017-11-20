@@ -6,7 +6,7 @@
 #if !defined(FMP_0FD7118A_1B28_4BDC_ADB1_DAFDBA2F2717)
 #define FMP_0FD7118A_1B28_4BDC_ADB1_DAFDBA2F2717
 
-#include <fmp/operators_fwd.hpp>
+#include <fmp/operator_fwd.hpp>
 #include <fmp/detail/sequence.hpp>
 
 namespace fmp {

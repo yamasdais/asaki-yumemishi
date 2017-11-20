@@ -8,7 +8,7 @@
 
 #include <fmp/primitive.hpp>
 #include <fmp/apply.hpp>
-#include <fmp/operators_fwd.hpp>
+#include <fmp/operator_fwd.hpp>
 
 namespace fmp {
 
