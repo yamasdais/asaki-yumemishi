@@ -8,6 +8,7 @@
 
 #include <fmp/list_fwd.hpp>
 #include <fmp/detail/monoid_impl.hpp>
+#include <fmp/detail/foldmap_impl.hpp>
 
 namespace fmp {
 namespace detail {
@@ -26,6 +27,13 @@ struct monoid_unite_impl<cons> {
   template <typename A0, typename A1>
   using apply = cons<typename A0::car_type,
                      cons<typename A1::car_type, typename A1::cdr_type>>;
+};
+
+template <typename F,
+          typename Acc,
+          typename... P
+          >
+struct foldr_impl<F, Acc, cons<P...>> {
 };
 
 } /* ns: fmp::detail */

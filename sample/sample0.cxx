@@ -232,9 +232,10 @@ void test_foldl() {
 
 void test_foldr() {
   using namespace fmp;
+  using f0 = foldr<curry<cons>, nil_type, sequence<int, long>>::type;
 //  using fold0 = foldr<cons, nil_type, int, long long>;
 
-//  std::cout << "foldr0:" << demangle<fold0::type>() << std::endl;
+  std::cout << "fold(f0): " << demangle<f0>() << std::endl;
 }
 
 void test_cons() {
@@ -371,6 +372,18 @@ void test_endo() {
   std::cout << "apply compose:" << demangle<re0>() << std::endl;
 }
 
+void test_getmf() {
+  using namespace fmp;
+
+  using c0 = cons<int, char>;
+  using r0 = get_mf<int>::type;
+  using r1 = get_mf<c0>::template type<float, double>;
+
+  std::cout << "-- GetMF-- " << std::endl;
+  std::cout << "r0(int): " << demangle<r0>() << std::endl;
+  std::cout << "r1(cons): " << demangle<r1>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -389,7 +402,6 @@ int main(int , char**)
   //test_max();
   //test_min();
   //test_foldl();
-  //test_foldr();
   //apply_sample();
   compose_sample();
   test_valtype();
@@ -402,6 +414,8 @@ int main(int , char**)
   //test_flip();
   //test_curried();
   test_endo();
+  test_getmf();
+  test_foldr();
 
   return 0;
 }

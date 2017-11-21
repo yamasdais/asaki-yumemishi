@@ -12,41 +12,47 @@ namespace detail {
 
 template <template <class A0, class A1> typename F,
           typename Acc, typename...>
-struct foldl_elem;
+struct foldl_elem0;
 
 template <template <class A0, class A1> typename F,
           typename Acc, typename T0, typename... Tail>
-struct foldl_elem<F, Acc, T0, Tail...> {
-  using type = typename foldl_elem<
+struct foldl_elem0<F, Acc, T0, Tail...> {
+  using type = typename foldl_elem0<
     F, typename F<Acc, T0>::type, Tail...
   >::type;
 };
 
 template <template <class A0, class A1> typename F,
           typename Acc>
-struct foldl_elem<F, Acc> {
+struct foldl_elem0<F, Acc> {
   using type = Acc;
 };
 
 template <template <class, class...> typename F,
           typename Acc, typename...>
-struct foldr_elem;
+struct foldr_elem0;
 
 template <template <class, class...> typename F,
           typename Acc,
           typename T0,
           typename... Tail>
-struct foldr_elem<F, Acc, T0, Tail...> {
+struct foldr_elem0<F, Acc, T0, Tail...> {
   using type = typename F<
-    T0, typename foldr_elem<F, Acc, Tail...>::type
+    T0, typename foldr_elem0<F, Acc, Tail...>::type
   >::type;
 };
 
 template <template <class, class...> typename F,
           typename Acc>
-struct foldr_elem<F, Acc> {
+struct foldr_elem0<F, Acc> {
   using type = Acc;
 };
+
+template <typename F,
+          typename Acc,
+          typename C
+          >
+struct foldr_impl;
 
 struct is_foldable {
 };

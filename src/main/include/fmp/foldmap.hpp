@@ -11,7 +11,18 @@
 #if !defined(FMP_5DD22950_26D7_4713_821B_82530AF2A776)
 #define FMP_5DD22950_26D7_4713_821B_82530AF2A776
 
+#include <fmp/detail/foldmap_impl.hpp>
+
 namespace fmp {
+
+template <typename F,
+          typename Acc,
+          typename C
+          >
+struct foldr {
+  using type = typename detail::foldr_impl<F, Acc, C>::type;
+};
+
 
 } /* ns: fmp */
 

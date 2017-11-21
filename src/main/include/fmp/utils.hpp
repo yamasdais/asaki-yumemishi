@@ -10,6 +10,18 @@
 
 namespace fmp {
 
+template <typename F>
+struct get_mf {
+  using type = nothing;
+};
+
+template <template <class...> typename F,
+          typename... A>
+struct get_mf<F<A...>> {
+  template <typename... P>
+  using type = F<P...>;
+};
+
 template <typename F, typename A0, typename A1>
 struct flip {
   using type = apply_t<F, A1, A0>;
