@@ -7,6 +7,8 @@
 #define FMP_2BC27905_2899_4653_A5E0_521DC13A65AB
 
 #include <fmp/monoid.hpp>
+#include <fmp/sequence.hpp>
+#include <fmp/foldmap.hpp>
 #include <fmp/detail/list_impl.hpp>
 
 namespace fmp {
@@ -69,6 +71,13 @@ struct monoid_trait<cons> : public detail::monoid_default<
   >
 {
 };
+
+// Utility
+template <typename... A>
+using list = foldr<curry<cons>, nil_type, sequence<A...>>;
+
+template <typename... A>
+using list_t = typename list<A...>::type;
 
 } /* ns: fmp */
 

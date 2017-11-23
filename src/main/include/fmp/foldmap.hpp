@@ -23,6 +23,11 @@ struct foldr {
   using type = typename detail::foldr_impl<F, Acc, C>::type;
 };
 
+template <typename F,
+          typename Acc,
+          typename C>
+using foldr_t = typename foldr<F, Acc,C>::type;
+
 
 } /* ns: fmp */
 

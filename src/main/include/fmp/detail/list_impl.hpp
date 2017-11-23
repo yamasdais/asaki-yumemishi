@@ -7,10 +7,12 @@
 #define FMP_AAAA1AA4_2052_4A5F_ABC9_182D0CB9EA32
 
 #include <fmp/list_fwd.hpp>
+#include <fmp/apply.hpp>
 #include <fmp/detail/monoid_impl.hpp>
 #include <fmp/detail/foldmap_impl.hpp>
 
 namespace fmp {
+
 namespace detail {
 
 struct is_cons_impl {
@@ -31,9 +33,25 @@ struct monoid_unite_impl<cons> {
 
 template <typename F,
           typename Acc,
-          typename... P
+          typename P>
+struct cons_foldr_elem {
+  using type = Acc;
+};
+
+template <typename F,
+          typename Acc,
+          typename Car, typename Cdr>
+struct cons_foldr_elem<F, Acc, cons<Car,Cdr>> {
+  using type = apply_t<F, Car,
+                       typename cons_foldr_elem<F, Acc, Cdr>::type>;
+};
+
+template <typename F,
+          typename Acc,
+          typename P0, typename P1
           >
-struct foldr_impl<F, Acc, cons<P...>> {
+struct foldr_impl<F, Acc, cons<P0, P1>> {
+  using type = typename cons_foldr_elem<F, Acc, cons<P0, P1>>::type;
 };
 
 } /* ns: fmp::detail */

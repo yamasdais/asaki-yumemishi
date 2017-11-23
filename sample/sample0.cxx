@@ -232,7 +232,7 @@ void test_foldl() {
 
 void test_foldr() {
   using namespace fmp;
-  using f0 = foldr<curry<cons>, nil_type, sequence<int, long>>::type;
+  using f0 = foldr_t<curry<cons>, nil_type, sequence<int, long>>;
 //  using fold0 = foldr<cons, nil_type, int, long long>;
 
   std::cout << "fold(f0): " << demangle<f0>() << std::endl;
@@ -257,6 +257,12 @@ void test_cons() {
   std::cout << "car<c1>:=" << demangle<car<c1>>() << std::endl;
   std::cout << "car_t<c1>:=" << demangle<car_t<c1>>() << std::endl;
 };
+
+void test_list() {
+  using l0 = fmp::list_t<char, int, float, double>;
+
+  std::cout << "list<>: " << demangle<l0>() << std::endl;
+}
 
 void apply_sample() {
   using namespace fmp;
@@ -416,6 +422,7 @@ int main(int , char**)
   test_endo();
   test_getmf();
   test_foldr();
+  test_list();
 
   return 0;
 }
