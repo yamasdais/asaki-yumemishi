@@ -8,8 +8,8 @@
 
 #include <fmp/list_fwd.hpp>
 #include <fmp/apply.hpp>
+#include <fmp/foldmap.hpp>
 #include <fmp/detail/monoid_impl.hpp>
-#include <fmp/detail/foldmap_impl.hpp>
 
 namespace fmp {
 
@@ -27,8 +27,7 @@ struct is_cons_impl {
 template <>
 struct monoid_unite_impl<cons> {
   template <typename A0, typename A1>
-  using apply = cons<typename A0::car_type,
-                     cons<typename A1::car_type, typename A1::cdr_type>>;
+  using apply = foldr_t<curry<cons>, A1, A0>;
 };
 
 template <typename F,

@@ -3,9 +3,6 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#if !defined(FMP_68F8599B_664B_4732_ACCE_7327873F93E1)
-#define FMP_68F8599B_664B_4732_ACCE_7327873F93E1
-
 #include <iostream>
 #include <typeinfo>
 #include <type_traits>
@@ -246,7 +243,7 @@ void test_cons() {
   using ac0 = curry<cons, int>;
   using c1_0 = apply_t<ac0, empty<cons>::type>;
   //using c2_0 = detail::monoid_unite_impl<cons>::template apply<cons<char, double>, c1>;
-  using c2 = unite_t<c1, c1>;
+  using c2 = unite_t<c1, cons<char, cons<float, nil_type> > >;
   using car_0t = car_t<c1>;
 
   std::cout << "unity<cons>: " << demangle<c0>() << std::endl;
@@ -426,5 +423,3 @@ int main(int , char**)
 
   return 0;
 }
-
-#endif /* if not defined 'FMP_68F8599B_664B_4732_ACCE_7327873F93E1' */
