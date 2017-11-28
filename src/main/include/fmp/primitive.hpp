@@ -109,21 +109,6 @@ struct boolean : public std::enable_if_t<
 {
 };
 
-template <typename T, T V>
-struct val : public std::integral_constant<T, V> {
-  using type = val<T, V>;
-  using value_type = T;
-
-  template <typename CastTo>
-  using cast = val<CastTo, static_cast<CastTo>(V)>;
-};
-
-template <typename T>
-struct valtype {
-  template <T V>
-  using let = val<T, V>;
-};
-
 } /* ns: fmp */
 
 #endif /* FMP_2EAC0BFA_977A_4474_BCBE_66EF548CE53D */

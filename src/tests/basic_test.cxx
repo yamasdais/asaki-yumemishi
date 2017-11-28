@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <fmp/primitive.hpp>
+#include <fmp/values.hpp>
 
 #include <fmp_test.hpp>
 
