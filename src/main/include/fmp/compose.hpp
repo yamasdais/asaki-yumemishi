@@ -12,7 +12,12 @@
 namespace fmp {
 
 // forward declaration
+#if 0
 template <typename F, typename G>
+struct compose;
+#endif
+
+template <typename F, typename G, typename... H>
 struct compose;
 
 } /* ns: fmp */
@@ -21,6 +26,7 @@ struct compose;
 
 namespace fmp {
 
+#if 0
 template <typename F, typename G>
 struct compose {
   static_assert(has_apply<F>::value && is_curried_v<F>,
@@ -31,9 +37,28 @@ struct compose {
 
   template <typename... A>
   using apply = detail::compose_apply_impl<F, apply_t<G, A...>>;
+};
+#endif
+
+template <typename F, typename G, typename... H>
+struct compose;
+
+template <typename F, typename G>
+struct compose<F, G> {
+  static_assert(has_apply<F>::value && is_curried_v<F>,
+                "compose<F, G>: The F must have apply<A...> member typename");
+
+  static_assert(has_apply<G>::value && is_curried_v<G>,
+                "compose<F, G>: The G must have apply<A...> member typename");
 
   template <typename... A>
-  using apply_t = typename apply<A...>::type;
+  using apply = detail::compose_apply_impl<F, apply_t<G, A...>>;
+};
+
+template <typename F, typename G, typename... H>
+struct compose {
+  template <typename... A>
+  using apply = detail::compose_apply_impl<F, apply_t<compose<G, H...>, A...>>;
 };
 
 } /* ns: fmp */

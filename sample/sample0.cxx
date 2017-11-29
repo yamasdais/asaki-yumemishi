@@ -284,14 +284,18 @@ void compose_sample() {
   using c0 = compose<f0, g0>;
   using r0 = apply_t<c0, int>;
   using r1 = apply_t<r0, int>;
+  using c2 = compose<curry<id>, f0, g0>;
+  using r2 = apply_t<c2, int, char>;
 
   std::cout << "hasapply:" << demangle<f0::template apply<cons<int, char>>>()
             << std::endl;
   std::cout << "f0 apply:" << demangle<apply_t<f0, cons<int, char>> >() << std::endl;
   std::cout << "car<cons2<int, char>>: "
             << demangle<car_t<cons<int, char>>>()<< std::endl;
-  std::cout << "compose r0:" << demangle<r0>() << std::endl;
+  std::cout << "compose r0:" << demangle<apply_t<r0, nil_type>>() << std::endl;
   std::cout << "compose r1:" << demangle<apply_t<f0, cons<int, int>>>() << std::endl;
+  std::cout << "compose c2:" << demangle<c2>() << std::endl;
+  std::cout << "compose r2:" << demangle<r2>() << std::endl;
 }
 
 void test_valtype() {
@@ -407,7 +411,6 @@ int main(int , char**)
   //test_min();
   //test_foldl();
   //apply_sample();
-  compose_sample();
   test_valtype();
   test_unity();
   test_unite();
@@ -421,6 +424,7 @@ int main(int , char**)
   test_getmf();
   test_foldr();
   test_list();
+  compose_sample();
 
   return 0;
 }

@@ -13,11 +13,12 @@ namespace detail {
 
 template <typename F, typename G>
 struct compose_apply_impl {
-//  using type = typename F::template apply_t<G>;
   using type = apply_t<F, G>;
 };
 
-template <typename F, template <class...> typename G, typename... A>
+template <typename F,
+          template <class...> typename G,
+          typename... A>
 struct compose_apply_impl<F, curry<G, A...>> {
   using type = compose<F, curry<G, A...>>;
 };
