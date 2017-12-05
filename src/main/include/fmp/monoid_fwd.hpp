@@ -19,6 +19,12 @@ struct unity;
 template <typename A0, typename A1>
 struct unite;
 
+template <
+  template <class...> typename Monoid,
+  typename C
+>
+struct mconcat;
+
 template <typename Param>
 struct all;
 

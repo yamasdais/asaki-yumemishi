@@ -392,6 +392,28 @@ void test_getmf() {
   std::cout << "r1(cons): " << demangle<r1>() << std::endl;
 }
 
+void test_mconcat() {
+  using namespace fmp;
+
+  std::cout << "## test_mconcat() ##" << std::endl;
+  using e0 = compose<curry<id>, curry<unite>>;
+  using u0 = unite_t<all<std::true_type>, all<std::false_type>>;
+  using r0 = apply_t<e0, all<std::true_type>, all<std::false_type>>;
+  using sq = sequence<all<std::true_type>, all<std::true_type>>;
+  using f0 = foldr_t<e0, unity_t<all>, sq>;
+
+  using mc0 = mconcat_t<all, sq>;
+  using cc = curry<foldr, curry<unite>, unity_t<all>>;
+  using mdet = monoid_trait<all>::concat;
+
+  std::cout << "u0:" << demangle<u0::get>() << std::endl;
+  std::cout << "e0:" << demangle<r0>() << std::endl;
+  std::cout << "fold(f0): " << demangle<f0::get>() << std::endl;
+  std::cout << "cc: " << demangle<cc>() << std::endl;
+  std::cout << "mdet: " << demangle<apply<mdet, sq>::type>() << std::endl;
+  std::cout << "mconcat: " << demangle<mc0>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -425,6 +447,7 @@ int main(int , char**)
   test_foldr();
   test_list();
   compose_sample();
+  test_mconcat();
 
   return 0;
 }

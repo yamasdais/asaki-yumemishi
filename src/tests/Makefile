@@ -34,7 +34,7 @@ libgtest.a: fmp_test.o
 	$(CXX) $(libgtest_CXXFLAGS) -o gtest-main.o -c $(libgtestsrcdir)/gtest_main.cc
 	ar rcs $@ gtest-all.o gtest-main.o fmp_test.o
 
-all_test: basic_test.o curry_test.o apply_test.o libgtest.a
+all_test: basic_test.o curry_test.o apply_test.o compose_test.o libgtest.a
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)

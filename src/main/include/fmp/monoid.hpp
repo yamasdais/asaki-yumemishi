@@ -43,17 +43,37 @@ struct unite<Monoid<A0...>, Monoid<A1...>> {
     Monoid<A0...>, Monoid<A1...>>;
 };
 
-
 template <typename A0, typename A1>
 using unite_t = typename unite<A0, A1>::type;
 
+// monoid concat
+template <
+  template <class...> typename Monoid,
+  typename C
+>
+struct mconcat
+{
+  using type = apply_t<typename monoid_trait<Monoid>::concat, C>;
+
+  using trace = typename monoid_trait<Monoid>::concat;
+};
+
+template <
+  template <class...> typename Monoid,
+  typename C
+>
+using mconcat_t = typename mconcat<Monoid, C>::type;
+
 /**
- * 'and' operator ('and' in latin. because of c++ reserved word)
+ * 'and' operator
  */
 template <typename Param>
 struct all
 {
-  using type = typename boolean<Param>::type;
+  using get = typename boolean<Param>::type;
+//  using type = typename boolean<Param>::type;
+//  using type = all<typename boolean<Param>::type>;
+  using type = all<get>;
 };
 
 template <typename A0, typename A1>
@@ -78,7 +98,9 @@ struct monoid_trait<all> : public detail::monoid_default<
 template <typename T>
 struct endo {
   static_assert(has_apply_v<T>, "endo<T>: expected type that has apply<>");
-  using type = T;
+
+  using get = T;
+  using type = endo<T>;
 
   template <typename... A0>
   using apply = apply_t<T, A0...>;

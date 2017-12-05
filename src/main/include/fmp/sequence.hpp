@@ -8,6 +8,7 @@
 
 #include <fmp/sequence_fwd.hpp>
 #include <fmp/operator_fwd.hpp>
+#include <fmp/monoid.hpp>
 #include <fmp/detail/sequence_impl.hpp>
 
 namespace fmp {
@@ -25,6 +26,7 @@ struct append<sequence<A0...>, F<A1...>> {
   using type = sequence<A0..., A1...>;
 };
 
+#if 0
 template <>
 struct unity<sequence> {
   using type = sequence<>;
@@ -34,6 +36,16 @@ template <typename... A0, typename... A1>
 struct unite<sequence<A0...>, sequence<A1...>> {
   using type = sequence<A0..., A1...>;
 };
+#endif
+
+template <>
+struct monoid_trait<sequence> : public detail::monoid_default<
+  sequence,
+  detail::monoid_unite_impl<sequence>::apply
+  >
+{
+};
+
 
 } /* ns: fmp */
 

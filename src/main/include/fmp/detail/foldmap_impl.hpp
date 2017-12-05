@@ -14,7 +14,13 @@ template <template <class A0, class A1> typename F,
           typename Acc, typename...>
 struct foldl_elem0;
 
-template <template <class A0, class A1> typename F,
+template <template <class, class> typename F,
+          typename Acc>
+struct foldl_elem0<F, Acc> {
+  using type = Acc;
+};
+
+template <template <class, class> typename F,
           typename Acc, typename T0, typename... Tail>
 struct foldl_elem0<F, Acc, T0, Tail...> {
   using type = typename foldl_elem0<
@@ -22,15 +28,15 @@ struct foldl_elem0<F, Acc, T0, Tail...> {
   >::type;
 };
 
-template <template <class A0, class A1> typename F,
-          typename Acc>
-struct foldl_elem0<F, Acc> {
-  using type = Acc;
-};
-
 template <template <class, class...> typename F,
           typename Acc, typename...>
 struct foldr_elem0;
+
+template <template <class, class...> typename F,
+          typename Acc>
+struct foldr_elem0<F,Acc> {
+  using type = Acc;
+};
 
 template <template <class, class...> typename F,
           typename Acc,
@@ -40,12 +46,6 @@ struct foldr_elem0<F, Acc, T0, Tail...> {
   using type = typename F<
     T0, typename foldr_elem0<F, Acc, Tail...>::type
   >::type;
-};
-
-template <template <class, class...> typename F,
-          typename Acc>
-struct foldr_elem0<F, Acc> {
-  using type = Acc;
 };
 
 template <typename F,

@@ -55,7 +55,18 @@ template <typename F,
           typename... P
           >
 struct foldr_impl<F, Acc, sequence<P...>> {
+#if 1
   using type = typename sequence_foldr_elem<F, Acc, P...>::type;
+#else
+  // for debug
+  using type = sequence<F, Acc, P...>;
+#endif
+};
+
+template <>
+struct monoid_unite_impl<sequence> {
+  template <typename A0, typename A1>
+  using apply = append<A0, A1>;
 };
 
 } /* namespace detail */ } /* namespace fmp */

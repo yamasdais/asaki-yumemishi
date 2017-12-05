@@ -7,6 +7,8 @@
 #define FMP_C9D45967_C2F8_45C5_9A79_E343AEC35685
 
 #include <fmp/monoid_fwd.hpp>
+#include <fmp/curry.hpp>
+#include <fmp/foldmap.hpp>
 
 namespace fmp {
 
@@ -26,6 +28,8 @@ struct monoid_default {
 
   template <typename A0, typename A1>
   using unite = typename Unite<A0, A1>::type;
+
+  using concat = curry<foldr, curry<fmp::unite>, unity>;
 };
 
 // monoid unity
@@ -52,7 +56,7 @@ struct has_unite_impl {
 template <>
 struct monoid_unite_impl<all> {
   template <typename A0, typename A1>
-  using apply = all<typename bool_type<A0::type::value && A1::type::value>::type>;
+  using apply = all<typename bool_type<A0::get::value && A1::get::value>::type>;
 
 };
 
@@ -60,7 +64,7 @@ struct monoid_unite_impl<all> {
 template <>
 struct monoid_unite_impl<endo> {
   template <typename A0, typename A1>
-  using apply = endo<compose<typename A0::type, typename A1::type>>;
+  using apply = endo<compose<typename A0::get, typename A1::get>>;
 };
 
 } /* ns: detail */ } /* ns: fmp */
