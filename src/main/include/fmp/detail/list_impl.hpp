@@ -53,6 +53,24 @@ struct foldr_impl<F, Acc, cons<P0, P1>> {
   using type = typename cons_foldr_elem<F, Acc, cons<P0, P1>>::type;
 };
 
+template <typename F,
+          typename C>
+struct cons_map_elem {
+  using type = C;
+};
+
+template <typename F,
+          typename Car, typename Cdr>
+struct cons_map_elem<F, cons<Car, Cdr>> {
+  using type = cons<apply_t<F, Car>, typename cons_map_elem<F, Cdr>::type>;
+};
+
+template <typename F,
+          typename Car, typename Cdr>
+struct map_impl<F, cons<Car, Cdr>> {
+  using type = typename cons_map_elem<F, cons<Car, Cdr>>::type;
+};
+
 } /* ns: fmp::detail */
 } /* ns: fmp */
 

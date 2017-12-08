@@ -414,6 +414,21 @@ void test_mconcat() {
   std::cout << "mconcat: " << demangle<mc0>() << std::endl;
 }
 
+void test_map() {
+  using namespace fmp;
+
+  std::cout << "## test_map() ##" << std::endl;
+  using c0 = list_t<int, char, double>;
+  using s0 = sequence<int, char, double>;
+  using p0 = curry<std::is_same, int>;
+  using cr0 = map<p0, c0>;
+  using sr0 = map<p0, s0>;
+
+  std::cout << "c0: " << demangle<c0>() << std::endl;
+  std::cout << "cr0: " << demangle<cr0::type>() << std::endl;
+  std::cout << "sr0: " << demangle<sr0::type>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -448,6 +463,7 @@ int main(int , char**)
   test_list();
   compose_sample();
   test_mconcat();
+  test_map();
 
   return 0;
 }

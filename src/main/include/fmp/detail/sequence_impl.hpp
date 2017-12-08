@@ -69,6 +69,13 @@ struct monoid_unite_impl<sequence> {
   using apply = append<A0, A1>;
 };
 
+template <typename F,
+          typename ...A>
+struct map_impl<F, sequence<A...>> {
+  using type = sequence<apply_t<F, A>...>;
+};
+
+
 } /* namespace detail */ } /* namespace fmp */
 
 #endif /* if not defined 'FMP_0C1960E6_F598_4F31_B57A_FEF339122B20' */

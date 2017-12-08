@@ -54,6 +54,12 @@ template <typename F,
           >
 struct foldr_impl;
 
+
+template <typename F,
+          typename C
+          >
+struct map_impl;
+
 struct is_foldable {
 };
 

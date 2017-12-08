@@ -29,6 +29,12 @@ template <typename F,
 using foldr_t = typename foldr<F, Acc,C>::type;
 
 
+template <typename F,
+          typename C>
+struct map {
+  using type = typename detail::map_impl<F, C>::type;
+};
+
 } /* ns: fmp */
 
 #endif /* if not defined 'FMP_5DD22950_26D7_4713_821B_82530AF2A776' */
