@@ -1,5 +1,5 @@
-PROGRAMS=sample0
-CXX=g++ 
+PROGRAMS=sample0 utilexp
+CXX=g++
 CXXFLAGS=-O -std=c++14 -Wall -Wextra -g
 INCLUDES=-I../src/main/include
 LDFLAGS=-std=c++14
@@ -28,6 +28,9 @@ $(DEPS) : .depend
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
 
 sample0: sample0.o sample_lib.o
+	$(CXX) $(LDFLAGS) -o $@ $^
+
+utilexp: utilexp.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)

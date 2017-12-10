@@ -320,6 +320,7 @@ void test_sequence() {
   using r0 = fmp::append_t<s0, s1>;
   std::cout << "--sequence--" << std::endl;
   std::cout << "r0:" << demangle<r0>() << std::endl;
+  std::cout << "head<r0>: " << demangle<fmp::head_t<r0>>() << std::endl;
   std::cout << "unity<sequence>=" << demangle<su>() << std::endl;
   std::cout << "unite<s0, s1>=" << demangle<sunite>() << std::endl;
 }
@@ -453,7 +454,6 @@ int main(int , char**)
   test_unite();
 
   //test_is_operatable();
-  //test_sequence();
   test_cons();
   //test_flip();
   //test_curried();
@@ -464,6 +464,7 @@ int main(int , char**)
   compose_sample();
   test_mconcat();
   test_map();
+  test_sequence();
 
   return 0;
 }

@@ -13,7 +13,7 @@ namespace detail {
 struct apply_impl {
   template <typename T,
             typename... A>
-  static auto get(typename T::template apply<A...>*) noexcept
+  static auto get(typename T::template apply<A...>::type*) noexcept
     -> typename T::template apply<A...>::type;
 
   template <typename,
@@ -21,7 +21,6 @@ struct apply_impl {
   static auto get(...) noexcept
     -> nothing;
 };
-
 
 } /* ns: fmp::detail */
 } /* ns: fmp */

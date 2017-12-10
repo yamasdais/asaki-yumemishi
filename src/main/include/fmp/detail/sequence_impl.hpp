@@ -14,18 +14,18 @@
 namespace fmp { namespace detail {
 
 template <typename... T>
-struct head_impl;
+struct sequence_head_impl;
 
 template <typename Head, typename... Tail>
-struct head_impl<Head, Tail...> {
-  using apply = Head;
+struct sequence_head_impl<Head, Tail...> {
+  using type = Head;
   template <template <class...> typename Holder>
   using tail = Holder<Tail...>;
 };
 
 template <>
-struct head_impl<> {
-  using apply = undefined_type;
+struct sequence_head_impl<> {
+  using type = undefined_type;
 };
 
 template <typename F,

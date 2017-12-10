@@ -6,9 +6,15 @@
 #if !defined(FMP_34923AEE_9F31_49B2_AD8D_D975BE25512D)
 #define FMP_34923AEE_9F31_49B2_AD8D_D975BE25512D
 
+#include <fmp/utils_fwd.hpp>
 #include <fmp/apply.hpp>
+#include <fmp/sequence.hpp>
 
 namespace fmp {
+
+
+template <typename T>
+using head_t = typename head<T>::type;
 
 template <typename F>
 struct get_mf {
@@ -30,6 +36,20 @@ struct flip {
 template <template <class...> typename  C,
           typename... A>
 using flipf = make_curried_hf<flip, C, A...>;
+
+template <typename... T>
+struct first {
+  using type = head_t<sequence<T...>>;
+};
+
+template <typename... T>
+using first_t = typename first<T...>::type;
+
+template <typename... Args>
+struct apply_args {
+  template <typename... F>
+  using apply = id<apply_t<first_t<F...>, Args...>>;
+};
 
 } /* ns: fmp */
 

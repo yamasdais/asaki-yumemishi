@@ -8,6 +8,7 @@
 
 #include <fmp/sequence_fwd.hpp>
 #include <fmp/operator_fwd.hpp>
+#include <fmp/utils_fwd.hpp>
 #include <fmp/monoid.hpp>
 #include <fmp/detail/sequence_impl.hpp>
 
@@ -46,6 +47,10 @@ struct monoid_trait<sequence> : public detail::monoid_default<
 {
 };
 
+template <typename ...P>
+struct head<sequence<P...>> {
+  using type = typename detail::sequence_head_impl<P...>::type;
+};
 
 } /* ns: fmp */
 
