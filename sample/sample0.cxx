@@ -15,6 +15,7 @@
 #include <fmp/foldmap.hpp>
 #include <fmp/values.hpp>
 #include <fmp/utils.hpp>
+#include <fmp/maybe.hpp>
 
 #include "sample.hpp"
 
@@ -430,6 +431,32 @@ void test_map() {
   std::cout << "sr0: " << demangle<sr0::type>() << std::endl;
 }
 
+void test_maybe() {
+  using namespace fmp;
+
+  std::cout << "## test_maybe() ##" << std::endl;
+
+  using j0 = just_t<int>;
+  using n0 = nothing_t;
+
+  using p0 = is_just_t<n0>;
+  using p1 = is_nothing_t<j0>;
+
+  using fj0 = from_just_t<j0>;
+  using fm0 = from_maybe_t<j0, nullptr_t>;
+  using fm1 = from_maybe_t<n0, nullptr_t>;
+  
+  std::cout << "j0: " << demangle<j0>() << std::endl;
+  std::cout << "n0: " << demangle<n0>() << std::endl;
+  
+  std::cout << "is_just<T>: " << demangle<is_just_t<j0>>() << std::endl;
+  std::cout << "is_nothing<T>: " << demangle<is_nothing_t<n0>>() << std::endl;
+
+  std::cout << "from_just<T>: " << demangle<from_just_t<j0>>() << std::endl;
+  std::cout << "from_maybe<T>: " << demangle<fm0>() << std::endl;
+  std::cout << "from_maybe<nothing>: " << demangle<fm1>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -465,6 +492,7 @@ int main(int , char**)
   test_mconcat();
   test_map();
   test_sequence();
+  test_maybe();
 
   return 0;
 }

@@ -19,7 +19,7 @@ struct apply_impl {
   template <typename,
             typename... A>
   static auto get(...) noexcept
-    -> nothing;
+    -> undefined_type;
 };
 
 } /* ns: fmp::detail */

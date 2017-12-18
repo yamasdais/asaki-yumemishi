@@ -26,9 +26,6 @@ struct unit_type {
 struct undefined_type {
 };
 
-struct nothing {
-};
-
 template <template <class...> typename T>
 struct empty {
 };

@@ -6,19 +6,19 @@
 #if !defined(FMP_34923AEE_9F31_49B2_AD8D_D975BE25512D)
 #define FMP_34923AEE_9F31_49B2_AD8D_D975BE25512D
 
+#include <fmp/primitive.hpp>
 #include <fmp/utils_fwd.hpp>
 #include <fmp/apply.hpp>
 #include <fmp/sequence.hpp>
 
 namespace fmp {
 
-
 template <typename T>
 using head_t = typename head<T>::type;
 
 template <typename F>
 struct get_mf {
-  using type = nothing;
+  using type = undefined_type;
 };
 
 template <template <class...> typename F,
