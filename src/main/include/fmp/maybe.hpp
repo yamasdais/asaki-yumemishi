@@ -93,6 +93,16 @@ struct from_maybe<maybe<detail::nothing_impl>, D> {
 template <typename T, typename D>
 using from_maybe_t = typename from_maybe<T, D>::type;
 
+// as monoid
+template <>
+struct monoid_trait<maybe> : public detail::monoid_default<
+  maybe,
+  detail::maybe_unite_impl,
+  detail::nothing_impl
+  > {
+};
+
+
 } /* ns: fmp */
 
 #endif /* if not defined 'FMP_CAB7B197_B0AD_4C4C_BEA9_2334826A3E89' */

@@ -8,6 +8,8 @@
 #include <type_traits>
 #include <limits>
 
+#include <boost/type_index.hpp>
+
 #include <fmp.hpp>
 #include <fmp/incubation.hpp>
 #include <fmp/operator.hpp>
@@ -18,6 +20,8 @@
 #include <fmp/maybe.hpp>
 
 #include "sample.hpp"
+
+#define bdemangle(T) boost::typeindex::type_id_with_cvr<T>().pretty_name()
 
 void test_quote() {
   using q0 = fmp::quote<int>;
@@ -436,7 +440,8 @@ void test_maybe() {
 
   std::cout << "## test_maybe() ##" << std::endl;
 
-  using j0 = just_t<int>;
+  using j0 = just_t<all<std::true_type>>;
+  using j1 = just_t<all<std::false_type>>;
   using n0 = nothing_t;
 
   using p0 = is_just_t<n0>;
@@ -445,6 +450,8 @@ void test_maybe() {
   using fj0 = from_just_t<j0>;
   using fm0 = from_maybe_t<j0, nullptr_t>;
   using fm1 = from_maybe_t<n0, nullptr_t>;
+  using unit0 = unity_t<maybe>;
+  using um0 = unite_t<j1, j1>;
   
   std::cout << "j0: " << demangle<j0>() << std::endl;
   std::cout << "n0: " << demangle<n0>() << std::endl;
@@ -455,6 +462,8 @@ void test_maybe() {
   std::cout << "from_just<T>: " << demangle<from_just_t<j0>>() << std::endl;
   std::cout << "from_maybe<T>: " << demangle<fm0>() << std::endl;
   std::cout << "from_maybe<nothing>: " << demangle<fm1>() << std::endl;
+  std::cout << "unity<>: " << bdemangle(unit0) << std::endl;
+  std::cout << "unite<A,B>: " << bdemangle(um0) << std::endl;
 }
 
 int main(int , char**)
