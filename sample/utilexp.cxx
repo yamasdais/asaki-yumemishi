@@ -7,12 +7,36 @@
 #include <typeinfo>
 #include <type_traits>
 #include <limits>
+#include <tuple>
 #include <boost/type_index.hpp>
 
 #include <fmp.hpp>
 #include <fmp/utils.hpp>
+#include <fmp/maybe.hpp>
 
 #define Demangle(T) boost::typeindex::type_id_with_cvr<T>().pretty_name()
+
+template <typename T, typename... A>
+struct apply0;
+
+template <typename T, typename... A>
+struct apply0 {
+  using type = typename T::template apply<A...>::type;
+};
+
+void test_copy() {
+  using namespace fmp;
+  std::cout << "## " << __func__ << "() ##" << std::endl;
+
+  auto t0 = std::make_tuple(1, 'x', "foo");
+  using c0 = copy_t<decltype(t0), sequence>;
+  using m0 = map_t<curry<std::add_const>, c0>;
+
+
+  std::cout << Demangle(decltype(t0)) << std::endl;
+  std::cout << Demangle(c0) << std::endl;
+  std::cout << Demangle(m0) << std::endl;
+};
 
 
 void test_first() {
@@ -40,5 +64,6 @@ int main(int, char**)
 {
   test_first();
   test_apply_args();
+  test_copy();
   return 0;
 }

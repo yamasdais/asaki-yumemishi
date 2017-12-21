@@ -452,6 +452,10 @@ void test_maybe() {
   using fm1 = from_maybe_t<n0, nullptr_t>;
   using unit0 = unity_t<maybe>;
   using um0 = unite_t<j1, j1>;
+  using cp0 = compose<curry<just>, curry<all>>;
+  using amp0 = map_t<cp0,
+                     sequence<std::true_type, std::true_type, std::true_type>>;
+  using mcc0 = mconcat_t<maybe, amp0>;
   
   std::cout << "j0: " << demangle<j0>() << std::endl;
   std::cout << "n0: " << demangle<n0>() << std::endl;
@@ -464,6 +468,8 @@ void test_maybe() {
   std::cout << "from_maybe<nothing>: " << demangle<fm1>() << std::endl;
   std::cout << "unity<>: " << bdemangle(unit0) << std::endl;
   std::cout << "unite<A,B>: " << bdemangle(um0) << std::endl;
+  std::cout << "all map: "<< bdemangle(amp0) << std::endl;
+  std::cout << "mconcat<maybe, map<...>>: " << demangle<from_maybe_t<mcc0, nothing>>() << std::endl;
 }
 
 int main(int , char**)

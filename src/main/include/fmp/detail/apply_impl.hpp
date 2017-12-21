@@ -13,7 +13,7 @@ namespace detail {
 struct apply_impl {
   template <typename T,
             typename... A>
-  static auto get(typename T::template apply<A...>::type*) noexcept
+  static auto get(typename T::template apply<A...>*) noexcept
     -> typename T::template apply<A...>::type;
 
   template <typename,

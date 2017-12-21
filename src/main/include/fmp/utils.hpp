@@ -51,6 +51,18 @@ struct apply_args {
   using apply = id<apply_t<first_t<F...>, Args...>>;
 };
 
+template <template <class...> typename Src,
+          template <class...> typename Dest,
+          typename... P>
+struct copy<Src<P...>, Dest> {
+  using type = Dest<P...>;
+};
+
+template <typename Src,
+          template <class...> typename Dest
+          >
+using copy_t = typename copy<Src, Dest>::type;
+
 } /* ns: fmp */
 
 #endif /* if not defined 'FMP_34923AEE_9F31_49B2_AD8D_D975BE25512D' */

@@ -11,6 +11,11 @@ namespace fmp {
 template <typename T>
 struct head;
 
+template <typename Src,
+          template <class...> typename Dest
+          >
+struct copy;
+
 } /* ns: fmp */
 
 

@@ -18,6 +18,12 @@ struct apply {
   using type = decltype(detail::apply_impl::get<T, A...>(nullptr));
 };
 
+template <template <class...> typename F,
+          typename... A>
+struct apply<curry<F>, A...> {
+  using type = typename curry<F>::template apply<A...>::type;
+};
+
 template <typename T, typename... A>
 using apply_t = typename apply<T, A...>::type;
 
