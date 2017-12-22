@@ -8,6 +8,7 @@
 
 #include <fmp/monoid_fwd.hpp>
 #include <fmp/apply.hpp>
+#include <fmp/compose.hpp>
 #include <fmp/detail/monoid_impl.hpp>
 #include <fmp/detail/operator_impl.hpp>
 #include <fmp/check.hpp>
@@ -103,7 +104,7 @@ struct endo {
   using type = endo<T>;
 
   template <typename... A0>
-  using apply = apply_t<T, A0...>;
+  using apply = id<apply_t<T, A0...>>;
 };
 
 template <>
@@ -114,7 +115,6 @@ struct monoid_trait<endo> : public detail::monoid_default<
   >
 {
 };
-
 
 } /* ns: fmp */
 

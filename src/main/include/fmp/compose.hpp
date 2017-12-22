@@ -6,6 +6,7 @@
 #if !defined(FMP_F16F016D_B014_4017_8E3E_2839D45D0114)
 #define FMP_F16F016D_B014_4017_8E3E_2839D45D0114
 
+#include <fmp/compose_fwd.hpp>
 #include <fmp/curry.hpp>
 #include <fmp/apply.hpp>
 
@@ -17,31 +18,12 @@ template <typename F, typename G>
 struct compose;
 #endif
 
-template <typename F, typename G, typename... H>
-struct compose;
 
 } /* ns: fmp */
 
 #include <fmp/detail/compose_impl.hpp>
 
 namespace fmp {
-
-#if 0
-template <typename F, typename G>
-struct compose {
-  static_assert(has_apply<F>::value && is_curried_v<F>,
-                "compose<F, G>: The F must have apply<A...> member typename");
-
-  static_assert(has_apply<G>::value && is_curried_v<G>,
-                "compose<F, G>: The G must have apply<A...> member typename");
-
-  template <typename... A>
-  using apply = detail::compose_apply_impl<F, apply_t<G, A...>>;
-};
-#endif
-
-template <typename F, typename G, typename... H>
-struct compose;
 
 template <typename F, typename G>
 struct compose<F, G> {

@@ -6,6 +6,7 @@
 #if !defined(FMP_FE8B755E_F036_42E8_BCEA_2CF8653318E8)
 #define FMP_FE8B755E_F036_42E8_BCEA_2CF8653318E8
 
+#include <fmp/compose_fwd.hpp>
 #include <fmp/apply.hpp>
 
 namespace fmp {

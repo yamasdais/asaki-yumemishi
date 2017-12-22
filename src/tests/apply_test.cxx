@@ -4,6 +4,7 @@
 
 #include <fmp/primitive.hpp>
 #include <fmp/values.hpp>
+#include <fmp/maybe.hpp>
 
 #include <fmp_test.hpp>
 
@@ -14,6 +15,7 @@ using namespace fmp;
 using ap0 = curry<noarg>;
 using ap1 = curry<id>;
 using ap2 = curry<std::is_same>;
+using ap3 = curry<std::add_const>;
 using v0 = val<int, 0>;
 
 using ApplyTypeTarget = ::testing::Types<
@@ -25,6 +27,7 @@ using ApplyTypeTarget = ::testing::Types<
   p<curry<id>, apply_t<ap1>>,
   p<v0, apply_t<apply_t<ap1>, v0>>,
   p<v0, apply_t<ap1, v0>>,
+  p<int const, apply_t<ap3, int>>,
 
   // 2 args
   p<curry<std::is_same>, apply_t<ap2>>,

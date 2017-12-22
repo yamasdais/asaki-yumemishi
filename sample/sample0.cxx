@@ -285,12 +285,18 @@ void compose_sample() {
   using namespace fmp;
   using f0 = curry<car>;
   using g0 = curry<cons>;
+  using f1 = curry<std::add_const>;
+  using f2 = curry<id>;
 
   using c0 = compose<f0, g0>;
   using r0 = apply_t<c0, int>;
   using r1 = apply_t<r0, int>;
   using c2 = compose<curry<id>, f0, g0>;
   using r2 = apply_t<c2, int, char>;
+
+  //using ac0 = typename compose<f2, f1>::template apply<int>::type;
+  //using ac0 = typename detail::compose_apply_impl<f2, apply_t<f1, int>>::type;
+  using ac0 = apply_t<compose<f2, f1>, int>;
 
   std::cout << "hasapply:" << demangle<f0::template apply<cons<int, char>>>()
             << std::endl;
@@ -301,6 +307,7 @@ void compose_sample() {
   std::cout << "compose r1:" << demangle<apply_t<f0, cons<int, int>>>() << std::endl;
   std::cout << "compose c2:" << demangle<c2>() << std::endl;
   std::cout << "compose r2:" << demangle<r2>() << std::endl;
+  std::cout << "compose ac0:" << bdemangle(ac0) << std::endl;
 }
 
 void test_valtype() {
@@ -499,15 +506,15 @@ int main(int , char**)
   test_cons();
   //test_flip();
   //test_curried();
-  test_endo();
   test_getmf();
   test_foldr();
   test_list();
-  compose_sample();
   test_mconcat();
   test_map();
   test_sequence();
   test_maybe();
+  compose_sample();
+  test_endo();
 
   return 0;
 }
