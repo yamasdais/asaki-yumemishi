@@ -308,6 +308,7 @@ void compose_sample() {
   std::cout << "compose c2:" << demangle<c2>() << std::endl;
   std::cout << "compose r2:" << demangle<r2>() << std::endl;
   std::cout << "compose ac0:" << bdemangle(ac0) << std::endl;
+  std::cout << "compose c0:" << bdemangle(r1) << std::endl;
 }
 
 void test_valtype() {
@@ -383,14 +384,12 @@ void test_endo() {
 
   std::cout << "ENDO-----" << std::endl;
   using e0 = endo<curry<all>>;
-  using ue0 = unite_t<endo<curry<negate>>, e0>;
-  using re0 = apply_t<ue0, std::true_type>;
+  using ue0 = unite_t<endo<curry<get>>, e0>;
 
   std::cout << "unity<endo>:" << demangle<unity_t<endo>>() << std::endl;
   std::cout << "endo:" << demangle<e0>() << std::endl;
   std::cout << "apply:" << demangle<apply_t<e0, std::true_type>>() << std::endl;
-  std::cout << "unite:" << demangle<ue0>() << std::endl;
-  std::cout << "apply compose:" << demangle<re0>() << std::endl;
+  std::cout << "unite:" << demangle<apply_t<ue0, std::true_type>>() << std::endl;
 }
 
 void test_getmf() {

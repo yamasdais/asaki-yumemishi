@@ -65,6 +65,14 @@ template <
 >
 using mconcat_t = typename mconcat<Monoid, C>::type;
 
+template <typename T>
+struct get {
+  using type = typename T::get;
+};
+
+template <typename T>
+using get_t = typename get<T>::type;
+
 /**
  * 'and' operator
  */
@@ -104,7 +112,8 @@ struct endo {
   using type = endo<T>;
 
   template <typename... A0>
-  using apply = id<apply_t<T, A0...>>;
+  //using apply = id<apply_t<T, A0...>>;
+  using apply = typename T::template apply<A0...>::type;
 };
 
 template <>

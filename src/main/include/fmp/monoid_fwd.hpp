@@ -39,6 +39,9 @@ template <template <class> typename OP,
           typename A0, typename A1>
 using is_monoid_t = typename is_monoid<OP, A0, A1>::type;
 
+template <typename T>
+struct get;
+
 } /* ns: fmp */
 
 #endif /* if not defined 'FMP_C261D76F_312D_4D18_9C20_9304AEBBF61C' */
