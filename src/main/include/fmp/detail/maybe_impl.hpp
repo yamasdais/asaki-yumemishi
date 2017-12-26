@@ -12,13 +12,13 @@ namespace fmp {
 namespace detail {
 
 template <typename T>
-struct just_impl {
-  using type = just_impl<T>;
+struct just_tag {
+  using type = just_tag<T>;
   using get = T;
 };
 
-struct nothing_impl {
-  using type = nothing_impl;
+struct nothing_tag {
+  using type = nothing_tag;
 };
 
 
@@ -26,23 +26,23 @@ template <typename A0, typename A1>
 struct maybe_unite_impl;
 
 template <>
-struct maybe_unite_impl<maybe<nothing_impl>, maybe<nothing_impl>> {
-  using type = maybe<nothing_impl>;
+struct maybe_unite_impl<maybe<nothing_tag>, maybe<nothing_tag>> {
+  using type = maybe<nothing_tag>;
 };
 
 template <typename A>
-struct maybe_unite_impl<maybe<nothing_impl>, maybe<just_impl<A>>> {
-  using type = maybe<just_impl<A>>;
+struct maybe_unite_impl<maybe<nothing_tag>, maybe<just_tag<A>>> {
+  using type = maybe<just_tag<A>>;
 };
 
 template <typename A>
-struct maybe_unite_impl<maybe<just_impl<A>>, maybe<nothing_impl>> {
-  using type = maybe<just_impl<A>>;
+struct maybe_unite_impl<maybe<just_tag<A>>, maybe<nothing_tag>> {
+  using type = maybe<just_tag<A>>;
 };
 
 template <typename A0, typename A1>
-struct maybe_unite_impl<maybe<just_impl<A0>>, maybe<just_impl<A1>>> {
-  using type = maybe<just_impl<unite_t<A0, A1>>>;
+struct maybe_unite_impl<maybe<just_tag<A0>>, maybe<just_tag<A1>>> {
+  using type = maybe<just_tag<unite_t<A0, A1>>>;
 };
 
 

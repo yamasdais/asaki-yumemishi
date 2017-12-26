@@ -15,27 +15,26 @@
 namespace fmp {
 
 template <typename T>
-struct maybe<detail::just_impl<T>> {
-  //using get = detail::just_impl<T>;
+struct maybe<detail::just_tag<T>> {
   using get = T;
-  using type = maybe<detail::just_impl<T>>;
+  using type = maybe<detail::just_tag<T>>;
 };
 
 template <>
-struct maybe<detail::nothing_impl> {
-  using get = detail::nothing_impl;
+struct maybe<detail::nothing_tag> {
+  using get = detail::nothing_tag;
   using type = maybe<get>;
 };
 
 struct nothing {
-  using type = maybe<detail::nothing_impl>;
+  using type = maybe<detail::nothing_tag>;
 };
 
 using nothing_t = typename nothing::type;
 
 template <typename T>
 struct just {
-  using type = maybe<detail::just_impl<T>>;
+  using type = maybe<detail::just_tag<T>>;
 };
 
 template <typename T>
@@ -48,7 +47,7 @@ struct is_just : public std::false_type {
 };
 
 template <typename T>
-struct is_just<maybe<detail::just_impl<T>>> : public std::true_type {
+struct is_just<maybe<detail::just_tag<T>>> : public std::true_type {
 };
 
 template <typename T>
@@ -60,7 +59,7 @@ struct is_nothing : public std::false_type {
 };
 
 template <>
-struct is_nothing<maybe<detail::nothing_impl>> : public std::true_type {
+struct is_nothing<maybe<detail::nothing_tag>> : public std::true_type {
 };
 
 template <typename T>
@@ -71,7 +70,7 @@ template <typename T>
 struct from_just;
 
 template <typename T>
-struct from_just<maybe<detail::just_impl<T>>> {
+struct from_just<maybe<detail::just_tag<T>>> {
   using type = T;
 };
 
@@ -83,12 +82,12 @@ template <typename T, typename D>
 struct from_maybe;
 
 template <typename T, typename D>
-struct from_maybe<maybe<detail::just_impl<T>>, D> {
+struct from_maybe<maybe<detail::just_tag<T>>, D> {
   using type = T;
 };
 
 template <typename D>
-struct from_maybe<maybe<detail::nothing_impl>, D> {
+struct from_maybe<maybe<detail::nothing_tag>, D> {
   using type = D;
 };
 
@@ -100,7 +99,7 @@ template <>
 struct monoid_trait<maybe> : public detail::monoid_default<
   maybe,
   detail::maybe_unite_impl,
-  detail::nothing_impl
+  detail::nothing_tag
   > {
 };
 
