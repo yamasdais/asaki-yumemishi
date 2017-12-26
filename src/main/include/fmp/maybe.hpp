@@ -9,6 +9,7 @@
 #include <fmp/primitive.hpp>
 #include <fmp/monoid.hpp>
 #include <fmp/maybe_fwd.hpp>
+#include <fmp/functor_fwd.hpp>
 #include <fmp/detail/maybe_impl.hpp>
 
 namespace fmp {

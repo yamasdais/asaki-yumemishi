@@ -18,6 +18,7 @@
 #include <fmp/values.hpp>
 #include <fmp/utils.hpp>
 #include <fmp/maybe.hpp>
+#include <fmp/functor.hpp>
 
 #include "sample.hpp"
 
@@ -478,6 +479,18 @@ void test_maybe() {
   std::cout << "mconcat<maybe, map<...>>: " << demangle<from_maybe_t<mcc0, nothing>>() << std::endl;
 }
 
+void test_fmap()
+{
+  using namespace fmp;
+  std::cout << "## " << __func__ << "() ##" << std::endl;
+
+  using c0 = list_t<int, char, double>;
+  using p0 = curry<std::is_same, int>;
+  using cr0 = fmap_t<p0, c0>;
+
+  std::cout << "cr0: " << demangle<cr0>() << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -514,6 +527,7 @@ int main(int , char**)
   compose_sample();
   test_endo();
   test_maybe();
+  test_fmap();
 
   return 0;
 }
