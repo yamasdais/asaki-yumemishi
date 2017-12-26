@@ -473,7 +473,7 @@ void test_maybe() {
   std::cout << "from_maybe<T>: " << demangle<fm0>() << std::endl;
   std::cout << "from_maybe<nothing>: " << demangle<fm1>() << std::endl;
   std::cout << "unity<>: " << bdemangle(unit0) << std::endl;
-  std::cout << "unite<A,B>: " << bdemangle(um0) << std::endl;
+  std::cout << "unite<A,B>: " << demangle<get_t<um0>>() << std::endl;
   std::cout << "all map: "<< bdemangle(amp0) << std::endl;
   std::cout << "mconcat<maybe, map<...>>: " << demangle<from_maybe_t<mcc0, nothing>>() << std::endl;
 }
@@ -511,9 +511,9 @@ int main(int , char**)
   test_mconcat();
   test_map();
   test_sequence();
-  test_maybe();
   compose_sample();
   test_endo();
+  test_maybe();
 
   return 0;
 }

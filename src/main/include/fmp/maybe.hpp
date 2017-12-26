@@ -15,8 +15,9 @@ namespace fmp {
 
 template <typename T>
 struct maybe<detail::just_impl<T>> {
-  using get = detail::just_impl<T>;
-  using type = maybe<get>;
+  //using get = detail::just_impl<T>;
+  using get = T;
+  using type = maybe<detail::just_impl<T>>;
 };
 
 template <>
