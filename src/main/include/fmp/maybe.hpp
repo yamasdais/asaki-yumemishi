@@ -103,6 +103,16 @@ struct monoid_trait<maybe> : public detail::monoid_default<
   > {
 };
 
+// as functor
+template <typename T, typename P>
+struct fmap<T, maybe<detail::just_tag<P>>> {
+  using type = just_t<apply_t<T, P>>;
+};
+
+template <typename T>
+struct fmap<T, maybe<detail::nothing_tag>> {
+  using type = nothing_t;
+};
 
 } /* ns: fmp */
 
