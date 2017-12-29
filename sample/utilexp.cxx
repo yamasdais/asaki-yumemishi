@@ -14,7 +14,7 @@
 #include <fmp/utils.hpp>
 #include <fmp/maybe.hpp>
 
-#define Demangle(T) boost::typeindex::type_id_with_cvr<T>().pretty_name()
+#include "sample.hpp"
 
 template <typename T, typename... A>
 struct apply0;
@@ -33,9 +33,9 @@ void test_copy() {
   using m0 = map_t<curry<std::add_const>, c0>;
 
 
-  std::cout << Demangle(decltype(t0)) << std::endl;
-  std::cout << Demangle(c0) << std::endl;
-  std::cout << Demangle(m0) << std::endl;
+  std::cout << T_name<decltype(t0)>() << std::endl;
+  std::cout << T_name<c0>() << std::endl;
+  std::cout << T_name<m0>() << std::endl;
 };
 
 
@@ -45,7 +45,7 @@ void test_first() {
 
   using f0 = first_t<int, char, void>;
 
-  std::cout << "f0: " << Demangle(f0) << std::endl;
+  std::cout << "f0: " << T_name<f0>() << std::endl;
 }
 
 void test_apply_args() {
@@ -55,8 +55,8 @@ void test_apply_args() {
   using a0 = apply_args<int, char>;
   using r0 = apply_t<a0, curry<std::is_same>>;
 
-  std::cout << "a0: " << Demangle(a0) << std::endl;
-  std::cout << "r0: " << Demangle(r0) << std::endl;
+  std::cout << "a0: " << T_name<a0>() << std::endl;
+  std::cout << "r0: " << T_name<r0>() << std::endl;
 }
 
 

@@ -18,56 +18,6 @@
 
 #include <gtest/gtest.h>
 
-class Demangler {
- public:
-
-  struct Deleter {
-    inline void operator()(void* p) {
-      std::free(p);
-    }
-  };
- private:
-  std::unique_ptr<char[], Deleter> name;
-
-  Demangler(const std::type_info& info, int stat);
-
- public:
-  inline explicit Demangler(const std::type_info& info)
-    : Demangler{info, 0}
-  {
-  }
-
-#if 0
-  inline Demangler(Demangler&& other) noexcept
-  {
-    *this = std::move(other);
-  }
-
-  inline Demangler& operator=(Demangler&& other) noexcept {
-    if (this != &other) {
-      this->name = std::move(other.name);
-    }
-    return *this;
-  }
-#endif
-
-  inline operator const char*() const noexcept {
-    return name.get();
-  }
-};
-
-
-template <typename Ty>
-inline auto demangle() {
-  return std::move(Demangler{typeid(Ty)});
-}
-
-template <typename Ty>
-inline auto demangle(const Ty& obj) {
-  return std::move(Demangler{typeid(obj)});
-}
-
-
 // gtest utilities
 
 // Boolean test

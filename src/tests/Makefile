@@ -30,12 +30,11 @@ depend : $(DEPS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
 
 
-libgtest.a: fmp_test.o
+libgtest.a:
 	$(CXX) $(libgtest_CXXFLAGS) -o gtest-all.o -c $(libgtestsrcdir)/gtest-all.cc
 	$(CXX) $(libgtest_CXXFLAGS) -o gtest-main.o -c $(libgtestsrcdir)/gtest_main.cc
-	ar rcs $@ gtest-all.o gtest-main.o fmp_test.o
+	ar rcs $@ gtest-all.o gtest-main.o
 
-#all_test: basic_test.o curry_test.o apply_test.o compose_test.o libgtest.a
 all_test: $(OBJS) libgtest.a
 	$(CXX) $(LDFLAGS) -o $@ $^
 

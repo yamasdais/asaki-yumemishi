@@ -28,7 +28,7 @@ $(DEPS) : .depend
 .cxx.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
 
-sample0: sample0.o sample_lib.o
+sample0: sample0.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 utilexp: utilexp.o
