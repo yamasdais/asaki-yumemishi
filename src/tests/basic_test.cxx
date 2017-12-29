@@ -25,11 +25,3 @@ using HasTypeTarget = ::testing::Types<
 >;
 
 INSTANTIATE_TYPED_TEST_CASE_P(HasType, BoolTest, HasTypeTarget);
-
-// Value
-using ValueTarget = ::testing::Types<
-  v<int, 0, val<int, 0>>,
-  v<char, ' ', val<int, 0x20>::cast<char>>
->;
-
-INSTANTIATE_TYPED_TEST_CASE_P(Values, ValueTest, ValueTarget);

@@ -57,6 +57,13 @@ void test_value() {
   std::cout << "and val0, val1: " << can_and_op() << std::endl;
   std::cout << "and val0, int: " << cant_and_op() << std::endl;
 
+#if defined(__cpp_template_auto)
+  using at1 = atval<0u>;
+  using at0 = atval<0>;
+  std::cout << "at1: " << demangle<at1>() << std::endl;
+  std::cout << "at0: " << demangle<at0>() << std::endl;
+#endif /* __cpp_template_auto */
+
 }
 
 void test_unity() {
@@ -455,8 +462,8 @@ void test_maybe() {
   using p1 = is_nothing_t<j0>;
 
   using fj0 = from_just_t<j0>;
-  using fm0 = from_maybe_t<j0, nullptr_t>;
-  using fm1 = from_maybe_t<n0, nullptr_t>;
+  using fm0 = from_maybe_t<j0, std::nullptr_t>;
+  using fm1 = from_maybe_t<n0, std::nullptr_t>;
   using unit0 = unity_t<maybe>;
   using um0 = unite_t<j1, j1>;
   using cp0 = compose<curry<just>, curry<all>>;
@@ -498,10 +505,35 @@ void test_fmap()
   std::cout << "fmap<nothing>: "<< bdemangle(mp1) << std::endl;
 }
 
+void test_add()
+{
+  using namespace fmp;
+  std::cout << "## " << __func__ << "() ##" << std::endl;
+
+  using vt = valtype<int>;
+  using v1 = vt::let<1>;
+  using v10 = vt::let<10>;
+  using r11 = add<v1, v10>;
+
+  std::cout << "add: " << bdemangle(r11::type) << std::endl;
+}
+
+void test_div()
+{
+  using namespace fmp;
+  std::cout << "## " << __func__ << "() ##" << std::endl;
+
+  using vt = valtype<int>;
+  using v1 = vt::let<12>;
+  using v2 = vt::let<6>;
+  using r0 = fmp::div<v1, v2>;
+
+//  std::cout << "div: " << bdemangle(r0::type) << std::endl;
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
-  //test_value();
   //test_derived();
   //test_quote();
   //test_order();
@@ -535,6 +567,8 @@ int main(int , char**)
   test_endo();
   test_maybe();
   test_fmap();
+  test_value();
+  test_add();
 
   return 0;
 }

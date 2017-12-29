@@ -1,8 +1,9 @@
 PROGRAMS=sample0 utilexp
 CXX=g++
-CXXFLAGS=-O -std=c++14 -Wall -Wextra -g
+CXXSTD=c++14
+CXXFLAGS=-O -std=$(CXXSTD) -Wall -Wextra -g
 INCLUDES=-I../src/main/include
-LDFLAGS=-std=c++14
+LDFLAGS=-std=$(CXXSTD)
 
 SRCS=$(shell ls *.cxx)
 OBJS=$(SRCS:.cxx=.o)

@@ -4,9 +4,10 @@ libgtest_CXXFLAGS = -I$(libgtestsrcdir) -I$(libgtestsrcdir)/.. \
 
 PROGRAMS=all_test
 CXX=g++
-CXXFLAGS=-O -std=c++14 -Wall -Wextra -g
+CXXSTD=c++14
+CXXFLAGS=-O -std=$(CXXSTD) -Wall -Wextra -g
 INCLUDES=-I../main/include -I.
-LDFLAGS=-std=c++14 -L. -lgtest -lpthread
+LDFLAGS=-std=$(CXXSTD) -L. -lgtest -lpthread
 
 SRCS=$(shell ls *.cxx)
 OBJS=$(SRCS:.cxx=.o)
@@ -34,7 +35,8 @@ libgtest.a: fmp_test.o
 	$(CXX) $(libgtest_CXXFLAGS) -o gtest-main.o -c $(libgtestsrcdir)/gtest_main.cc
 	ar rcs $@ gtest-all.o gtest-main.o fmp_test.o
 
-all_test: basic_test.o curry_test.o apply_test.o compose_test.o libgtest.a
+#all_test: basic_test.o curry_test.o apply_test.o compose_test.o libgtest.a
+all_test: $(OBJS) libgtest.a
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)

@@ -6,7 +6,6 @@
 #if !defined(FMP_920AB251_2A86_41EA_84BF_55360C70A3C2)
 #define FMP_920AB251_2A86_41EA_84BF_55360C70A3C2
 
-#include <fmp/primitive.hpp>
 
 namespace fmp {
 
@@ -24,6 +23,53 @@ struct valtype {
   template <T V>
   using let = val<T, V>;
 };
+
+#if defined(__cpp_template_auto)
+template <auto V>
+using atval = val<decltype(V), V>;
+
+#endif /* __cpp_template_auto */
+
+
+template <typename V0, typename V1>
+struct add {
+  using type = val<decltype(V0::value + V1::value), V0::value + V1::value>;
+};
+
+template <typename V0, typename V1>
+using add_t = typename add<V0, V1>::type;
+
+template <typename V0, typename V1>
+struct sub {
+  using type = val<decltype(V0::value - V1::value), V0::value - V1::value>;
+};
+
+template <typename V0, typename V1>
+using sub_t = typename sub<V0, V1>::type;
+
+template <typename V0, typename V1>
+struct mul {
+  using type = val<decltype(V0::value * V1::value), V0::value * V1::value>;
+};
+
+template <typename V0, typename V1>
+using mul_t = typename mul<V0, V1>::type;
+
+template <typename V0, typename V1>
+struct div {
+  using type = val<decltype(V0::value / V1::value), V0::value / V1::value>;
+};
+
+template <typename V0, typename V1>
+using div_t = typename div<V0, V1>::type;
+
+template <typename V0, typename V1>
+struct mod {
+  using type = val<decltype(V0::value % V1::value), V0::value % V1::value>;
+};
+
+template <typename V0, typename V1>
+using mod_t = typename mod<V0, V1>::type;
 
 } /* ns: fmp */
 
