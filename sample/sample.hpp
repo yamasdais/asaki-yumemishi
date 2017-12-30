@@ -20,7 +20,7 @@
 
 template <typename T>
 auto T_name() {
-  return std::move(boost::typeindex::type_id_with_cvr<T>().pretty_name());
+  return boost::typeindex::type_id_with_cvr<T>().pretty_name();
 };
 
 #endif /* UUID_29B974E6_2A8A_4B56_B0D5_6B885825F24A */
