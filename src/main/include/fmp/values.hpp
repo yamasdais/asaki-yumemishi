@@ -30,7 +30,7 @@ using atval = val<decltype(V), V>;
 
 #endif /* __cpp_template_auto */
 
-
+// add
 template <typename V0, typename V1>
 struct add {
   using type = val<decltype(V0::value + V1::value), V0::value + V1::value>;
@@ -39,6 +39,7 @@ struct add {
 template <typename V0, typename V1>
 using add_t = typename add<V0, V1>::type;
 
+// sub
 template <typename V0, typename V1>
 struct sub {
   using type = val<decltype(V0::value - V1::value), V0::value - V1::value>;
@@ -47,6 +48,7 @@ struct sub {
 template <typename V0, typename V1>
 using sub_t = typename sub<V0, V1>::type;
 
+// multiply
 template <typename V0, typename V1>
 struct mul {
   using type = val<decltype(V0::value * V1::value), V0::value * V1::value>;
@@ -55,6 +57,7 @@ struct mul {
 template <typename V0, typename V1>
 using mul_t = typename mul<V0, V1>::type;
 
+// divide
 template <typename V0, typename V1>
 struct div {
   using type = val<decltype(V0::value / V1::value), V0::value / V1::value>;
@@ -63,6 +66,7 @@ struct div {
 template <typename V0, typename V1>
 using div_t = typename div<V0, V1>::type;
 
+// modulo
 template <typename V0, typename V1>
 struct mod {
   using type = val<decltype(V0::value % V1::value), V0::value % V1::value>;

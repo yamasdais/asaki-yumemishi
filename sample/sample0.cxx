@@ -50,10 +50,6 @@ void test_value() {
   std::cout << "b0:" << b0() << std::endl;
   std::cout << "b(false):" << fmp::boolean<std::false_type>() << std::endl;
 
-  using can_and_op = fmp::is_and_operatable<has_val0, has_val1>;
-  using cant_and_op = fmp::is_and_operatable<has_val0, int>;
-  std::cout << "and val0, val1: " << can_and_op() << std::endl;
-  std::cout << "and val0, int: " << cant_and_op() << std::endl;
 
 #if defined(__cpp_template_auto)
   using at1 = atval<0u>;
@@ -344,18 +340,6 @@ void test_sequence() {
   std::cout << "unite<s0, s1>=" << T_name<sunite>() << std::endl;
 }
 
-void test_is_operatable() {
-  using namespace fmp;
-
-  using ett = all<std::true_type>;
-  using etf = all<std::false_type>;
-  using can_op = is_monoid_t<all, ett, int>;
-  using et_op = detail::monoid_unite_impl<all>::apply<ett, etf>;
-
-  std::cout << "pred: " << T_name<can_op>() << std::endl;
-  std::cout << "op: " << T_name<et_op>() << std::endl;
-}
-
 void test_flip() {
   using namespace fmp;
 
@@ -540,7 +524,6 @@ int main(int , char**)
   test_monoid_et();
   //test_monoid_uel();
   //test_lt();
-  //test_eq();
   //test_gt();
   //test_compare();
   //test_max();
@@ -551,7 +534,6 @@ int main(int , char**)
   test_unity();
   test_unite();
 
-  //test_is_operatable();
   test_cons();
   //test_flip();
   //test_curried();
@@ -567,6 +549,7 @@ int main(int , char**)
   test_fmap();
   test_value();
   test_add();
+  test_eq();
 
   return 0;
 }

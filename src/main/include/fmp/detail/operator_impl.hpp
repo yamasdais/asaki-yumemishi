@@ -14,6 +14,7 @@ namespace fmp {
 
 namespace detail {
 
+#if 0
 // operator and
 struct is_and_operatable_impl {
   template <typename T0, typename T1>
@@ -25,25 +26,7 @@ struct is_and_operatable_impl {
   template <typename T0, typename T1>
   static auto check(...) -> std::false_type;
 };
-
-#if 0
-template <typename T0, typename T1>
-struct op_and_impl : std::enable_if_t<
-  is_and_operatable<T0, T1>::value,
-  bool_type<T0::value && T1::value>
->
-{
-};
 #endif
-
-template <typename T0, typename T1>
-struct op_and_impl0 : public derived<
-  bool_type<T0::type::value && T1::type::value>
->
-{
-};
-
-
 
 // operatable?
 template <template <class> typename T>
@@ -61,6 +44,27 @@ struct is_bin_op_impl<all> {
   template <typename T0, typename T1>
   static auto check(...) -> std::false_type;
 };
+
+
+#if 0
+template <typename T0, typename T1>
+struct op_and_impl : std::enable_if_t<
+  is_and_operatable<T0, T1>::value,
+  bool_type<T0::value && T1::value>
+>
+{
+};
+#endif
+
+#if 0
+template <typename T0, typename T1>
+struct op_and_impl0 : public derived<
+  bool_type<T0::type::value && T1::type::value>
+>
+{
+};
+
+
 
 // operator or
 struct is_or_operatable_impl {
@@ -140,6 +144,7 @@ struct op_gt_impl : public std::enable_if_t<
 {
 };
 
+#endif
 // max implementation
 template <typename T0, typename T1>
 struct max_impl : public std::enable_if_t<

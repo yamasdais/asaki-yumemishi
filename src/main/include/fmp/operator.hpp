@@ -15,6 +15,7 @@
 
 namespace fmp {
 
+#if 0
 template <typename T0, typename T1>
 struct is_and_operatable : public derived_t<
   decltype(detail::is_and_operatable_impl::check<T0, T1>(nullptr, nullptr))
@@ -49,6 +50,7 @@ struct is_gt_operatable : public derived_t<
 >
 {
 };
+#endif
 
 #if 0
 /**
@@ -62,24 +64,45 @@ struct uel : public monoid<
 #endif
 
 /**
- * 'less than' operator
+ * 'equals' operator
  */
-template <typename T0, typename T1>
-struct lt : public detail::op_lt_impl<T0, T1> {
+template <typename V0, typename V1>
+struct eq : public bool_type<V0::value == V1::value> {
 };
 
 /**
- * 'equals' operator
+ * 'not equals' operator
  */
-template <typename T0, typename T1>
-struct eq : public detail::op_eq_impl<T0, T1> {
+template <typename V0, typename V1>
+struct ne : public bool_type<V0::value != V1::value> {
+};
+
+/**
+ * 'less than' operator
+ */
+template <typename V0, typename V1>
+struct lt : public bool_type<(V0::value < V1::value)> {
+};
+
+/**
+ * 'less than or equal' operator
+ */
+template <typename V0, typename V1>
+struct lte : public bool_type<(V0::value <= V1::value)> {
 };
 
 /**
  * 'greater than' operator
  */
-template <typename T0, typename T1>
-struct gt : public detail::op_gt_impl<T0, T1> {
+template <typename V0, typename V1>
+struct gt : public bool_type<(V0::value > V1::value)> {
+};
+
+/**
+ * 'greater than or equals' operator
+ */
+template <typename V0, typename V1>
+struct gte : public bool_type<(V0::value >= V1::value)> {
 };
 
 /**
