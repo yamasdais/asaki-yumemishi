@@ -48,7 +48,18 @@ using OperatorTarget = ::testing::Types<
   p<true_type, gte<val<int, 1>, val<int, 0>>>,
   p<true_type, gte<val<int, 0>, val<int, 0>>>,
   p<false_type, gte<val<int, -1>, val<int, 0>>>,
-  p<true_type, gte<val<int, 3>, val<unsigned int, 2u>>>
+  p<true_type, gte<val<int, 3>, val<unsigned int, 2u>>>,
+  p<true_type, neg<std::false_type>>,
+  p<false_type, neg<std::true_type>>,
+  p<true_type, neg<gte_t<val<int, -1>, val<int, 0>>>>,
+  p<false_type, et<std::false_type, std::false_type>>,
+  p<false_type, et<std::true_type, std::false_type>>,
+  p<false_type, et<std::false_type, std::true_type>>,
+  p<true_type, et_t<std::true_type, std::true_type>>,
+  p<false_type, uel_t<std::false_type, std::false_type>>,
+  p<true_type, uel_t<std::true_type, std::false_type>>,
+  p<true_type, uel_t<std::false_type, std::true_type>>,
+  p<true_type, uel_t<std::true_type, std::true_type>>
   >;
 
 INSTANTIATE_TYPED_TEST_CASE_P(Operators, BoolTest, OperatorTarget);

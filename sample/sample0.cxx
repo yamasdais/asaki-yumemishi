@@ -168,9 +168,11 @@ void test_eq() {
   using int0 = fmp::val<int, 0>;
   using int1 = fmp::val<int, 1>;
   using op = fmp::eq<int0, int1>;
+  using namespace fmp;
   std::cout << "EQ: 0 op 1: " << T_name<op::type>() << std::endl;
-  std::cout << "EQ: 0 op 0: " << T_name<fmp::eq<int0, int0>::type>() << std::endl;
+  std::cout << "EQ: 0 op 0: " << T_name<fmp::eq<int0, int0>>() << std::endl;
   std::cout << "EQ: 1 op 0: " << T_name<fmp::eq<int1, int0>::type>() << std::endl;
+  std::cout << "gte: " << T_name<neg<gte<val<int, 0>, val<int, 0>>::type>>() << std::endl;
 }
 
 void test_gt() {

@@ -70,12 +70,18 @@ template <typename V0, typename V1>
 struct eq : public bool_type<V0::value == V1::value> {
 };
 
+template <typename V0, typename V1>
+using eq_t = typename eq<V0, V1>::type;
+
 /**
  * 'not equals' operator
  */
 template <typename V0, typename V1>
 struct ne : public bool_type<V0::value != V1::value> {
 };
+
+template <typename V0, typename V1>
+using ne_t = typename ne<V0, V1>::type;
 
 /**
  * 'less than' operator
@@ -84,12 +90,18 @@ template <typename V0, typename V1>
 struct lt : public bool_type<(V0::value < V1::value)> {
 };
 
+template <typename V0, typename V1>
+using lt_t = typename lt<V0, V1>::type;
+
 /**
  * 'less than or equal' operator
  */
 template <typename V0, typename V1>
 struct lte : public bool_type<(V0::value <= V1::value)> {
 };
+
+template <typename V0, typename V1>
+using lte_t = typename lte<V0, V1>::type;
 
 /**
  * 'greater than' operator
@@ -98,12 +110,50 @@ template <typename V0, typename V1>
 struct gt : public bool_type<(V0::value > V1::value)> {
 };
 
+template <typename V0, typename V1>
+using gt_t = typename gt<V0, V1>::type;
+
 /**
  * 'greater than or equals' operator
  */
 template <typename V0, typename V1>
 struct gte : public bool_type<(V0::value >= V1::value)> {
 };
+
+template <typename V0, typename V1>
+using gte_t = typename gte<V0, V1>::type;
+
+/**
+ * 'negate' operator
+ */
+template <typename V>
+struct neg : public bool_type<(!V::value)> {
+};
+
+template <typename V>
+using neg_t = typename neg<V>::type;
+
+/**
+ * 'and' operator
+ * et: 'and' in Latin.
+ */
+template <typename V0, typename V1>
+struct et : public bool_type<(V0::value && V1::value)> {
+};
+
+template <typename V0, typename V1>
+using et_t = typename et<V0, V1>::type;
+
+/**
+ * 'or' operator
+ * uel: 'or' in Latin.
+ */
+template <typename V0, typename V1>
+struct uel : public bool_type<(V0::value || V1::value)> {
+};
+
+template <typename V0, typename V1>
+using uel_t = typename uel<V0, V1>::type;
 
 /**
  * compare operator
