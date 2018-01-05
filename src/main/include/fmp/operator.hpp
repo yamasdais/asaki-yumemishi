@@ -158,7 +158,7 @@ using uel_t = typename uel<V0, V1>::type;
 /**
  * compare operator
  */
-enum ordering {
+enum class ordering {
   LT = -1,
   EQ = 0,
   GT = 1

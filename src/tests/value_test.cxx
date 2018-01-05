@@ -34,7 +34,24 @@ using ValueTarget = ::testing::Types<
   v<long, 4, fmp::div_t<val<int, 12>, val<long, 3>>>,
 // mod
   v<int, 3, mod_t<val<int, 8>, val<int, 5>>>,
-  v<long, 5, mod_t<val<int, 11>, val<long, 6>>>
+  v<long, 5, mod_t<val<int, 11>, val<long, 6>>>,
+// b_not
+  v<int, ~1, b_not_t<val<int, 1>>>,
+  v<unsigned int, ~0xe5e5e5e5, b_not_t<val<unsigned int, 0xe5e5e5e5>>>,
+// b_and
+  v<int, 35 & 42, b_and_t<val<int, 35>, val<int, 42>>>,
+  v<int, 0xe00a, b_and_t<val<short, 0xef4a>, val<int, 0xe00a>>>,
+  v<int, 0xe00a, b_and_t<val<unsigned short, 0xef4a>, val<int, 0xefe00a>>>,
+// b_or
+  v<int, 35 | 42, b_or_t<val<int, 35>, val<int, 42>>>,
+  v<int, 0xef6a, b_or_t<val<short, 0x0f4a>, val<int, 0xe02a>>>,
+// b_xor
+  v<int, 35 ^ 42, b_xor_t<val<int, 35>, val<int, 42>>>,
+  v<int, 0xe797, b_xor_t<val<int, 0xf57c>, val<int, 0x12eb>>>,
+// b_shl
+  v<int, 8, b_shl_t<val<int, 1>, val<int, 3>>>,
+// b_shr
+  v<int, 1, b_shr_t<val<int, 15>, val<int, 3>>>
 >;
 
 INSTANTIATE_TYPED_TEST_CASE_P(Values, ValueTest, ValueTarget);
