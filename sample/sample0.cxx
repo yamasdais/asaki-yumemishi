@@ -515,6 +515,25 @@ void test_div()
   std::cout << "div: " << T_name<r0>() << std::endl;
 }
 
+void test_eval()
+{
+  using namespace fmp;
+  std::cout << "## " << __func__ << "() ##" << std::endl;
+
+  using c0 = list_t<int, char, double>;
+  using p0 = curry<std::is_same, int>;
+  using cr0 = fmap<p0, c0>;
+
+  using e0 = eval_t<int>;
+  using e1 = cr0::type;
+  using e1_1 = eval_t<cr0>;
+
+  std::cout << "e0: " << T_name<e0>() << std::endl;
+  std::cout << "e1: " << T_name<e1>() << std::endl;
+  std::cout << "e1_0: " << T_name<e1_1>() << std::endl;
+  
+}
+
 int main(int , char**)
 {
   std::cout << std::boolalpha;
@@ -552,6 +571,7 @@ int main(int , char**)
   test_value();
   test_add();
   test_eq();
+  test_eval();
 
   return 0;
 }

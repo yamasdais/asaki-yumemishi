@@ -91,7 +91,7 @@ struct negate<std::false_type> : public std::true_type {
 #include <fmp/curry.hpp>
 #include <fmp/apply.hpp>
 #include <fmp/compose.hpp>
-
+#include <fmp/eval.hpp>
 #include <fmp/list.hpp>
 
 #include <fmp/detail/apply_impl.hpp>
