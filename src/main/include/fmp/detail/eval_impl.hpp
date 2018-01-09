@@ -25,6 +25,22 @@ struct eval_impl<T, false> {
   using type = T;
 };
 
+template <typename T, int Level, bool>
+struct evalL_impl;
+
+template <typename T, int Level>
+struct evalL_impl<T, Level, true> {
+  using type = typename evalL_impl<typename T::type,
+                                   Level - 1,
+                                   has_type<typename T::type>::value
+                                   && (Level > 0)>::type;
+};
+
+template <typename T, int Level>
+struct evalL_impl<T, Level, false> {
+  using type = T;
+};
+
 }  /* ns: detail */
 }  /* ns: fmp */
 

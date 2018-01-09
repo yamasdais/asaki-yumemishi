@@ -11,6 +11,9 @@ namespace fmp {
 template <typename T>
 struct eval;
 
+template <typename T, int Level>
+struct evalL;
+
 }  /* ns: fmp */
 
 #endif /* if not defined 'FMP_44E0EABF_4264_4A5B_9E73_20A86CE3559D' */
