@@ -26,18 +26,18 @@ struct eval_impl<T, false> {
 };
 
 template <typename T, int Level, bool>
-struct evalL_impl;
+struct evalcL_impl;
 
 template <typename T, int Level>
-struct evalL_impl<T, Level, true> {
-  using type = typename evalL_impl<typename T::type,
-                                   Level - 1,
-                                   has_type<typename T::type>::value
+struct evalcL_impl<T, Level, true> {
+  using type = typename evalcL_impl<typename T::type,
+                                    Level - 1,
+                                    has_type<typename T::type>::value
                                    && (Level > 0)>::type;
 };
 
 template <typename T, int Level>
-struct evalL_impl<T, Level, false> {
+struct evalcL_impl<T, Level, false> {
   using type = T;
 };
 

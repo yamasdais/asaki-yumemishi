@@ -12,6 +12,9 @@ template <typename T>
 struct eval;
 
 template <typename T, int Level>
+struct evalcL;
+
+template <typename T, typename Level>
 struct evalL;
 
 }  /* ns: fmp */

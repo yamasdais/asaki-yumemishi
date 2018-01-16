@@ -18,12 +18,19 @@ template <typename T>
 using eval_t = typename eval<T>::type;
 
 template <typename T, int Level>
-struct evalL : public detail::evalL_impl<T, Level,
-                                         has_type<T>::value
-                                         && (Level > 0)> {
+struct evalcL : public detail::evalcL_impl<T, Level,
+                                           has_type<T>::value
+                                           && (Level > 0)> {
 };
 
 template <typename T, int Level>
+using evalcL_t = typename evalcL<T, Level>::type;
+
+template <typename T, typename Level>
+struct evalL : public evalcL<T, Level::value> {
+};
+
+template <typename T, typename Level>
 using evalL_t = typename evalL<T, Level>::type;
 
 }  /* ns: fmp */

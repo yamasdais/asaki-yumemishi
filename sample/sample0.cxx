@@ -524,13 +524,16 @@ void test_eval()
   using p0 = curry<std::is_same, int>;
   using cr0 = fmap<p0, c0>;
 
-  using e0 = evalL_t<int, 0>;
+  using e0 = evalcL_t<int, 0>;
   using e1 = cr0::type;
-  using e1_1 = evalL_t<cr0, 2>;
+  using e1_1 = evalcL_t<cr0, 2>;
+  using e1_2 = evalL_t<cr0, val<int, 2>>;
 
   std::cout << "e0: " << T_name<e0>() << std::endl;
   std::cout << "e1: " << T_name<e1>() << std::endl;
+  std::cout << "eval_t: " << T_name<eval_t<cr0>>() << std::endl;
   std::cout << "e1_0: " << T_name<e1_1>() << std::endl;
+  std::cout << "e1_2: " << T_name<e1_2>() << std::endl;
   
 }
 
