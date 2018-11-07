@@ -1,6 +1,6 @@
-PROGRAMS=sample0 utilexp
+PROGRAMS=sample0 utilexp literal
 CXX=g++
-CXXSTD=c++14
+CXXSTD=c++17
 CXXFLAGS=-O -std=$(CXXSTD) -Wall -Wextra -g
 INCLUDES=-I../src/main/include
 LDFLAGS=-std=$(CXXSTD)
@@ -32,6 +32,9 @@ sample0: sample0.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 utilexp: utilexp.o
+	$(CXX) $(LDFLAGS) -o $@ $^
+
+literal: literal.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)
