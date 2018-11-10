@@ -1,6 +1,9 @@
 #include <iostream>
+#include <type_traits>
 #include <boost/type_index.hpp>
 #include <boost/hana/string.hpp>
+#include <boost/hana/type.hpp>
+#include <boost/hana/transform.hpp>
 
 namespace literal {
 
@@ -48,11 +51,31 @@ constexpr To convert(char ch) noexcept {
 template <typename To, typename Str>
 struct store;
 
-template <typename To, char... Ch>
-struct store<To, const boost::hana::string<Ch...>> {
+template <
+  typename To,
+  template <char...> typename F,
+  char... Ch
+  >
+struct store<To, const F<Ch...>> {
   constexpr static To const buffer[sizeof...(Ch)+1] = {
     static_cast<To>(Ch)..., static_cast<To>('\0')
   };
+};
+template <
+  typename To,
+  template <char...> typename F,
+  char... Ch
+  >
+struct store<To, F<Ch...>> {
+  constexpr static To const buffer[sizeof...(Ch)+1] = {
+    static_cast<To>(Ch)..., static_cast<To>('\0')
+  };
+};
+
+template <typename To>
+struct trans {
+  constexpr static auto hana_type = boost::hana::type_c<To>;
+
 };
 
 }
@@ -61,11 +84,14 @@ void test0()
 {
   using boost::typeindex::type_id_with_cvr;
   constexpr auto c0 = literal::convert<wchar_t>('a');
-  constexpr auto c1 = BOOST_HANA_STRING("abc");
-  auto c2 = literal::store<wchar_t, decltype(c1)>::buffer;
+  auto c1 = BOOST_HANA_STRING("abc");
+  const auto c2 = literal::store<wchar_t, decltype(c1)>::buffer;
+  auto c3 = literal::trans<wchar_t>::hana_type;
+
   std::cout << "c0:" << type_id_with_cvr<decltype(c0)>().pretty_name() << std::endl;
   std::cout << "C1:" << type_id_with_cvr<decltype(c1)>().pretty_name() << std::endl;
   std::cout << "C2:" << type_id_with_cvr<decltype(c2)>().pretty_name() << std::endl;
+  std::cout << "C3:" << type_id_with_cvr<decltype(c3)>().pretty_name() << std::endl;
 }
 
 
