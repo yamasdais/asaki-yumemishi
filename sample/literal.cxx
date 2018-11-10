@@ -1,6 +1,7 @@
 #include <iostream>
 #include <type_traits>
 #include <boost/type_index.hpp>
+#include <boost/hana/tuple.hpp>
 #include <boost/hana/string.hpp>
 #include <boost/hana/type.hpp>
 #include <boost/hana/transform.hpp>
@@ -78,20 +79,55 @@ struct trans {
 
 };
 
+template <typename ChT>
+struct string_t {
+  template <ChT... C>
+  using tuple_type = boost::hana::tuple<boost::hana::integral_constant<ChT, C>...>;
+};
+
+namespace detail {
+
+template <typename ChT, typename S, std::size_t... N>
+constexpr literal::string_t<ChT>::tuple_type<S::get()[N]...>
+prepare_impl(S, std::index_sequence<N...>) { return {}; }
+
+template <typename ChT, typename S>
+constexpr decltype(auto)
+prepare(S s) {
+  return prepare_impl<ChT>(
+    s,
+    std::make_index_sequence<sizeof(S::get())/sizeof(ChT) - 1>{});
+}
+
+template <typename S>
+using element_type = std::remove_const_t<std::remove_reference_t<S>>;
+
+}
+
+#define LITERAL_METASTRING(s) \
+  (::literal::detail::prepare<::literal::detail::element_type<decltype(*s)>>([]{ \
+      struct tmp { \
+        static constexpr decltype(auto) get() { return s; }    \
+      }; \
+      return tmp{};                             \
+    }()));
+
 }
 
 void test0()
 {
   using boost::typeindex::type_id_with_cvr;
-  constexpr auto c0 = literal::convert<wchar_t>('a');
+  constexpr auto c0 = literal::string_t<char>::tuple_type<'a', 'b', 'c'>{};
   auto c1 = BOOST_HANA_STRING("abc");
   const auto c2 = literal::store<wchar_t, decltype(c1)>::buffer;
-  auto c3 = literal::trans<wchar_t>::hana_type;
+  using c3 = literal::detail::element_type<decltype(*"abc")>;
+  constexpr auto c4 = LITERAL_METASTRING(L"aabc");
 
   std::cout << "c0:" << type_id_with_cvr<decltype(c0)>().pretty_name() << std::endl;
   std::cout << "C1:" << type_id_with_cvr<decltype(c1)>().pretty_name() << std::endl;
   std::cout << "C2:" << type_id_with_cvr<decltype(c2)>().pretty_name() << std::endl;
-  std::cout << "C3:" << type_id_with_cvr<decltype(c3)>().pretty_name() << std::endl;
+  std::cout << "C3:" << type_id_with_cvr<c3>().pretty_name() << std::endl;
+  std::cout << "C4:" << type_id_with_cvr<decltype(c4)>().pretty_name() << std::endl;
 }
 
 
