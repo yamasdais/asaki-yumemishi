@@ -105,15 +105,13 @@ prepare(S s) {
     std::make_index_sequence<sizeof(S::get())/sizeof(ChT) - 1>{});
 }
 
-template <typename S>
-using element_type = std::remove_const_t<std::remove_reference_t<S>>;
 
 }
 
-#define LITERAL_METASTRING(s) \
-  (::literaltst::detail::prepare<::literaltst::detail::element_type<decltype(*s)>>([]{ \
+#define LITERAL_METASTRING(str) \
+  (::literaltst::detail::prepare<std::decay_t<decltype(*str)>>([]{ \
       struct tmp { \
-        static constexpr decltype(auto) get() { return s; }    \
+        static constexpr decltype(auto) get() { return str; }    \
       }; \
       return tmp{};                             \
     }()));
@@ -126,7 +124,7 @@ void test0()
   constexpr auto c0 = literaltst::string_t<char>::tuple_type<'a', 'b', 'c'>{};
   auto c1 = BOOST_HANA_STRING("abc");
   const auto c2 = literaltst::store<wchar_t, decltype(c1)>::buffer;
-  using c3 = literaltst::detail::element_type<decltype(*"abc")>;
+  using c3 = std::decay_t<decltype(*"abc")>;
   constexpr auto c4 = LITERAL_METASTRING(L"aabc");
   auto sum_str = [](auto str) {
     return boost::hana::fold_left(str, boost::hana::int_c<0>, [](auto sum, auto c) {
