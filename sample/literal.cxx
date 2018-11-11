@@ -3,10 +3,16 @@
 #include <boost/type_index.hpp>
 #include <boost/hana/tuple.hpp>
 #include <boost/hana/string.hpp>
+#include <boost/hana/integral_constant.hpp>
 #include <boost/hana/type.hpp>
 #include <boost/hana/transform.hpp>
+#include <boost/hana/fold_left.hpp>
+#include <boost/hana/value.hpp>
+#include <boost/hana/plus.hpp>
+#include <boost/hana/fwd/count.hpp>
 
-namespace literal {
+
+namespace literaltst {
 
 struct CharLiteralChooser {
   wchar_t wchar_literal;
@@ -40,7 +46,7 @@ constexpr wchar_t CharLiteralChooser::get() const noexcept {
 
 #define CNV_CHTYPE(CH, PREFIX) (PREFIX ## CH)
 #define CONVERT_CH(TYPE, CH) \
-  literal::CharLiteralChooser{                                          \
+  literaltst::CharLiteralChooser{                                          \
     CNV_CHTYPE(CH,u8), CNV_CHTYPE(CH,L), CNV_CHTYPE(CH,u), CNV_CHTYPE(CH,U)\
     }.get<TYPE>()
 
@@ -88,7 +94,7 @@ struct string_t {
 namespace detail {
 
 template <typename ChT, typename S, std::size_t... N>
-constexpr literal::string_t<ChT>::tuple_type<S::get()[N]...>
+constexpr literaltst::string_t<ChT>::tuple_type<S::get()[N]...>
 prepare_impl(S, std::index_sequence<N...>) { return {}; }
 
 template <typename ChT, typename S>
@@ -105,7 +111,7 @@ using element_type = std::remove_const_t<std::remove_reference_t<S>>;
 }
 
 #define LITERAL_METASTRING(s) \
-  (::literal::detail::prepare<::literal::detail::element_type<decltype(*s)>>([]{ \
+  (::literaltst::detail::prepare<::literaltst::detail::element_type<decltype(*s)>>([]{ \
       struct tmp { \
         static constexpr decltype(auto) get() { return s; }    \
       }; \
@@ -117,17 +123,28 @@ using element_type = std::remove_const_t<std::remove_reference_t<S>>;
 void test0()
 {
   using boost::typeindex::type_id_with_cvr;
-  constexpr auto c0 = literal::string_t<char>::tuple_type<'a', 'b', 'c'>{};
+  constexpr auto c0 = literaltst::string_t<char>::tuple_type<'a', 'b', 'c'>{};
   auto c1 = BOOST_HANA_STRING("abc");
-  const auto c2 = literal::store<wchar_t, decltype(c1)>::buffer;
-  using c3 = literal::detail::element_type<decltype(*"abc")>;
+  const auto c2 = literaltst::store<wchar_t, decltype(c1)>::buffer;
+  using c3 = literaltst::detail::element_type<decltype(*"abc")>;
   constexpr auto c4 = LITERAL_METASTRING(L"aabc");
+  auto sum_str = [](auto str) {
+    return boost::hana::fold_left(str, boost::hana::int_c<0>, [](auto sum, auto c) {
+        constexpr int i = boost::hana::value(c) - 'a';
+        return sum + boost::hana::int_c<i>;
+      });
+  };
+  auto cat_str = [](auto str0, auto str1) {
+    return str0 + str1;
+  };
+  auto c5 = cat_str(c1, c1);
 
   std::cout << "c0:" << type_id_with_cvr<decltype(c0)>().pretty_name() << std::endl;
   std::cout << "C1:" << type_id_with_cvr<decltype(c1)>().pretty_name() << std::endl;
   std::cout << "C2:" << type_id_with_cvr<decltype(c2)>().pretty_name() << std::endl;
   std::cout << "C3:" << type_id_with_cvr<c3>().pretty_name() << std::endl;
   std::cout << "C4:" << type_id_with_cvr<decltype(c4)>().pretty_name() << std::endl;
+  std::cout << "C5:" << type_id_with_cvr<decltype(c5)>().pretty_name() << std::endl;
 }
 
 
