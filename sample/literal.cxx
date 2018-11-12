@@ -77,6 +77,7 @@ struct store<To, F<Ch...>> {
   constexpr static To const buffer[sizeof...(Ch)+1] = {
     static_cast<To>(Ch)..., static_cast<To>('\0')
   };
+  constexpr static auto length = sizeof...(Ch);
 };
 
 template <typename To>
@@ -123,7 +124,7 @@ void test0()
   using boost::typeindex::type_id_with_cvr;
   constexpr auto c0 = literaltst::string_t<char>::tuple_type<'a', 'b', 'c'>{};
   auto c1 = BOOST_HANA_STRING("abc");
-  const auto c2 = literaltst::store<wchar_t, decltype(c1)>::buffer;
+  using c2 = literaltst::store<wchar_t, decltype(c1)>;
   using c3 = std::decay_t<decltype(*"abc")>;
   constexpr auto c4 = LITERAL_METASTRING(L"aabc");
   auto sum_str = [](auto str) {
@@ -136,13 +137,15 @@ void test0()
     return str0 + str1;
   };
   auto c5 = cat_str(c1, c1);
+  auto c6 = c2::length;
 
   std::cout << "c0:" << type_id_with_cvr<decltype(c0)>().pretty_name() << std::endl;
   std::cout << "C1:" << type_id_with_cvr<decltype(c1)>().pretty_name() << std::endl;
-  std::cout << "C2:" << type_id_with_cvr<decltype(c2)>().pretty_name() << std::endl;
+  std::cout << "C2:" << type_id_with_cvr<decltype(c2::buffer)>().pretty_name() << std::endl;
   std::cout << "C3:" << type_id_with_cvr<c3>().pretty_name() << std::endl;
   std::cout << "C4:" << type_id_with_cvr<decltype(c4)>().pretty_name() << std::endl;
   std::cout << "C5:" << type_id_with_cvr<decltype(c5)>().pretty_name() << std::endl;
+  std::cout << "C6:" << c6 << std::endl;
 }
 
 

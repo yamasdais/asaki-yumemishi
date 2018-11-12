@@ -16,6 +16,8 @@ void test0() {
   constexpr auto c0_3 = hana::basic_char_c<char, 'a'>;
   constexpr auto c0_4 = c0 == BOOST_HANA_B_STRING("bcd");
   constexpr auto c1 = BOOST_HANA_B_STRING(L"aabc");
+  constexpr auto c1_0 = BOOST_HANA_WSTRING("aabc");
+  constexpr auto c1_1 = c1 == c1_0;
 
   std::cout << "c0:" << type_id_with_cvr<decltype(c0)>().pretty_name() << std::endl;
   std::cout << "c0_1:" << type_id_with_cvr<decltype(c0_1)>().pretty_name() << std::endl;
@@ -24,6 +26,8 @@ void test0() {
   std::cout << "c0_4:" << type_id_with_cvr<decltype(c0_4)>().pretty_name() << std::endl;
   std::cout << "c0.c_str():" << c0.c_str() << std::endl;
   std::cout << "c1:" << type_id_with_cvr<decltype(c1)>().pretty_name() << std::endl;
+  std::cout << "c1_0:" << type_id_with_cvr<decltype(c1_0)>().pretty_name() << std::endl;
+  std::cout << "c1_1:" << type_id_with_cvr<decltype(c1_1)>().pretty_name() << std::endl;
 }
 
 int main(int, char**) {

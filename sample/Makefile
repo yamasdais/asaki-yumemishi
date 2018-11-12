@@ -1,4 +1,4 @@
-PROGRAMS=sample0 utilexp literal
+PROGRAMS=sample0 utilexp literal literal0
 CXX=g++
 CXXSTD=c++17
 CXXFLAGS=-O -std=$(CXXSTD) -Wall -Wextra -g
@@ -35,6 +35,8 @@ utilexp: utilexp.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 literal: literal.o
+	$(CXX) $(LDFLAGS) -o $@ $^
+literal0: literal0.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 include $(DEPS)

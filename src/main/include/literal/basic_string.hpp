@@ -50,6 +50,7 @@ struct basic_string
   : detail::operators::adl<basic_string<CharT, s...>>
 , detail::iterable_operators<basic_string<CharT, s...>>
 {
+  using value_type = CharT;
   static constexpr CharT const* c_str() {
     return &detail::basic_string_storage<CharT, s...>[0];
   }
@@ -70,7 +71,7 @@ struct make_impl<basic_string_tag<CharT>> {
 
 namespace basic_string_detail {
 template <typename CharT, typename S, std::size_t ...N>
-constexpr basic_string<CharT, S::get()[N]...>
+constexpr basic_string<CharT, static_cast<CharT>(S::get()[N])...>
 prepare_impl(S, std::index_sequence<N...>)
 { return {}; }
 
@@ -78,7 +79,7 @@ template <typename CharT, typename S>
 constexpr decltype(auto) prepare(S s) {
   return prepare_impl<CharT>(
     s,
-    std::make_index_sequence<sizeof(S::get())/sizeof(CharT) - 1>{});
+    std::make_index_sequence<sizeof(S::get())/sizeof(*S::get()) - 1>{});
 }
 
 #define BOOST_HANA_B_STRING(s)                                  \
@@ -98,6 +99,9 @@ constexpr decltype(auto) prepare(S s) {
        return tmp{};                                            \
      }()))
 
+#define BOOST_HANA_WSTRING(s) BOOST_HANA_BASIC_STRING(wchar_t, s)
+#define BOOST_HANA_U16STRING(s) BOOST_HANA_BASIC_STRING(char16_t, s)
+#define BOOST_HANA_U32STRING(s) BOOST_HANA_BASIC_STRING(char32_t, s)
 }
 
 namespace detail {
