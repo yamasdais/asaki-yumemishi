@@ -1,6 +1,8 @@
 #include <boost/hana/assert.hpp>
+#include <boost/hana/core/to.hpp>
 #include <boost/hana/equal.hpp>
 #include <boost/hana/integral_constant.hpp>
+#include <boost/hana/not.hpp>
 
 #include <literal/basic_string.hpp>
 
@@ -21,6 +23,17 @@ struct BoolTest : public ::testing::Test {
 
 TYPED_TEST_CASE_P(BoolTest);
 
+// true test
+template <typename T>
+struct TrueTest : public ::testing::Test {
+  // concept declarations of type T
+  using actual_type = T;
+  static_assert(std::is_same<typename actual_type::value_type, bool>::value,
+                "type must be a bool");
+};
+
+TYPED_TEST_CASE_P(TrueTest);
+
 TYPED_TEST_P(BoolTest, CheckBoolean) {
   bool actual = typename TypeParam::second_type();
   if (typename TypeParam::first_type()) {
@@ -30,7 +43,13 @@ TYPED_TEST_P(BoolTest, CheckBoolean) {
   }
 }
 
+TYPED_TEST_P(TrueTest, CheckTrue) {
+  bool actual = typename TypeParam::type();
+  ASSERT_TRUE(actual);
+}
+
 REGISTER_TYPED_TEST_CASE_P(BoolTest, CheckBoolean);
+REGISTER_TYPED_TEST_CASE_P(TrueTest, CheckTrue);
 
 // short hand
 template <typename T0, typename T1>
@@ -70,45 +89,61 @@ INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32Macro, BoolTest,
 // make
 template <typename C>
 using MakeTarget = ::testing::Types<
-  p<true_type, decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(),
-                                    hana::basic_string_c<C>))>,
-  p<true_type, decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
-                                      hana::basic_char_c<C, (C)'a'>),
-                                    hana::basic_string_c<C, (C)'a'>))>,
-  p<true_type, decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
-                                      hana::basic_char_c<C, (C)'a'>,
-                                      hana::basic_char_c<C, (C)'b'>
-                                    ),
-                                    hana::basic_string_c<C, (C)'a', (C)'b'>))>,
-  p<true_type, decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
-                                      hana::basic_char_c<C, (C)'a'>,
-                                      hana::basic_char_c<C, (C)'b'>,
-                                      hana::basic_char_c<C, (C)'c'>
-                                    ),
-                                    hana::basic_string_c<C, (C)'a', (C)'b', (C)'c'>))>,
-  p<true_type, decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
-                                      hana::basic_char_c<C, (C)'a'>,
-                                      hana::basic_char_c<C, (C)'b'>,
-                                      hana::basic_char_c<C, (C)'c'>,
-                                      hana::basic_char_c<C, (C)'d'>
-                                    ),
-                                    hana::basic_string_c<C, (C)'a', (C)'b', (C)'c', (C)'d'>))>,
-  p<true_type, decltype(hana::equal(hana::make_basic_string<C>(
-                                      hana::basic_char_c<C, (C)'a'>,
-                                      hana::basic_char_c<C, (C)'b'>,
-                                      hana::basic_char_c<C, (C)'c'>),
-                                    hana::make<hana::basic_string_tag<C>>(
-                                      hana::basic_char_c<C, (C)'a'>,
-                                      hana::basic_char_c<C, (C)'b'>,
-                                      hana::basic_char_c<C, (C)'c'>
-                                    )))>
+  decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(),
+                       hana::basic_string_c<C>)),
+  decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
+                         hana::basic_char_c<C, (C)'a'>),
+                       hana::basic_string_c<C, (C)'a'>)),
+  decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
+                         hana::basic_char_c<C, (C)'a'>,
+                         hana::basic_char_c<C, (C)'b'>
+                       ),
+                       hana::basic_string_c<C, (C)'a', (C)'b'>)),
+  decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
+                         hana::basic_char_c<C, (C)'a'>,
+                         hana::basic_char_c<C, (C)'b'>,
+                         hana::basic_char_c<C, (C)'c'>
+                       ),
+                       hana::basic_string_c<C, (C)'a', (C)'b', (C)'c'>)),
+  decltype(hana::equal(hana::make<hana::basic_string_tag<C>>(
+                         hana::basic_char_c<C, (C)'a'>,
+                         hana::basic_char_c<C, (C)'b'>,
+                         hana::basic_char_c<C, (C)'c'>,
+                         hana::basic_char_c<C, (C)'d'>
+                       ),
+                       hana::basic_string_c<C, (C)'a', (C)'b', (C)'c', (C)'d'>)),
+  decltype(hana::equal(hana::make_basic_string<C>(
+                         hana::basic_char_c<C, (C)'a'>,
+                         hana::basic_char_c<C, (C)'b'>,
+                         hana::basic_char_c<C, (C)'c'>),
+                       hana::make<hana::basic_string_tag<C>>(
+                         hana::basic_char_c<C, (C)'a'>,
+                         hana::basic_char_c<C, (C)'b'>,
+                         hana::basic_char_c<C, (C)'c'>
+                       )))
   >;
 
-INSTANTIATE_TYPED_TEST_CASE_P(BStrCharMake, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrCharMake, TrueTest,
                               MakeTarget<char>);
-INSTANTIATE_TYPED_TEST_CASE_P(BStrWCharMake, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrWCharMake, TrueTest,
                               MakeTarget<wchar_t>);
-INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16Make, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16Make, TrueTest,
                               MakeTarget<char16_t>);
-INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32Make, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32Make, TrueTest,
                               MakeTarget<char32_t>);
+
+// to
+template <typename C>
+using ToTarget0 = ::testing::Types<
+  p<true_type, hana::is_convertible<hana::basic_string_tag<C>, C const*>>,
+  p<false_type, hana::is_embedded<hana::basic_string_tag<C>, C const*>>
+  >;
+
+INSTANTIATE_TYPED_TEST_CASE_P(BStrCharTo, BoolTest,
+                              ToTarget0<char>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrWCharTo, BoolTest,
+                              ToTarget0<wchar_t>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16To, BoolTest,
+                              ToTarget0<char16_t>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32To, BoolTest,
+                              ToTarget0<char32_t>);
