@@ -9,6 +9,8 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
+namespace hana = boost::hana;
+
 // bool test
 template <typename T>
 struct BoolTest : public ::testing::Test {
@@ -34,6 +36,39 @@ struct TrueTest : public ::testing::Test {
 
 TYPED_TEST_CASE_P(TrueTest);
 
+template <typename T>
+struct SameTest : public ::testing::Test {
+  // concept declarations of type T
+  using expected_type = typename T::first_type;
+  using actual_type = typename T::second_type;
+};
+
+TYPED_TEST_CASE_P(SameTest);
+
+template <typename Ex,
+          typename T,
+          template <T...> typename S,
+          char... c>
+struct AliasPair {
+  using expected_type = Ex;
+  using char_type = T;
+  using str_type = S<static_cast<T>(c)...>;
+
+  AliasPair() {
+  }
+
+  bool isExpected() const noexcept {
+    return std::is_same<expected_type, str_type>::value;
+  }
+};
+
+
+template <typename T>
+struct AliasTest : public ::testing::Test {
+};
+
+TYPED_TEST_CASE_P(AliasTest);
+
 TYPED_TEST_P(BoolTest, CheckBoolean) {
   bool actual = typename TypeParam::second_type();
   if (typename TypeParam::first_type()) {
@@ -48,17 +83,34 @@ TYPED_TEST_P(TrueTest, CheckTrue) {
   ASSERT_TRUE(actual);
 }
 
+TYPED_TEST_P(SameTest, CheckSame) {
+  auto r =std::is_same<
+    typename TypeParam::first_type,
+    typename TypeParam::second_type>::value;
+  ASSERT_TRUE(r);
+}
+
+TYPED_TEST_P(AliasTest, AliasCheckSame) {
+  ASSERT_TRUE(TypeParam().isExpected());
+}
+
 REGISTER_TYPED_TEST_CASE_P(BoolTest, CheckBoolean);
 REGISTER_TYPED_TEST_CASE_P(TrueTest, CheckTrue);
+REGISTER_TYPED_TEST_CASE_P(SameTest, CheckSame);
+REGISTER_TYPED_TEST_CASE_P(AliasTest, AliasCheckSame);
 
 // short hand
 template <typename T0, typename T1>
 using p = std::pair<T0, T1>;
 
+template <typename Ex,
+          typename T,
+          template <T...> typename S,
+          char... c>
+using a = AliasPair<Ex, T, S, c...>;
+
 using true_type = std::true_type;
 using false_type = std::false_type;
-
-namespace hana = boost::hana;
 
 // construct macro
 template <typename C>
@@ -68,6 +120,7 @@ auto macro_test_s2 = BOOST_HANA_BASIC_STRING(C, "a");
 template <typename C>
 auto macro_test_s3 = BOOST_HANA_BASIC_STRING(C, "abcd");
 
+#if 0
 template <typename C>
 using MacroTarget = ::testing::Types<
   p<true_type, std::is_same<decltype(macro_test_s1<C>),
@@ -77,15 +130,43 @@ using MacroTarget = ::testing::Types<
   p<true_type, std::is_same<decltype(macro_test_s3<C>),
                             hana::basic_string<C, (C)'a', (C)'b', (C)'c', (C)'d'>>>
   >;
+#endif
+template <typename C>
+using MacroTarget = ::testing::Types<
+  p<decltype(macro_test_s1<C>),
+    hana::basic_string<C>>,
+  p<decltype(macro_test_s2<C>),
+    hana::basic_string<C, (C)'a'>>,
+  p<decltype(macro_test_s3<C>),
+    hana::basic_string<C, (C)'a', (C)'b', (C)'c', (C)'d'>>
+  >;
 
-INSTANTIATE_TYPED_TEST_CASE_P(BStrCharMacro, BoolTest,
+using AliasMacroTarget = ::testing::Types<
+  a<decltype(macro_test_s1<char>), char, hana::string_b>,
+  a<decltype(macro_test_s2<char>), char, hana::string_b, 'a'>,
+  a<decltype(macro_test_s3<char>), char, hana::string_b, 'a', 'b', 'c', 'd'>,
+  a<decltype(macro_test_s1<wchar_t>), wchar_t, hana::wstring>,
+  a<decltype(macro_test_s2<wchar_t>), wchar_t, hana::wstring, 'a'>,
+  a<decltype(macro_test_s3<wchar_t>), wchar_t, hana::wstring, 'a', 'b', 'c', 'd'>,
+  a<decltype(macro_test_s1<char16_t>), char16_t, hana::u16string>,
+  a<decltype(macro_test_s2<char16_t>), char16_t, hana::u16string, 'a'>,
+  a<decltype(macro_test_s3<char16_t>), char16_t, hana::u16string, 'a', 'b', 'c', 'd'>,
+  a<decltype(macro_test_s1<char32_t>), char32_t, hana::u32string>,
+  a<decltype(macro_test_s2<char32_t>), char32_t, hana::u32string, 'a'>,
+  a<decltype(macro_test_s3<char32_t>), char32_t, hana::u32string, 'a', 'b', 'c', 'd'>
+  >;
+
+INSTANTIATE_TYPED_TEST_CASE_P(BStrCharMacro, SameTest,
                               MacroTarget<char>);
-INSTANTIATE_TYPED_TEST_CASE_P(BStrWCharMacro, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrWCharMacro, SameTest,
                               MacroTarget<wchar_t>);
-INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16Macro, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16Macro, SameTest,
                               MacroTarget<char16_t>);
-INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32Macro, BoolTest,
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32Macro, SameTest,
                               MacroTarget<char32_t>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrAliasMacro, AliasTest,
+                              AliasMacroTarget);
+
 // make
 template <typename C>
 using MakeTarget = ::testing::Types<

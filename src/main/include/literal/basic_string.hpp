@@ -337,6 +337,24 @@ struct hash_impl<basic_string_tag<CharT>> {
     return hana::type_c<String>;
   }
 };
+
+//////////////////////////////////////////////////////////////////////////
+// Typed Char Alias
+//////////////////////////////////////////////////////////////////////////
+//template <char ...s>
+//using string = basic_string<char, s...>;
+template <char ...s>
+using string_b = basic_string<char, s...>;
+
+template <wchar_t ...s>
+using wstring = basic_string<wchar_t, s...>;
+
+template <char16_t ...s>
+using u16string = basic_string<char16_t, s...>;
+
+template <char32_t ...s>
+using u32string = basic_string<char32_t, s...>;
+
 BOOST_HANA_NAMESPACE_END
 
 
