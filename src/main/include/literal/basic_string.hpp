@@ -39,10 +39,21 @@
 BOOST_HANA_NAMESPACE_BEGIN
 
 namespace detail {
+
+template <typename CharTo, typename CharFrom>
+constexpr CharTo
+promote_as_unsigned(CharFrom value) {
+  return static_cast<CharTo>(
+    static_cast<std::make_unsigned_t<CharFrom>>(value)
+  );
+}
+
 template <typename CharT, CharT ...s>
 constexpr CharT const basic_string_storage[sizeof...(s) + 1] = {
   s..., static_cast<CharT>('\0') 
 };
+
+
 }
 
 template <typename CharT, CharT ...s>
@@ -71,7 +82,8 @@ struct make_impl<basic_string_tag<CharT>> {
 
 namespace basic_string_detail {
 template <typename CharT, typename S, std::size_t ...N>
-constexpr basic_string<CharT, static_cast<CharT>(S::get()[N])...>
+constexpr basic_string<
+  CharT, boost::hana::detail::promote_as_unsigned<CharT>(S::get()[N])...>
 prepare_impl(S, std::index_sequence<N...>)
 { return {}; }
 
