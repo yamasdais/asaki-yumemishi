@@ -5,6 +5,7 @@
 #include <boost/hana/greater.hpp>
 #include <boost/hana/less.hpp>
 #include <literal/basic_string.hpp>
+#include <functional>
 
 namespace hana = boost::hana;
 
@@ -30,11 +31,21 @@ void test0() {
   std::cout << "c1_1:" << type_id_with_cvr<decltype(c1_1)>().pretty_name() << std::endl;
 }
 
-int test1() {
+template <typename S>
+struct sig {};
+
+
+
+void test1() {
+  using boost::typeindex::type_id_with_cvr;
 
   constexpr int w0 = hana::detail::promote_as_unsigned<int>('\xF0');
   constexpr int w0_0 = static_cast<int>('\xF0');
   std::cout << "w0:" << w0 << "," << w0_0 << std::endl;
+  std::cout << "hello" << std::endl;
+
+  constexpr auto c0 = L'\xc0';
+   std::cout << "c0:" << c0 << std::endl;
 }
 
 int main(int, char**) {

@@ -119,6 +119,8 @@ template <typename C>
 auto macro_test_s2 = BOOST_HANA_BASIC_STRING(C, "a");
 template <typename C>
 auto macro_test_s3 = BOOST_HANA_BASIC_STRING(C, "abcd");
+template <typename C>
+auto macro_test_s4 = BOOST_HANA_BASIC_STRING(C, "\x80\xff\xa0");
 
 #if 0
 template <typename C>
@@ -138,7 +140,9 @@ using MacroTarget = ::testing::Types<
   p<decltype(macro_test_s2<C>),
     hana::basic_string<C, (C)'a'>>,
   p<decltype(macro_test_s3<C>),
-    hana::basic_string<C, (C)'a', (C)'b', (C)'c', (C)'d'>>
+    hana::basic_string<C, (C)'a', (C)'b', (C)'c', (C)'d'>>,
+  p<decltype(macro_test_s4<C>),
+    hana::basic_string<C, (C)0x080, (C)0x0ff, (C)0x0a0>>
   >;
 
 using AliasMacroTarget = ::testing::Types<
@@ -228,3 +232,26 @@ INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16To, BoolTest,
                               ToTarget0<char16_t>);
 INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32To, BoolTest,
                               ToTarget0<char32_t>);
+
+// any_of
+template <typename C>
+using AnyOfTarget = ::testing::Types<
+  p<true_type, decltype(hana::any_of(
+                          macro_test_s3<C>,
+                          hana::equal.to(hana::basic_char_c<C, (C)'d'>)))>,
+  p<true_type, decltype(hana::not_(hana::any_of(
+                          macro_test_s1<C>,
+                          hana::always(hana::true_c))))>,
+  p<true_type, decltype(hana::not_(hana::any_of(
+                          macro_test_s3<C>,
+                          hana::equal.to(hana::basic_char_c<C, (C)'z'>))))>
+  >;
+
+INSTANTIATE_TYPED_TEST_CASE_P(BStrCharAnyOf, BoolTest,
+                              AnyOfTarget<char>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrWCharAnyOf, BoolTest,
+                              AnyOfTarget<wchar_t>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16AnyOf, BoolTest,
+                              AnyOfTarget<char16_t>);
+INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32AnyOf, BoolTest,
+                              AnyOfTarget<char32_t>);

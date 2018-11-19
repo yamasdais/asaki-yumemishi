@@ -260,7 +260,7 @@ struct front_impl<basic_string_tag<CharT>> {
 
 template <typename CharT>
 struct drop_front_impl<basic_string_tag<CharT>> {
-  template <std::size_t N, char ...xs, std::size_t ...i>
+  template <std::size_t N, CharT ...xs, std::size_t ...i>
   static constexpr auto helper(
     basic_string<CharT, xs...> const&,
     std::index_sequence<i...>) {
