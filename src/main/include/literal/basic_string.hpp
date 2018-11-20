@@ -40,14 +40,6 @@ BOOST_HANA_NAMESPACE_BEGIN
 
 namespace detail {
 
-template <typename CharTo, typename CharFrom>
-constexpr CharTo
-promote_as_unsigned(CharFrom value) {
-  return static_cast<CharTo>(
-    static_cast<std::make_unsigned_t<CharFrom>>(value)
-  );
-}
-
 template <typename CharT, CharT ...s>
 constexpr CharT const basic_string_storage[sizeof...(s) + 1] = {
   s..., static_cast<CharT>('\0') 
@@ -81,9 +73,18 @@ struct make_impl<basic_string_tag<CharT>> {
 };
 
 namespace basic_string_detail {
+
+template <typename CharTo, typename CharFrom>
+constexpr CharTo
+cast_as_unsigned(CharFrom value) {
+  return static_cast<CharTo>(
+    static_cast<std::make_unsigned_t<CharFrom>>(value)
+  );
+}
+
+
 template <typename CharT, typename S, std::size_t ...N>
-constexpr basic_string<
-  CharT, boost::hana::detail::promote_as_unsigned<CharT>(S::get()[N])...>
+constexpr basic_string<CharT, S::convert(S::get()[N])...>
 prepare_impl(S, std::index_sequence<N...>)
 { return {}; }
 
@@ -91,25 +92,33 @@ template <typename CharT, typename S>
 constexpr decltype(auto) prepare(S s) {
   return prepare_impl<CharT>(
     s,
-    std::make_index_sequence<sizeof(S::get())/sizeof(*S::get()) - 1>{});
+    std::make_index_sequence<sizeof(S::get())/sizeof(typename S::from_type) - 1>{});
 }
 
 #define BOOST_HANA_B_STRING(s)                                  \
   (::boost::hana::basic_string_detail::prepare<                 \
    std::decay_t<decltype(*s)>>([]{                              \
        struct tmp {                                             \
+         using from_type = std::decay_t<decltype(*s)>;          \
          static constexpr decltype(auto) get() { return s; }    \
+         static constexpr from_type convert(from_type v) {      \
+           return v;                                            \
+         }                                                      \
        };                                                       \
        return tmp{};                                            \
      }()))
 
-#define BOOST_HANA_BASIC_STRING(type, s)                        \
-  (::boost::hana::basic_string_detail::prepare<type>([]{        \
-       struct tmp {                                             \
-         static constexpr decltype(auto) get() { return s; }    \
-       };                                                       \
-       return tmp{};                                            \
-     }()))
+#define BOOST_HANA_BASIC_STRING(type, s)                                \
+  (::boost::hana::basic_string_detail::prepare<type>([]{                \
+      struct tmp {                                                      \
+        using from_type = std::decay_t<decltype(*s)>;                   \
+        static constexpr decltype(auto) get() { return s; }             \
+        static constexpr type convert(from_type v) {                 \
+          return ::boost::hana::basic_string_detail::cast_as_unsigned<type>(v); \
+        }                                                               \
+      };                                                                \
+      return tmp{};                                                     \
+    }()))
 
 #define BOOST_HANA_WSTRING(s) BOOST_HANA_BASIC_STRING(wchar_t, s)
 #define BOOST_HANA_U16STRING(s) BOOST_HANA_BASIC_STRING(char16_t, s)

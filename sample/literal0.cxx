@@ -39,13 +39,15 @@ struct sig {};
 void test1() {
   using boost::typeindex::type_id_with_cvr;
 
-  constexpr int w0 = hana::detail::promote_as_unsigned<int>('\xF0');
-  constexpr int w0_0 = static_cast<int>('\xF0');
-  std::cout << "w0:" << w0 << "," << w0_0 << std::endl;
   std::cout << "hello" << std::endl;
 
   constexpr auto c0 = L'\xc0';
-   std::cout << "c0:" << c0 << std::endl;
+  std::cout << "c0:" << c0 << std::endl;
+
+  using t0 = decltype(std::declval<decltype(*"abc")>());
+  using t1 = std::decay_t<t0>;
+  std::cout << "t0:" << type_id_with_cvr<t0>().pretty_name() << std::endl;
+  std::cout << "t1:" << type_id_with_cvr<t1>().pretty_name() << std::endl;
 }
 
 int main(int, char**) {
