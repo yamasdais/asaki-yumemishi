@@ -48,6 +48,12 @@ void test1() {
   using t1 = std::decay_t<t0>;
   std::cout << "t0:" << type_id_with_cvr<t0>().pretty_name() << std::endl;
   std::cout << "t1:" << type_id_with_cvr<t1>().pretty_name() << std::endl;
+
+  auto s0 = hana::equal(BOOST_HANA_BASIC_STRING(char, "abcd")[hana::size_c<2>],
+                        hana::basic_char_c<char, 'c'>);
+  std::cout << "s0:" << s0 << std::endl;
+  std::cout << "s0t:" << type_id_with_cvr<decltype(s0)>().pretty_name() << std::endl;
+  std::cout << "s0::type:" << decltype(s0)::value << std::endl;
 }
 
 int main(int, char**) {

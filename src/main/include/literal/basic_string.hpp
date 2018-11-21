@@ -304,7 +304,7 @@ struct at_impl<basic_string_tag<CharT>> {
   static constexpr auto apply(basic_string<CharT, s...> const&, N const&) {
     constexpr CharT characters[] = { s..., static_cast<CharT>('\0') };
     constexpr auto n = N::value;
-    return hana::basic_char_c<characters[n]>;
+    return hana::basic_char_c<CharT, characters[n]>;
   }
 };
 

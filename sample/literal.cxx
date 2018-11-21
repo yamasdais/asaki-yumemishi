@@ -12,43 +12,60 @@
 #include <boost/hana/fwd/count.hpp>
 
 
-namespace literaltst {
+struct LiteralChooser {
+  char const* char_literal;
+  wchar_t const* wchar_literal;
+  char16_t const* char16_literal;
+  char32_t const* char32_literal;
 
-struct CharLiteralChooser {
-  wchar_t wchar_literal;
-  char utf8_literal;
-  char16_t char16_literal;
-  char32_t char32_literal;
-
-  constexpr CharLiteralChooser(
-    wchar_t wchar_literal,
-    char utf8_literal,
-    char16_t char16_literal,
-    char32_t char32_literal
-  ) : wchar_literal(wchar_literal),
-      utf8_literal(utf8_literal),
-      char16_literal(char16_literal),
-      char32_literal(char32_literal)
+  constexpr LiteralChooser(
+    char const* char_literal,
+    wchar_t const* wchar_literal,
+    char16_t const* char16_literal,
+    char32_t const* char32_literal
+  ) : char_literal(char_literal),
+    wchar_literal(wchar_literal),
+    char16_literal(char16_literal),
+    char32_literal(char32_literal)
   {
   }
   template <typename Ch>
-  constexpr Ch get() const noexcept;
+  constexpr operator Ch const *() const noexcept;
 };
 
 template <>
-constexpr char CharLiteralChooser::get() const noexcept {
-  return utf8_literal;
+constexpr LiteralChooser::operator char const*()
+  const noexcept {
+  return char_literal;
 }
+
 template <>
-constexpr wchar_t CharLiteralChooser::get() const noexcept {
+constexpr LiteralChooser::operator wchar_t const*()
+  const noexcept {
   return wchar_literal;
 }
 
+template <>
+constexpr LiteralChooser::operator char16_t const*()
+  const noexcept {
+  return char16_literal;
+}
+
+template <>
+constexpr LiteralChooser::operator char32_t const*()
+  const noexcept {
+  return char32_literal;
+}
+
 #define CNV_CHTYPE(CH, PREFIX) (PREFIX ## CH)
+#if 0
 #define CONVERT_CH(TYPE, CH) \
-  literaltst::CharLiteralChooser{                                          \
-    CNV_CHTYPE(CH,u8), CNV_CHTYPE(CH,L), CNV_CHTYPE(CH,u), CNV_CHTYPE(CH,U)\
+  CharLiteralChooser{                                          \
+    CH, CNV_CHTYPE(CH,L), CNV_CHTYPE(CH,u), CNV_CHTYPE(CH,U)\
     }.get<TYPE>()
+#endif
+#define CONVERT_CH(TYPE, CH) \
+  LiteralChooser{ CH, CNV_CHTYPE(CH,L), CNV_CHTYPE(CH,u), CNV_CHTYPE(CH,U) }
 
 template <typename To>
 constexpr To convert(char ch) noexcept {
@@ -95,7 +112,7 @@ struct string_t {
 namespace detail {
 
 template <typename ChT, typename S, std::size_t... N>
-constexpr literaltst::string_t<ChT>::tuple_type<S::get()[N]...>
+constexpr string_t<ChT>::tuple_type<S::get()[N]...>
 prepare_impl(S, std::index_sequence<N...>) { return {}; }
 
 template <typename ChT, typename S>
@@ -110,21 +127,19 @@ prepare(S s) {
 }
 
 #define LITERAL_METASTRING(str) \
-  (::literaltst::detail::prepare<std::decay_t<decltype(*str)>>([]{ \
+  (::detail::prepare<std::decay_t<decltype(*str)>>([]{ \
       struct tmp { \
         static constexpr decltype(auto) get() { return str; }    \
       }; \
       return tmp{};                             \
     }()));
 
-}
-
 void test0()
 {
   using boost::typeindex::type_id_with_cvr;
-  constexpr auto c0 = literaltst::string_t<char>::tuple_type<'a', 'b', 'c'>{};
+  constexpr auto c0 = string_t<char>::tuple_type<'a', 'b', 'c'>{};
   auto c1 = BOOST_HANA_STRING("abc");
-  using c2 = literaltst::store<wchar_t, decltype(c1)>;
+  using c2 = store<wchar_t, decltype(c1)>;
   using c3 = std::decay_t<decltype(*"abc")>;
   constexpr auto c4 = LITERAL_METASTRING(L"aabc");
   auto sum_str = [](auto str) {
@@ -148,11 +163,29 @@ void test0()
   std::cout << "C6:" << c6 << std::endl;
 }
 
+void test1() {
+  using boost::typeindex::type_id_with_cvr;
+  constexpr char32_t const* cc = LiteralChooser("abc", L"abc", u"abc", U"abc");
 
+  std::cout << "cc:" << type_id_with_cvr<decltype(cc)>().pretty_name() << std::endl;
+}
+
+int basic_strcmp(char const* l, char const* r) {
+  for (; *l != '\0'; l++, r++) {
+    if (*l != *r) {
+      return *l < *r ? -1 : 1;
+    }
+  }
+  return *r == '\0' ? 0 : -1;
+}
+void test2() {
+  auto res = basic_strcmp("a", "ab");
+  std::cout << "res: " << res << std::endl;
+}
 
 int main(int,char**)
 {
-  test0();
+  test2();
   
   return 0;
 }

@@ -1,4 +1,5 @@
 #include <boost/hana/assert.hpp>
+#include <boost/hana/at.hpp>
 #include <boost/hana/core/to.hpp>
 #include <boost/hana/equal.hpp>
 #include <boost/hana/integral_constant.hpp>
@@ -67,7 +68,13 @@ template <typename T>
 struct AliasTest : public ::testing::Test {
 };
 
+template <typename T>
+struct HanaTest : public ::testing::Test {
+};
+
 TYPED_TEST_CASE_P(AliasTest);
+TYPED_TEST_CASE_P(HanaTest);
+
 
 TYPED_TEST_P(BoolTest, CheckBoolean) {
   bool actual = typename TypeParam::second_type();
@@ -93,6 +100,7 @@ TYPED_TEST_P(SameTest, CheckSame) {
 TYPED_TEST_P(AliasTest, AliasCheckSame) {
   ASSERT_TRUE(TypeParam().isExpected());
 }
+
 
 REGISTER_TYPED_TEST_CASE_P(BoolTest, CheckBoolean);
 REGISTER_TYPED_TEST_CASE_P(TrueTest, CheckTrue);
@@ -255,3 +263,162 @@ INSTANTIATE_TYPED_TEST_CASE_P(BStrChar16AnyOf, BoolTest,
                               AnyOfTarget<char16_t>);
 INSTANTIATE_TYPED_TEST_CASE_P(BStrChar32AnyOf, BoolTest,
                               AnyOfTarget<char32_t>);
+
+// at
+TYPED_TEST_P(HanaTest, CheckHanaAt) {
+  using C = TypeParam;
+
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(BOOST_HANA_BASIC_STRING(C, "abcd")[hana::size_c<2>],
+                hana::basic_char_c<C, 'c'>));
+
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "a"), hana::size_c<0>),
+                hana::basic_char_c<C, 'a'>));
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "ab"), hana::size_c<0>),
+                hana::basic_char_c<C, 'a'>));
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "abc"), hana::size_c<0>),
+                hana::basic_char_c<C, 'a'>));
+
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "ab"), hana::size_c<1>),
+                hana::basic_char_c<C, 'b'>));
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "abc"), hana::size_c<1>),
+                hana::basic_char_c<C, 'b'>));
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "abcd"), hana::size_c<1>),
+                hana::basic_char_c<C, 'b'>));
+
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "abc"), hana::size_c<2>),
+                hana::basic_char_c<C, 'c'>));
+  BOOST_HANA_CONSTANT_CHECK(
+    hana::equal(hana::at(BOOST_HANA_BASIC_STRING(C, "abcd"), hana::size_c<2>),
+                hana::basic_char_c<C, 'c'>));
+
+  ASSERT_TRUE(true);
+}
+
+// c_str
+template <typename C>
+int basic_strcmp(C const* l, C const* r) {
+  for (;*l != static_cast<C>('\0'); l++, r++) {
+    if (*l != *r) {
+      return *l < *r ? -1 : 1;
+    }
+  }
+  return *r == static_cast<C>('\0') ? 0 : -1;
+}
+
+struct LiteralChooser {
+  char const* char_literal;
+  wchar_t const* wchar_literal;
+  char16_t const* char16_literal;
+  char32_t const* char32_literal;
+
+  constexpr LiteralChooser(
+    char const* char_literal,
+    wchar_t const* wchar_literal,
+    char16_t const* char16_literal,
+    char32_t const* char32_literal
+  ) : char_literal(char_literal),
+    wchar_literal(wchar_literal),
+    char16_literal(char16_literal),
+    char32_literal(char32_literal)
+  {
+  }
+  template <typename Ch>
+  constexpr operator Ch const *() const noexcept;
+};
+
+template <>
+constexpr LiteralChooser::operator char const*()
+  const noexcept {
+  return char_literal;
+}
+
+template <>
+constexpr LiteralChooser::operator wchar_t const*()
+  const noexcept {
+  return wchar_literal;
+}
+
+template <>
+constexpr LiteralChooser::operator char16_t const*()
+  const noexcept {
+  return char16_literal;
+}
+
+template <>
+constexpr LiteralChooser::operator char32_t const*()
+  const noexcept {
+  return char32_literal;
+}
+
+#define CNV_CHTYPE(CH, PREFIX) (PREFIX ## CH)
+#define CONVERT_CH(TYPE, CH) \
+  LiteralChooser{ CH, CNV_CHTYPE(CH,L), CNV_CHTYPE(CH,u), CNV_CHTYPE(CH,U) }
+
+TYPED_TEST_P(HanaTest, CheckHanaCStr) {
+  using C = TypeParam;
+
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "").c_str(),
+      CONVERT_CH(C, "")) == 0);
+
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "a").c_str(),
+      CONVERT_CH(C, "a")) == 0);
+
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "ab").c_str(),
+      CONVERT_CH(C, "ab")) == 0);
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "abc").c_str(),
+      CONVERT_CH(C, "abc")) == 0);
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "ab").c_str(),
+      CONVERT_CH(C, "a")) > 0);
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "a").c_str(),
+      CONVERT_CH(C, "ab")) < 0);
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "a").c_str(),
+      CONVERT_CH(C, "b")) < 0);
+  BOOST_HANA_RUNTIME_CHECK(
+    basic_strcmp<C>(
+      BOOST_HANA_BASIC_STRING(C, "\x80\xa0\xff").c_str(),
+      CONVERT_CH(C, "\x80\xa0\xff")) == 0);
+
+  {
+    auto str = BOOST_HANA_BASIC_STRING(C, "abcdef");
+    constexpr C const* c_str = str.c_str();
+    (void)c_str;
+  }
+
+  {
+    constexpr C const* c_str = hana::basic_string<C, 'f', 'o', 'o'>::c_str();
+    (void)c_str;
+  }
+
+  ASSERT_TRUE(true);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(HanaTest, CheckHanaAt, CheckHanaCStr);
+
+using HanaTestTypes = ::testing::Types<
+  char, wchar_t, char16_t, char32_t
+  >;
+INSTANTIATE_TYPED_TEST_CASE_P(BStrCharAt, HanaTest,
+                              HanaTestTypes);
