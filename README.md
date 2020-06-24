@@ -1,5 +1,8 @@
-# FMP
-functional meta programming (C++ templates)
+# Purpose
+My experiments and library
+
+# FMP(attic)
+functional meta programming (C++ templates).
 
 ## Requirement
-c++14 compiler. I write the codes on Ubuntu Linux 16.10~ (g++, clang++)
+c++20 compiler.
