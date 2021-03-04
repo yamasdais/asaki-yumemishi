@@ -75,14 +75,7 @@ namespace dais::parse {
 
     // source
     template <class Source>
-    concept sourceable = requires (Source const& src) {
-        typename Source::value_type;
-        typename Source::result_type;
-        typename Source::error_type;
-        typename Source::iterator_type;
-        {src.peek(std::declval<typename Source::iterator_type>())}
-            -> std::convertible_to<typename Source::result_type>;
-    } && std::ranges::forward_range<Source>;
+    concept sourceable = std::ranges::forward_range<Source>;
 
     template <sourceable Source>
     using source_iter_t = std::ranges::iterator_t<Source>;
@@ -111,17 +104,21 @@ namespace dais::parse {
             constexpr static inline auto getParam() noexcept
                 -> std::remove_cvref_t<decltype(std::get<I>(std::declval<std::tuple<Params...>>()))>;
         };
+
+        template <class T, size_t I>
+        using GetParametricType = std::remove_cvref_t<decltype(TypeHolder<T>::template getParam<I>())>;
     }
     template <class T>
-    using facade_source_t = decltype(detail::TypeHolder<T>::template getParam<0>());
-
-    template <class T>
-    using facade_error_t = decltype(detail::TypeHolder<T>::template getParam<1>());
-
-    template <class T>
     concept parser_facade = 
-        sourceable<facade_source_t<T>>
-        && parser_error<facade_error_t<T>>;
+        sourceable<detail::GetParametricType<T, 0>>
+        && parser_error<detail::GetParametricType<T, 1>>;
+
+    template <class T>
+    using facade_source_t = detail::GetParametricType<T, 0>;
+
+    template <class Facade>
+        requires parser_facade<Facade>
+    using facade_error_t = detail::GetParametricType<Facade, 1>;
 
 
     template <parser_facade Facade>
@@ -140,11 +137,6 @@ namespace dais::parse {
         }
     using result_error_t = decltype(std::get<1>(std::declval<Result>()));
 
-#if 0
-    template <sourceable Source, class Error = error<char const*>>
-    constexpr inline source_result_t<Source> peek(Source const& source, source_iter_t<Source>& current) {
-    }
-#endif
     template <parser_facade Facade>
     constexpr inline auto peek(
             facade_source_t<Facade> const& source,
@@ -155,13 +147,26 @@ namespace dais::parse {
             : result_t{source_value_t<facade_source_t<Facade>>{*current}};
     }
 
-    template <class T, sourceable Source>
-    using parser_result_t = std::variant<T, typename Source::error_type>;
+    template <class Parser, class Facade>
+    concept parser = parser_facade<Facade>
+        && std::invocable<Parser,
+            facade_source_t<Facade> const&, source_iter_t<facade_source_t<Facade>>&>;
+
+    // parser result type
+    template <class T, parser_facade Facade>
+    using parser_result_t = std::variant<T, facade_error_t<Facade>>;
 
     template <class Result>
-        requires requires (Result const& result) {
-            {result.index()} -> std::convertible_to<size_t>;
-        }
+    concept parser_result = requires(Result const& result) {
+        {result.index()} -> std::convertible_to<size_t>;
+    };
+    template <class Result, class Facade>
+    concept parser_result_with = parser_facade<Facade>
+    && requires(Result const& res) {
+        {std::get<1>(res)} -> std::convertible_to<facade_error_t<Facade>>;
+    };
+
+    template <parser_result Result>
     constexpr static inline bool parser_success(Result const& result) noexcept {
         return result.index() == 0;
     }
@@ -169,7 +174,9 @@ namespace dais::parse {
     template <class Result>
     using parser_value_decl_t = decltype(std::get<0>(std::declval<Result>()));
     template <class Result>
-    using parser_value_t = std::remove_reference_t<parser_value_decl_t<Result>>;
+    using parser_value_t = std::remove_cvref_t<parser_value_decl_t<Result>>;
+
+#if 0
 
     template <class Func, sourceable Source>
         requires std::is_invocable_v<Func, Source const&, typename Source::iterator_type&>
@@ -251,4 +258,5 @@ namespace dais::parse {
         return 'a' <= c && c <= 'z';
     }, []() noexcept { return "lower alphabet"; }>;
 
+#endif
 }
