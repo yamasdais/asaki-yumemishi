@@ -7,8 +7,9 @@
 #include <string_view>
 #include <type_traits>
 #include <variant>
+#include <tuple>
 
-template <class T>
+template <class... T>
 struct TypeTracer;
 
 namespace dais::parse {
@@ -18,6 +19,14 @@ namespace dais::parse {
     struct error {
         using message_type = Mesg;
         Mesg message;
+    };
+
+    template <class Error>
+    concept parser_error = std::constructible_from<Error, char const*>;
+
+    struct default_parser_error {
+        using message_type = char const*;
+        char const* message;
     };
 
     // source will be depricated, then replaced with concept
@@ -64,6 +73,7 @@ namespace dais::parse {
         return source<Range>(std::ranges::views::all_t<Range>(range));
     }
 
+    // source
     template <class Source>
     concept sourceable = requires (Source const& src) {
         typename Source::value_type;
@@ -73,6 +83,77 @@ namespace dais::parse {
         {src.peek(std::declval<typename Source::iterator_type>())}
             -> std::convertible_to<typename Source::result_type>;
     } && std::ranges::forward_range<Source>;
+
+    template <sourceable Source>
+    using source_iter_t = std::ranges::iterator_t<Source>;
+
+    template <sourceable Source>
+    using source_value_t = std::ranges::range_value_t<Source>;
+
+    template <class Result>
+        requires requires (Result const& result) {
+            {result.index()} -> std::convertible_to<size_t>;
+        }
+    constexpr inline bool result_success(Result const& result) noexcept {
+        return result.index() == 0;
+    }
+
+    template <sourceable Source, parser_error Error = default_parser_error>
+    struct parser_facade_t { };
+
+    namespace detail {
+        template <class>
+        struct TypeHolder;
+
+        template <template <class...> class T, class... Params>
+        struct TypeHolder<T<Params...>> {
+            template <size_t I>
+            constexpr static inline auto getParam() noexcept
+                -> std::remove_cvref_t<decltype(std::get<I>(std::declval<std::tuple<Params...>>()))>;
+        };
+    }
+    template <class T>
+    using facade_source_t = decltype(detail::TypeHolder<T>::template getParam<0>());
+
+    template <class T>
+    using facade_error_t = decltype(detail::TypeHolder<T>::template getParam<1>());
+
+    template <class T>
+    concept parser_facade = 
+        sourceable<facade_source_t<T>>
+        && parser_error<facade_error_t<T>>;
+
+
+    template <parser_facade Facade>
+        using source_result_t = std::variant<source_value_t<facade_source_t<Facade>>, facade_error_t<Facade>>;
+
+    constexpr inline parser_facade auto make_parser_facade(sourceable auto const& source,
+            parser_error auto const& error) noexcept
+        -> parser_facade_t<std::remove_cvref_t<decltype(source)>, std::remove_cvref_t<decltype(error)>>;
+
+    constexpr inline parser_facade auto make_parser_facade(sourceable auto const& source) noexcept
+        -> parser_facade_t<std::remove_cvref_t<decltype(source)>, default_parser_error>;
+
+    template <class Result>
+        requires requires (Result const& result) {
+            {std::get<1>(result)};
+        }
+    using result_error_t = decltype(std::get<1>(std::declval<Result>()));
+
+#if 0
+    template <sourceable Source, class Error = error<char const*>>
+    constexpr inline source_result_t<Source> peek(Source const& source, source_iter_t<Source>& current) {
+    }
+#endif
+    template <parser_facade Facade>
+    constexpr inline auto peek(
+            facade_source_t<Facade> const& source,
+            source_iter_t<facade_source_t<Facade>>& current) {
+        using result_t = source_result_t<Facade>;
+        return current == std::ranges::end(source)
+            ? result_t{facade_error_t<Facade>{"out of range"}}
+            : result_t{source_value_t<facade_source_t<Facade>>{*current}};
+    }
 
     template <class T, sourceable Source>
     using parser_result_t = std::variant<T, typename Source::error_type>;
