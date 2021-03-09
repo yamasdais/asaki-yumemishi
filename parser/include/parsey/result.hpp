@@ -22,8 +22,6 @@ template <parse_result Result>
 using parse_result_value_t =
     std::remove_cvref_t<decltype(*std::declval<Result>())>;
 
-// template <class T>
-// using parse_result_error_t = detail::GetParametricType<T, 1>;
 template <parse_result Result>
 using parse_result_error_t =
     std::remove_cvref_t<decltype(std::declval<Result>().error())>;

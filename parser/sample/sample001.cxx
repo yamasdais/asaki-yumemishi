@@ -169,7 +169,6 @@ void test_facade() {
 }
 #endif
 
-
 void test_parse() {
     using source_t = dp::source<std::string_view>;
     source_t src(sv);
@@ -188,13 +187,21 @@ void test_parse() {
     std::cout << "test saved source: " << *res << std::endl;
     res = dp::pieces::letter('b')(saved);
     std::cout << "test saved source: " << res.visit(visitor) << std::endl;
-    auto catchar = [](std::string init, char ch) { return init.append(1, ch); };
+    auto catchar = [](std::string init, char ch) {
+        return init.append(1, ch);
+    };
     std::cout << "catchar: " << catchar(std::string{"42"}, 'a') << std::endl;
-    auto foo = dp::detail::foldAll(catchar, std::string{}, "cat chars", dp::pieces::lower, dp::pieces::lower);
+    auto foo = dp::detail::foldAll(catchar, std::string{}, "cat chars",
+        dp::pieces::lower, dp::pieces::lower);
     auto resf = foo(saved);
-    std::cout << "test foldparser: " << resf.visit(print_result<decltype(resf)>{}) << std::endl;
+    std::cout << "test foldparser: "
+              << resf.visit(print_result<decltype(resf)>{}) << std::endl;
 
-    static_assert(std::same_as<dp::parser_return_value_t<decltype(dp::pieces::lower), source_t>, char>, "parser_return_value_t");
+    static_assert(
+        std::same_as<
+            dp::parser_return_value_t<decltype(dp::pieces::lower), source_t>,
+            char>,
+        "parser_return_value_t");
     res = dp::pieces::upper(saved);
     std::cout << "test saved source: " << res.visit(visitor) << std::endl;
 }

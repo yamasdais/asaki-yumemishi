@@ -26,32 +26,6 @@ using parse_source_input_value_t = typename T::input_value_type;
 template <parse_source T>
 using parse_source_result_t = typename T::value_type;
 
-#if 0
-template <parse_source Source>
-struct source_result {
-    using value_type = typename Source::input_value_type;
-    using error_type = typename Source::error_type;
-    using result_type = std::variant<value_type, error_type>;
-    constexpr explicit source_result(value_type value)
-        : result_value{std::move(value)} {}
-
-    constexpr explicit source_result(parse_error auto error)
-        : result_value{std::move(error)} {}
-
-    constexpr operator bool() const noexcept {
-        return result_value.index() == 0u;
-    }
-    constexpr bool operator!() const noexcept { return !(bool)*this; }
-
-    constexpr value_type operator*() const { return std::get<0>(result_value); }
-
-    constexpr auto error() const { return std::get<1>(result_value); }
-
-  private:
-    result_type result_value;
-};
-#endif
-
 template <std::ranges::forward_range Range,
     locator<std::iter_value_t<Range>> Locator =
         index_locator<std::iter_value_t<Range>>,
