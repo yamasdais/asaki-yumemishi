@@ -3,33 +3,19 @@
 #include <concepts>
 #include <ranges>
 #include <iterator>
-#include <string>
-#include <string_view>
 #include <type_traits>
 #include <variant>
 #include <tuple>
 
-template <class... T>
-struct TypeTracer;
+#include <parsey/detail/util.hpp>
+#include <parsey/locator.hpp>
+#include <parsey/error.hpp>
+#include <parsey/source.hpp>
+#include <parsey/parse.hpp>
 
-namespace dais::parse {
-    struct locator;
+namespace parsey {
 
-    template <class Mesg>
-    struct error {
-        using message_type = Mesg;
-        Mesg message;
-    };
-
-    template <class Error>
-    concept parser_error = std::constructible_from<Error, char const*>;
-
-    struct default_parser_error {
-        using message_type = char const*;
-        char const* message;
-    };
-
-    // source will be depricated, then replaced with concept
+#if 0
     template <std::ranges::forward_range Range, class MessageT = char const*>
     struct source {
         using view_type = std::ranges::views::all_t<Range>;
@@ -73,108 +59,102 @@ namespace dais::parse {
         return source<Range>(std::ranges::views::all_t<Range>(range));
     }
 
-    // source
-    template <class Source>
-    concept sourceable = std::ranges::forward_range<Source>;
+// source
+template <class Source>
+concept sourceable = std::ranges::forward_range<Source>;
 
-    template <sourceable Source>
-    using source_iter_t = std::ranges::iterator_t<Source>;
+template <sourceable Source>
+using source_iter_t = std::ranges::iterator_t<Source>;
 
-    template <sourceable Source>
-    using source_value_t = std::ranges::range_value_t<Source>;
+template <sourceable Source>
+using source_value_t = std::ranges::range_value_t<Source>;
 
-    template <class Result>
-        requires requires (Result const& result) {
-            {result.index()} -> std::convertible_to<size_t>;
-        }
-    constexpr inline bool result_success(Result const& result) noexcept {
-        return result.index() == 0;
-    }
+template <class Result>
+requires requires(Result const& result) {
+    { result.index() }
+    ->std::convertible_to<size_t>;
+}
+constexpr inline bool result_success(Result const& result) noexcept {
+    return result.index() == 0;
+}
+#endif
 
-    template <sourceable Source, parser_error Error = default_parser_error>
-    struct parser_facade_t { };
+#if 0
+// parser facade
+template <sourceable Source, parser_error Error = default_parser_error>
+struct parser_facade_t {};
 
-    namespace detail {
-        template <class>
-        struct TypeHolder;
+template <class T>
+concept parser_facade = sourceable<detail::GetParametricType<T, 0>>&&
+    parser_error<detail::GetParametricType<T, 1>>;
 
-        template <template <class...> class T, class... Params>
-        struct TypeHolder<T<Params...>> {
-            template <size_t I>
-            constexpr static inline auto getParam() noexcept
-                -> std::remove_cvref_t<decltype(std::get<I>(std::declval<std::tuple<Params...>>()))>;
-        };
+template <class Facade>
+using facade_source_t = detail::GetParametricType<Facade, 0>;
 
-        template <class T, size_t I>
-        using GetParametricType = std::remove_cvref_t<decltype(TypeHolder<T>::template getParam<I>())>;
-    }
-    template <class T>
-    concept parser_facade = 
-        sourceable<detail::GetParametricType<T, 0>>
-        && parser_error<detail::GetParametricType<T, 1>>;
+template <class Facade>
+requires parser_facade<Facade> using facade_error_t =
+    detail::GetParametricType<Facade, 1>;
 
-    template <class T>
-    using facade_source_t = detail::GetParametricType<T, 0>;
+template <parser_facade Facade>
+using source_result_t = std::variant<source_value_t<facade_source_t<Facade>>,
+    facade_error_t<Facade>>;
 
-    template <class Facade>
-        requires parser_facade<Facade>
-    using facade_error_t = detail::GetParametricType<Facade, 1>;
+constexpr inline parser_facade auto make_parser_facade(
+    sourceable auto const& source, parser_error auto const& error) noexcept
+    -> parser_facade_t<std::remove_cvref_t<decltype(source)>,
+        std::remove_cvref_t<decltype(error)>>;
 
+constexpr inline parser_facade auto make_parser_facade(
+    sourceable auto const& source) noexcept
+    -> parser_facade_t<std::remove_cvref_t<decltype(source)>,
+        default_parser_error>;
 
-    template <parser_facade Facade>
-        using source_result_t = std::variant<source_value_t<facade_source_t<Facade>>, facade_error_t<Facade>>;
+template <class Result>
+requires requires(Result const& result) {
+    {std::get<1>(result)};
+}
+using result_error_t = decltype(std::get<1>(std::declval<Result>()));
 
-    constexpr inline parser_facade auto make_parser_facade(sourceable auto const& source,
-            parser_error auto const& error) noexcept
-        -> parser_facade_t<std::remove_cvref_t<decltype(source)>, std::remove_cvref_t<decltype(error)>>;
+template <parser_facade Facade>
+constexpr inline auto peek(facade_source_t<Facade> const& source,
+    source_iter_t<facade_source_t<Facade>>& current) {
+    using result_t = source_result_t<Facade>;
+    return current == std::ranges::end(source)
+             ? result_t{facade_error_t<Facade>{"out of range"}}
+             : result_t{source_value_t<facade_source_t<Facade>>{*current}};
+}
 
-    constexpr inline parser_facade auto make_parser_facade(sourceable auto const& source) noexcept
-        -> parser_facade_t<std::remove_cvref_t<decltype(source)>, default_parser_error>;
+template <class Parser, class Facade>
+concept parser = parser_facade<Facade>&& std::invocable<Parser,
+    facade_source_t<Facade> const&, source_iter_t<facade_source_t<Facade>>&>;
 
-    template <class Result>
-        requires requires (Result const& result) {
-            {std::get<1>(result)};
-        }
-    using result_error_t = decltype(std::get<1>(std::declval<Result>()));
+// parser result type
+template <class T, parser_facade Facade>
+using parser_result_t = std::variant<T, facade_error_t<Facade>>;
 
-    template <parser_facade Facade>
-    constexpr inline auto peek(
-            facade_source_t<Facade> const& source,
-            source_iter_t<facade_source_t<Facade>>& current) {
-        using result_t = source_result_t<Facade>;
-        return current == std::ranges::end(source)
-            ? result_t{facade_error_t<Facade>{"out of range"}}
-            : result_t{source_value_t<facade_source_t<Facade>>{*current}};
-    }
+template <class Result>
+concept parser_result = requires(Result const& result) {
+    { result.index() }
+    ->std::convertible_to<size_t>;
+};
+template <class Result, class Facade>
+concept parser_result_with = parser_facade<Facade>&& requires(
+    Result const& res) {
+    { std::get<1>(res) }
+    ->std::convertible_to<facade_error_t<Facade>>;
+};
 
-    template <class Parser, class Facade>
-    concept parser = parser_facade<Facade>
-        && std::invocable<Parser,
-            facade_source_t<Facade> const&, source_iter_t<facade_source_t<Facade>>&>;
+template <parser_result Result>
+constexpr static inline bool parser_success(Result const& result) noexcept {
+    return result.index() == 0;
+}
 
-    // parser result type
-    template <class T, parser_facade Facade>
-    using parser_result_t = std::variant<T, facade_error_t<Facade>>;
+template <class Result>
+using parser_value_decl_t = decltype(std::get<0>(std::declval<Result>()));
+template <class Result>
+using parser_value_t = std::remove_cvref_t<parser_value_decl_t<Result>>;
 
-    template <class Result>
-    concept parser_result = requires(Result const& result) {
-        {result.index()} -> std::convertible_to<size_t>;
-    };
-    template <class Result, class Facade>
-    concept parser_result_with = parser_facade<Facade>
-    && requires(Result const& res) {
-        {std::get<1>(res)} -> std::convertible_to<facade_error_t<Facade>>;
-    };
-
-    template <parser_result Result>
-    constexpr static inline bool parser_success(Result const& result) noexcept {
-        return result.index() == 0;
-    }
-
-    template <class Result>
-    using parser_value_decl_t = decltype(std::get<0>(std::declval<Result>()));
-    template <class Result>
-    using parser_value_t = std::remove_cvref_t<parser_value_decl_t<Result>>;
+#endif
 
 #if 0
 
@@ -259,4 +239,4 @@ namespace dais::parse {
     }, []() noexcept { return "lower alphabet"; }>;
 
 #endif
-}
+}  // namespace parsey
