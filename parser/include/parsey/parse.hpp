@@ -27,6 +27,12 @@ constexpr auto letter(std::integral auto refCh) noexcept {
     return detail::liftPredImpl(
         [refCh](std::integral auto ch) { return ch == refCh; }, "letter");
 }
+
+// combinators
+constexpr auto concat(auto&& func, auto&&... parsers) {
+
+}
+
 }  // namespace pieces
 
 }  // namespace parsey

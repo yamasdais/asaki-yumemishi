@@ -12,3 +12,4 @@
 #include <parsey/error.hpp>
 #include <parsey/source.hpp>
 #include <parsey/parse.hpp>
+#include <parsey/util.hpp>

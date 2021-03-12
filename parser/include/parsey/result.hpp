@@ -49,7 +49,7 @@ struct result {
     template <class Func>
     requires std::same_as<std::invoke_result_t<Func, T const>,
         std::invoke_result_t<Func, Error const>> constexpr auto
-    visit(Func&& func) const {
+    fmap(Func&& func) const {
         return std::visit(std::forward<Func>(func), result_value);
     }
 

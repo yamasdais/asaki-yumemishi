@@ -1,0 +1,19 @@
+= Parsey
+
+Yet another Parsec style parser for C++.
+
+== Requirement
+
+=== C++20 compiler
+
+==== Can compile
+* g++ 10
+
+==== Cannot compile
+* clang++13, reports error passing lamda expression to non-type template parameter
+
+== Build
+
+=== GCC
+mkdir build; cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..

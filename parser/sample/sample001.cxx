@@ -10,37 +10,6 @@ constexpr static auto sv = std::string_view("abcdef");
 
 namespace dp = parsey;
 
-#if 0
-template <dp::parser_facade Facade>
-struct printResult {
-    using value_type = dp::source_value_t<dp::facade_source_t<Facade>>;
-    void operator()(value_type const ch) const { std::cout << ch << "\n"; }
-    void operator()(std::basic_string<value_type> const& str) const {
-        std::cout << str << "\n";
-    }
-    void operator()(dp::facade_error_t<Facade> const& err) const {
-        std::cout << err.message << "\n";
-    }
-};
-
-// template <class Source, dp::parser<Source> Parser>
-template <dp::parser_facade Facade>
-void parseTest(dp::parser<Facade> auto const& parser,
-    dp::facade_source_t<Facade> const& source) {
-    auto itr = std::ranges::begin(source);
-    auto result = parser(source, itr);
-    // auto success = dp::parser_success(result);
-    // TypeTracer<dp::parser_value_t<decltype(result)>> x;
-    // std::cout << "parser success: " << success << std::endl;
-    std::visit(printResult<Facade>{}, result);
-}
-
-template <dp::parser_facade Facade>
-constexpr auto to_parser_result(auto value) {
-    return dp::parser_result_t<decltype(value), Facade>{value};
-}
-
-#endif
 template <dp::parse_result Result>
 struct print_result {
     std::string operator()(dp::parse_result_value_t<Result> const& val) const {
@@ -145,10 +114,10 @@ void test_source_result() {
 template <dp::parse_facade Facade>
 void test_parser_result() {
     auto res = dp::make_parse_result<dp::facade_error_t<Facade>>(42);
-    std::cout << "parser result(" << (bool)res << "): " << *res << std::endl;
+    std::cout << "parser_with result(" << (bool)res << "): " << *res << std::endl;
     auto const err = dp::make_parse_result<int>(
-        dp::default_parser_error("test parser result"));
-    std::cout << "parser error(" << (bool)err << "): " << err.error()
+        dp::default_parser_error("test parser_with result"));
+    std::cout << "parser_with error(" << (bool)err << "): " << err.error()
               << std::endl;
     static_assert(
         dp::parse_result_from<decltype(res), int, dp::facade_source_t<Facade>>,
@@ -169,6 +138,28 @@ void test_facade() {
 }
 #endif
 
+void test_accumulator() {
+    constexpr auto pfun = [](std::string acc, char v) {
+        return std::move(acc.append(1, v));
+    };
+    constexpr auto pfun0 = [](std::string& acc, char v) {
+        acc.append(1, v);
+    };
+    static_assert(
+        std::invocable<decltype(pfun), std::string, char>, "invocable");
+    static_assert(
+        std::invocable<decltype(pfun0), std::string&, char>, "invocable");
+    static_assert(
+        std::same_as<std::invoke_result_t<decltype(pfun0), std::string&, char>,
+            void>,
+        "invoke_result_t");
+
+    auto f = dp::make_accumulator<std::basic_string, char>(pfun0);
+    f('a')('b');
+    std::cout << "accumulator: " << *f << std::endl;
+    auto fmpres = f.fmap<std::string>(std::identity{});
+    std::cout << *fmpres << std::endl;
+}
 void test_parse() {
     using source_t = dp::source<std::string_view>;
     source_t src(sv);
@@ -186,7 +177,7 @@ void test_parse() {
     res = dp::pieces::lower(saved);
     std::cout << "test saved source: " << *res << std::endl;
     res = dp::pieces::letter('b')(saved);
-    std::cout << "test saved source: " << res.visit(visitor) << std::endl;
+    std::cout << "test saved source: " << res.fmap(visitor) << std::endl;
     auto catchar = [](std::string init, char ch) {
         return init.append(1, ch);
     };
@@ -195,7 +186,7 @@ void test_parse() {
         dp::pieces::lower, dp::pieces::lower);
     auto resf = foo(saved);
     std::cout << "test foldparser: "
-              << resf.visit(print_result<decltype(resf)>{}) << std::endl;
+              << resf.fmap(print_result<decltype(resf)>{}) << std::endl;
 
     static_assert(
         std::same_as<
@@ -203,18 +194,18 @@ void test_parse() {
             char>,
         "parser_return_value_t");
     res = dp::pieces::upper(saved);
-    std::cout << "test saved source: " << res.visit(visitor) << std::endl;
+    std::cout << "test saved source: " << res.fmap(visitor) << std::endl;
 }
 
 #if 0
 template <dp::parser_facade Facade>
 void test_parser_result() {
     constexpr auto x0 = to_parser_result<Facade>(42);
-    static_assert(dp::parser_success(x0), "parser success: x0");
+    static_assert(dp::parser_success(x0), "parser_with success: x0");
     static_assert(
-        dp::parser_result_with<decltype(x0), Facade>, "parser result: x0");
+        dp::parser_result_with<decltype(x0), Facade>, "parser_with result: x0");
     static_assert(std::is_same_v<int, dp::parser_value_t<decltype(x0)>>,
-        "parser result value: x0");
+        "parser_with result value: x0");
 }
 
 void test_facade() {
@@ -245,7 +236,12 @@ int main(int, char**) {
     test_error();
     test_source();
     test_source_result();
+    test_accumulator();
     test_parse();
+
+#ifdef __clang_major__
+    std::cout << "__clang_major__" << __clang_major__ << std::endl;
+#endif
 
     return 0;
 }
