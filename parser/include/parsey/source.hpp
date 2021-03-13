@@ -16,11 +16,9 @@ concept parse_source = requires(Source& src) {
     typename Source::input_value_type;
     typename Source::error_type;
     typename Source::value_type;
-    {
-        *src
-        } -> std::convertible_to<result<typename Source::input_value_type,
-            typename Source::error_type>>;
-    { ++src };
+    {*src} -> std::convertible_to<result<typename Source::input_value_type,
+                typename Source::error_type>>;
+    {++src};
 }
 &&std::forward_iterator<Source>&& parse_error<typename Source::error_type>;
 

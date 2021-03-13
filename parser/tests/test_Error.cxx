@@ -6,7 +6,7 @@
 
 namespace dp = parsey;
 
-TEST(Error, Basic) {
+TEST(Error, Ctor) {
     static_assert(
         dp::parse_error<dp::default_parser_error>, "parser_error concept");
     constexpr char const* message = "test error";

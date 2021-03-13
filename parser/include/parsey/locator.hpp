@@ -14,6 +14,7 @@ concept locator =
     std::is_default_constructible_v<T>&& std::is_copy_constructible_v<T>&&
         std::is_move_constructible_v<T>&& requires(T& l, V v) {
     l.increment(v);
+    std::as_const(l).position();
 };
 
 template <class T>
@@ -49,6 +50,10 @@ struct index_locator {
     friend inline std::ostream& operator<<(
         std::ostream& o, index_locator const& locator) {
         return o << locator.index;
+    }
+
+    constexpr size_t position() const noexcept {
+        return index;
     }
 
   private:
