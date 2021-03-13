@@ -1,6 +1,7 @@
 = Parsey
 
 Yet another Parsec style parser for C++.
+__This is not useful yet__
 
 == Requirement
 
@@ -8,12 +9,23 @@ Yet another Parsec style parser for C++.
 
 ==== Can compile
 * g++ 10
+* clang++-11
 
 ==== Cannot compile
-* clang++13, reports error passing lamda expression to non-type template parameter
+* [.line-through]#clang++13, reports error passing lamda expression to non-type template parameter# => Made some work arounds.
 
 == Build
 
 === GCC
+[source,shell]
+----
 mkdir build; cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
+----
+
+=== Clang
+[source,shell]
+----
+mkdir clang.build; cd clang.build
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11 ..
+----

@@ -12,10 +12,12 @@
 namespace parsey {
 
 template <class Source>
-concept parse_source = requires(Source const& src) {
+concept parse_source = requires(Source& src) {
     typename Source::input_value_type;
     typename Source::error_type;
     typename Source::value_type;
+    {*src}-> std::convertible_to<result<typename Source::input_value_type, typename Source::error_type>>;
+    {++src};
 }
 &&std::forward_iterator<Source>&& parse_error<typename Source::error_type>;
 
@@ -42,7 +44,9 @@ struct source {
         typename std::iterator_traits<iterator_type>::iterator_concept;
 
     constexpr source() = default;
-    constexpr source(source const& other) = default;
+    constexpr source(source const& other)
+    requires std::copyable<iterator_type> && std::copyable<sentinel_type>
+    && std::copyable<Locator> = default;
     constexpr source(source&& other) = default;
 
     explicit constexpr source(Range const& range) noexcept(noexcept(

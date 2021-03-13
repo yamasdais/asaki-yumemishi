@@ -34,13 +34,14 @@ struct accumulator {
         }
         return *this;
     }
-template <class X> struct tt;
+
     template <std::semiregular ResT, class ResFunc = Func>
-    constexpr auto fmap(auto&& proj)
-    requires std::convertible_to<std::invoke_result_t<decltype(proj), T>, ResT>
-    {
-        using ret_t = std::remove_cvref_t<std::invoke_result_t<decltype(proj), T>>;
-        return accumulator<ret_t, ResFunc>{std::invoke((decltype(proj))proj, value)};
+    constexpr auto fmap(auto&& proj) requires
+        std::convertible_to<std::invoke_result_t<decltype(proj), T>, ResT> {
+        using ret_t =
+            std::remove_cvref_t<std::invoke_result_t<decltype(proj), T>>;
+        return accumulator<ret_t, ResFunc>{
+            std::invoke((decltype(proj))proj, value)};
     }
 
   private:
@@ -49,8 +50,10 @@ template <class X> struct tt;
 };
 
 template <template <class...> class ParamT, class T>
-auto make_accumulator = [](auto&& func)
-requires std::invocable<decltype(func), ParamT<T>, T> || std::invocable<decltype(func), ParamT<T>&, T> {
+auto make_accumulator = [](auto&&func) requires std::invocable<decltype(func),
+                            ParamT<T>, T> || std::invocable < decltype(func),
+     ParamT<T>
+&, T > {
     return accumulator(ParamT<T>{}, (decltype(func))func);
 };
 

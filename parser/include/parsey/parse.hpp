@@ -12,6 +12,10 @@
 
 namespace parsey {
 
+struct parser {
+
+};
+
 namespace pieces {
 constexpr inline static detail::any_fn any{};
 

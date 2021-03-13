@@ -12,6 +12,10 @@
 
 namespace parsey::detail {
 
+struct ParserImpl {
+
+};
+
 constexpr bool isAlphaLower(std::integral auto ch) noexcept {
     return 'a' <= ch && ch <= 'z';
 }
