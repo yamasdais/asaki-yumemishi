@@ -2,11 +2,21 @@
 #pragma once
 
 #include <concepts>
+#include <type_traits>
 #include <functional>
 
 #include <parsey/detail/util.hpp>
 
 namespace parsey {
+
+// meta programming category
+
+
+template <class T, std::size_t I>
+using get_tparam_t = typename detail::GetParamTypeImpl<I, std::remove_cvref_t<T>>::type;
+
+template <template <class...> class To, class From>
+using copy_tparam_t = typename detail::CopyParamTypesImpl<To, std::remove_cvref_t<From>>::type;
 
 template <std::semiregular T, class Func>
 struct accumulator {

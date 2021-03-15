@@ -20,38 +20,17 @@ struct print_result {
     }
 };
 
-void test_error() {
-    static_assert(
-        dp::parse_error<dp::default_parser_error>, "parser_error concept");
-    constexpr dp::default_parser_error err{"test error"};
-    std::cout << err << std::endl;
-}
-
 void test_paramType() {
     std::tuple<int const, std::string, double> ttup;
     using ttup_t = decltype(ttup);
     using t0 = typename dp::detail::GetParamTypeImpl<0, ttup_t>::type;
-    using t1 = dp::detail::GetParametricType<ttup_t, 1>;
-    using t2 = dp::detail::GetParametricType<ttup_t, 2>;
+    using t1 = dp::get_tparam_t<ttup_t, 1>;
+    using t2 = dp::get_tparam_t<ttup_t, 2>;
     static_assert(std::same_as<t0, int const>);
     static_assert(std::same_as<t1, std::string>);
     static_assert(std::same_as<t2, double>);
     static_assert(
-        std::same_as<dp::detail::GetParametricType<std::string, 0>, char>);
-}
-
-void test_locator() {
-    constexpr dp::index_locator<char> c_locator;
-    // TypeTracer<lvt> x;
-    auto loc = c_locator;
-    using lvt = dp::locator_value_t<decltype(loc)>;
-    static_assert(std::same_as<lvt, char>);
-    auto is_printable = dp::printable_locator<decltype(loc)>;
-    loc.increment('a');
-    static_assert(dp::locator<decltype(loc), char>, "locator");
-    std::cout << "locator index: " << loc << std::endl;
-    std::cout << "next: " << loc.next('b') << std::endl;
-    std::cout << "is printable: " << is_printable << std::endl;
+        std::same_as<dp::get_tparam_t<std::string, 0>, char>);
 }
 
 template <template <class> class Trait, class L, class R>
@@ -109,34 +88,6 @@ void test_source_result() {
 
     std::cout << *res << std::endl;
 }
-
-#if 0
-template <dp::parse_facade Facade>
-void test_parser_result() {
-    auto res = dp::make_parse_result<dp::facade_error_t<Facade>>(42);
-    std::cout << "parser_with result(" << (bool)res << "): " << *res << std::endl;
-    auto const err = dp::make_parse_result<int>(
-        dp::default_parser_error("test parser_with result"));
-    std::cout << "parser_with error(" << (bool)err << "): " << err.error()
-              << std::endl;
-    static_assert(
-        dp::parse_result_from<decltype(res), int, dp::facade_source_t<Facade>>,
-        "parse result from");
-}
-
-void test_facade() {
-    using source_t = dp::source<std::string_view>;
-    source_t src(sv);
-    dp::parser_facade_t<source_t> facade;
-    using src_t = dp::facade_source_t<decltype(facade)>;
-    using err_t = dp::facade_error_t<decltype(facade)>;
-    static_assert(std::same_as<src_t, source_t>, "facade_source_t");
-    static_assert(
-        std::same_as<err_t, dp::default_parser_error>, "facade_erro_t");
-
-    test_parser_result<decltype(facade)>();
-}
-#endif
 
 void test_accumulator() {
     constexpr auto pfun = [](std::string acc, char v) {
@@ -197,43 +148,9 @@ void test_parse() {
     std::cout << "test saved source: " << res.fmap(visitor) << std::endl;
 }
 
-#if 0
-template <dp::parser_facade Facade>
-void test_parser_result() {
-    constexpr auto x0 = to_parser_result<Facade>(42);
-    static_assert(dp::parser_success(x0), "parser_with success: x0");
-    static_assert(
-        dp::parser_result_with<decltype(x0), Facade>, "parser_with result: x0");
-    static_assert(std::is_same_v<int, dp::parser_value_t<decltype(x0)>>,
-        "parser_with result value: x0");
-}
-
-void test_facade() {
-    auto v = std::string_view("0123abc");
-    using ft = decltype(dp::make_parser_facade(v, dp::default_parser_error{}));
-    // using ft = dp::parser_facade_t<decltype(src)>;
-
-    static_assert(dp::parser_facade<ft>, "facade");
-
-    using src_t = dp::facade_source_t<ft>;
-    using err_t = dp::facade_error_t<ft>;
-    // TypeTracer<src_t, decltype(src)> x;
-    static_assert(std::is_same_v<src_t, decltype(v)>, "source type");
-    static_assert(
-        std::is_same_v<err_t, dp::default_parser_error>, "error type");
-    // TypeTracer<snd> x;
-    auto itr = std::ranges::begin(v);
-    // TypeTracer<decltype(itr), dp::source_iter_t<decltype(src)>&> x;
-    auto res = dp::peek<ft>(v, itr);
-    test_parser_result<ft>();
-}
-#endif
-
 int main(int, char**) {
     std::cout << std::boolalpha;
 
-    test_locator();
-    test_error();
     test_source();
     test_source_result();
     test_accumulator();

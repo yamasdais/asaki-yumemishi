@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <ostream>
 
-#include <parsey/detail/util.hpp>
+#include <parsey/util.hpp>
 
 namespace parsey {
 
@@ -19,8 +19,8 @@ concept locator =
 
 template <class T>
 //requires locator<T, typename T::value_type>
-requires locator<T, detail::GetParametricType<T, 0>>
- using locator_value_t = detail::GetParametricType<T, 0>;
+requires locator<T, get_tparam_t<T, 0>>
+ using locator_value_t = get_tparam_t<T, 0>;
 
 template <class T>
 concept printable_locator = locator<T, locator_value_t<T>>&& requires(
@@ -32,9 +32,7 @@ concept printable_locator = locator<T, locator_value_t<T>>&& requires(
 
 template <class T>
 struct index_locator {
-    constexpr index_locator() noexcept
-        : index{0u} {}
-    constexpr explicit index_locator(size_t index) noexcept
+    constexpr explicit index_locator(size_t index = 0u) noexcept
         : index{index} {}
     constexpr index_locator(index_locator const&) = default;
     constexpr index_locator(index_locator&&) = default;

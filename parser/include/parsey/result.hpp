@@ -10,12 +10,10 @@ namespace parsey {
 template <class T>
 concept parse_result = requires(T val) {
     typename T::value_type;
-    { static_cast<bool>(val) }
-    ->std::same_as<bool>;
-    { !val }
-    ->std::same_as<bool>;
-    {*val};
-    {val.error()};
+    { static_cast<bool>(val) } -> std::same_as<bool>;
+    { !val } -> std::same_as<bool>;
+    { *val };
+    { val.error() };
 };
 
 template <parse_result Result>
@@ -25,6 +23,34 @@ using parse_result_value_t =
 template <parse_result Result>
 using parse_result_error_t =
     std::remove_cvref_t<decltype(std::declval<Result>().error())>;
+
+// TODO: move to fwd/result.hpp
+template <class T, parse_error Error>
+struct result;
+
+template <class RetT, parse_error Error>
+struct result_error_handler {
+    constexpr auto operator()(Error const&& err) const {
+        return result<RetT, Error>{std::forward<Error>(err)};
+    }
+};
+
+template <class Func, class T, parse_error Error>
+requires std::invocable<Func, T>
+struct result_value_visitor
+    : result_error_handler<std::invoke_result_t<Func, T>, Error> {
+    using ret_t = std::invoke_result_t<Func, T>;
+    constexpr auto operator()(T v) const {
+        return result<ret_t, Error>{std::invoke(Func{}, std::move(v))};
+    }
+    using result_error_handler<ret_t, Error>::operator();
+};
+
+template <class T, parse_error Error>
+[[nodiscard]] constexpr auto make_result_visitor(std::invocable<T> auto Func) {
+    return result_value_visitor<std::remove_cvref_t<decltype(Func)>, T,
+        Error>{};
+}
 
 template <class T, parse_error Error>
 struct result {
@@ -47,9 +73,10 @@ struct result {
     constexpr auto error() const { return std::get<1>(result_value); }
 
     template <class Func>
-    requires std::same_as<std::invoke_result_t<Func, T const>,
-        std::invoke_result_t<Func, Error const>> constexpr auto
-    fmap(Func&& func) const {
+    requires std::invocable<Func, T const> && std::invocable<Func,
+        Error const> && std::same_as<std::invoke_result_t<Func, T const>,
+        std::invoke_result_t<Func, Error const>>
+    constexpr auto fmap(Func&& func) const {
         return std::visit(std::forward<Func>(func), result_value);
     }
 

@@ -15,4 +15,7 @@ using get_param_t = typename T::type;
 
 using TestCharTypes = ::testing::Types<char, char8_t, char16_t, char32_t, wchar_t>;
 
+template <class...>
+struct TTrace;
+
 }  // namespace testutil

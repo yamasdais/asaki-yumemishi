@@ -6,14 +6,15 @@
 namespace parsey {
 
 template <class Error>
-concept parse_error = std::is_nothrow_constructible_v<Error, char const*>;
+concept parse_error = std::is_nothrow_constructible_v<Error, char const*>
+&& std::is_class_v<Error>;
 
 struct default_parser_error {
     using message_type = char const*;
     char const* message;
     // work around: vscode intellisense(perhaps) claims the parser_error
     // constraint violation without this constructor
-    constexpr default_parser_error(char const* message) noexcept
+    constexpr explicit default_parser_error(char const* message) noexcept
         : message{message} {}
 
     friend std::ostream& operator<<(

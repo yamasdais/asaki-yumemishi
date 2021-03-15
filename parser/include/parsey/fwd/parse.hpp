@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-#include <parsey/detail/util.hpp>
+#include <parsey/util.hpp>
 #include <parsey/source.hpp>
 #include <parsey/result.hpp>
 
