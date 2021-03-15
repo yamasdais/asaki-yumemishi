@@ -42,7 +42,7 @@ template <class... T>
 struct ResultVisitorImpl : public ParamVisitor<T>... {
     using ParamVisitor<T>::operator()...;
     constexpr bool operator()(TestErrorType const& error) const {
-        return true;
+        return false;
     }
 };
 using ResultVisitor = dp::copy_tparam_t<ResultVisitorImpl, ResValueTypes>;
@@ -59,21 +59,19 @@ TYPED_TEST(ParseResult, CtorValue) {
     using result_t = typename TestFixture::result_type;
     using value_t = dp::parse_result_value_t<result_t>;
     constexpr ResultVisitorImpl<value_t> visitor;
-    //testutil::TTrace<decltype(visitor)> t;
     constexpr result_t res = ctor_sample_result<result_t, value_t>();
     ASSERT_TRUE(res);
+    ASSERT_TRUE(ParamVisitor<value_t>{}(*res));
+    // visitor
     auto rvisited = res.fmap(visitor);
     static_assert(std::same_as<bool, decltype(rvisited)>, "visited result type");
-    ASSERT_TRUE(ParamVisitor<value_t>{}(*res));
+    ASSERT_TRUE(rvisited);
     auto rv = dp::make_result_visitor<value_t, TestErrorType>(visitor);
-    //testutil::TTrace<decltype(rv)> t;
-    auto v = rv(std::get<value_t>(samples));
+    ASSERT_TRUE(rv(std::get<value_t>(samples)));
 
-
-    //res.fmap(visitor);
-    //constexpr result_t res0 = dp::make_parse_result<typename TestFixture::error_type>(*res);
-    //ASSERT_TRUE(res0);
-    //ASSERT_EQ(*res, *res0);
+    constexpr result_t res0 = dp::make_parse_result<typename TestFixture::error_type>(*res);
+    ASSERT_TRUE(res0);
+    ASSERT_EQ(*res, *res0);
 }
 
 TYPED_TEST(ParseResult, CtorError) {
@@ -82,7 +80,10 @@ TYPED_TEST(ParseResult, CtorError) {
     using error_t = dp::parse_result_error_t<result_t>;
     constexpr char const* msg = "test error message";
     constexpr result_t res{error_t{msg}};
+    constexpr ResultVisitorImpl<value_t> visitor;
     ASSERT_FALSE(res);
+    auto rvisited = res.fmap(visitor);
+    ASSERT_FALSE(rvisited);
     constexpr result_t res0 = dp::make_parse_result<value_t>(error_t{msg});
     ASSERT_FALSE(res0);
 }

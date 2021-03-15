@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <concepts>
 #include <variant>
 
@@ -28,27 +29,29 @@ using parse_result_error_t =
 template <class T, parse_error Error>
 struct result;
 
-template <class RetT, parse_error Error>
+template <class RetT, parse_error Error, std::invocable<Error> ErrCnv>
 struct result_error_handler {
     constexpr auto operator()(Error const&& err) const {
-        return result<RetT, Error>{std::forward<Error>(err)};
+        return result<RetT, Error>{ErrCnv{}(std::forward<Error>(err))};
     }
 };
 
-template <class Func, class T, parse_error Error>
+template <class T, std::invocable<T> Func, parse_error Error,
+    std::invocable<Error> ErrCnv = std::identity>
 requires std::invocable<Func, T>
 struct result_value_visitor
-    : result_error_handler<std::invoke_result_t<Func, T>, Error> {
+    : result_error_handler<std::invoke_result_t<Func, T>, Error, ErrCnv> {
     using ret_t = std::invoke_result_t<Func, T>;
     constexpr auto operator()(T v) const {
         return result<ret_t, Error>{std::invoke(Func{}, std::move(v))};
     }
-    using result_error_handler<ret_t, Error>::operator();
+    using result_error_handler<ret_t, Error, ErrCnv>::operator();
 };
 
 template <class T, parse_error Error>
-constexpr auto make_result_visitor(std::invocable<T> auto Func) {
-    return result_value_visitor<std::remove_cvref_t<decltype(Func)>, T,
+constexpr auto make_result_visitor(std::invocable<T> auto&& func) requires
+    std::invocable<std::remove_cvref_t<decltype(func)>, T> {
+    return result_value_visitor<T, std::remove_cvref_t<decltype(func)>,
         Error>{};
 }
 
@@ -76,6 +79,10 @@ struct result {
     requires std::invocable<Func, T const> && std::invocable<Func,
         Error const> && std::same_as<std::invoke_result_t<Func, T const>,
         std::invoke_result_t<Func, Error const>>
+        && requires(Func f, result_type r) {
+            {std::visit(f, r)}
+                ->std::convertible_to<std::invoke_result_t<Func, T const>>;
+        }
     constexpr auto fmap(Func&& func) const {
         return std::visit(std::forward<Func>(func), result_value);
     }
