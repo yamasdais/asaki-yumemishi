@@ -41,8 +41,8 @@ struct source {
     using iterator_type = std::ranges::iterator_t<Range>;
     using sentinel_type = std::ranges::sentinel_t<Range>;
     using iterator_concept = std::forward_iterator_tag;
-    using range_iter_concept =
-        typename std::iterator_traits<iterator_type>::iterator_concept;
+    //using range_iter_concept =
+    //    typename std::iterator_traits<iterator_type>::iterator_concept;
 
     constexpr source() = default;
     constexpr source(source const& other) requires std::copyable<

@@ -47,7 +47,7 @@ struct result_value_visitor
 };
 
 template <class T, parse_error Error>
-[[nodiscard]] constexpr auto make_result_visitor(std::invocable<T> auto Func) {
+constexpr auto make_result_visitor(std::invocable<T> auto Func) {
     return result_value_visitor<std::remove_cvref_t<decltype(Func)>, T,
         Error>{};
 }
