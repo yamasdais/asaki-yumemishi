@@ -5,6 +5,8 @@
 #include <concepts>
 #include <type_traits>
 #include <variant>
+#include <ranges>
+#include <algorithm>
 
 #include <parsey/result.hpp>
 #include <parsey/error.hpp>
@@ -35,13 +37,12 @@ struct ParamVisitor {
     constexpr bool operator()(T const& v) const {
         auto sample = get_sample_value<T>();
         static_assert(std::same_as<T, decltype(sample)>, "result value type");
-#ifdef _MSC_VER
-        return true;
-#else
-        return sample == v;
-#endif
+        // work around for Visual studio bug.
+        //return sample == v;
+        return testutil::CheckEqualVal(sample, v);
     }
 };
+
 template <class... T>
 struct ResultVisitorImpl : public ParamVisitor<T>... {
     using ParamVisitor<T>::operator()...;
@@ -76,9 +77,7 @@ TYPED_TEST(ParseResult, CtorValue) {
 
     constexpr result_t res0 = dp::make_parse_result<typename TestFixture::error_type>(*res);
     ASSERT_TRUE(res0);
-#ifndef _MSC_VER
-    ASSERT_EQ(*res, *res0);
-#endif
+    ASSERT_TRUE(testutil::CheckEqualVal(*res, *res0));
 }
 
 TYPED_TEST(ParseResult, CtorError) {
