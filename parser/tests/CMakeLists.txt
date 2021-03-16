@@ -26,14 +26,11 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  EXCLUDE_FROM_ALL)
 
 find_package(Threads REQUIRED)
-#find_package(GTest REQUIRED)
 
 include(GoogleTest)
 
 file(GLOB srcs test*.cxx)
 add_executable(runTest ${srcs})
-target_include_directories(runTest
-    PRIVATE ${GTEST_INCLUDE_DIR})
 target_link_libraries(runTest
     Threads::Threads
     gtest_main

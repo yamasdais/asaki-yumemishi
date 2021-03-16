@@ -10,9 +10,7 @@ __This is not useful yet__
 ==== Can compile
 * g++ 10
 * clang++-11
-
-==== Cannot compile
-* [.line-through]#clang++13, reports error passing lamda expression to non-type template parameter# => Made some work arounds.
+* Visual C++ 2019
 
 == Build
 
