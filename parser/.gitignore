@@ -1,3 +1,5 @@
 build/
 clang.build/
 external/
+.vs/
+CMakeSettings.json

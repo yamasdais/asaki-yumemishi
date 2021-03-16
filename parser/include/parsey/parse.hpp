@@ -33,9 +33,6 @@ constexpr auto letter(std::integral auto refCh) noexcept {
 }
 
 // combinators
-constexpr auto concat(auto&& func, auto&&... parsers) {
-
-}
 
 }  // namespace pieces
 
