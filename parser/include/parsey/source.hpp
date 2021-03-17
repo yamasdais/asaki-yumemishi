@@ -16,9 +16,9 @@ concept parse_source = requires(Source& src) {
     typename Source::input_value_type;
     typename Source::error_type;
     typename Source::value_type;
-    {*src} -> std::convertible_to<result<typename Source::input_value_type,
-                typename Source::error_type>>;
-    {++src};
+    { *src } -> std::convertible_to<result<typename Source::input_value_type,
+                    typename Source::error_type>>;
+    { ++src };
 }
 &&std::forward_iterator<Source>&& parse_error<typename Source::error_type>;
 
@@ -41,8 +41,8 @@ struct source {
     using iterator_type = std::ranges::iterator_t<Range>;
     using sentinel_type = std::ranges::sentinel_t<Range>;
     using iterator_concept = std::forward_iterator_tag;
-    //using range_iter_concept =
-    //    typename std::iterator_traits<iterator_type>::iterator_concept;
+    // using range_iter_concept =
+    //     typename std::iterator_traits<iterator_type>::iterator_concept;
 
     constexpr source() = default;
     constexpr source(source const& other) requires std::copyable<
@@ -80,13 +80,28 @@ struct source {
         return *this;
     }
 
+    constexpr friend inline bool operator==(
+        source const& l, source const& r) noexcept {
+        return l.current == r.current;
+    }
+    constexpr friend inline bool operator!=(
+        source const& l, source const& r) noexcept {
+        return l.current != r.current;
+    }
     constexpr friend inline auto operator-(
-        const source& l, const source& r) noexcept {
+        source const& l, source const& r) noexcept {
         return l.current - r.current;
     }
 
   private:
     constexpr void next() {
+        if (current == sentinel) {
+            if (std::is_constant_evaluated()) {
+                static_assert([]() { return false; }, "out of range");
+            } else {
+                throw std::range_error("out of range: source::next()");
+            }
+        }
         locator.increment(*current);
         ++current;
     }

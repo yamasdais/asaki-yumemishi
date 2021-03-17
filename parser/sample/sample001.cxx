@@ -37,57 +37,6 @@ template <template <class> class Trait, class L, class R>
 struct CheckIterTraits {
     static_assert(std::same_as<Trait<L>, Trait<R>>);
 };
-void test_source() {
-    using source_t = dp::source<std::string_view>;
-    constexpr source_t orig{sv};
-    source_t source(orig);
-    static_assert(std::is_nothrow_default_constructible_v<source_t>,
-        "nothrow default constructible");
-    static_assert(std::is_nothrow_copy_constructible_v<source_t>,
-        "nothrow copy constructible");
-    static_assert(std::is_nothrow_move_constructible_v<source_t>,
-        "nothrow move constructible");
-    // constexpr source_t def;
-    using sv_iter_t = std::ranges::iterator_t<decltype(sv)>;
-    // static_assert(std::same_as<std::iter_difference_t<source_t>,
-    // std::iter_difference_t<sv_iter_t>>, "iter_difference_t"); using
-    // sv_value_t = std::iter_value_t<sv_iter_t>;
-    CheckIterTraits<std::iter_difference_t, source_t, sv_iter_t>{};
-    static_assert(std::same_as<std::iter_value_t<sv_iter_t>,
-                      std::iter_value_t<sv_iter_t>>,
-        "iter_value_t");
-    // CheckIterTraits<std::iter_reference_t, source_t, sv_iter_t>{};
-    // CheckIterTraits<std::iter_rvalue_reference_t, source_t, sv_iter_t>{};
-    static_assert(std::forward_iterator<source_t>, "is forward");
-    // static_assert(std::same_as<std::iter_value_t<source_t>,
-    // std::iter_value_t<std::string_view>>, "iter_value_t");
-    std::cout << "Is source: "
-              << dp::parse_source<decltype(source)> << std::endl;
-
-    std::cout << "operator**: " << **source << std::endl;
-    source_t saved = source;
-    ++source;
-    ++source;
-    std::cout << "operator**(+2): " << **source << std::endl;
-    std::cout << "operator**(saved): " << **saved << std::endl;
-    std::cout << "source - saved:" << (source - saved) << std::endl;
-}
-
-void test_source_result() {
-    using source_t = dp::source<std::string_view>;
-    source_t const source(sv);
-    auto res = *source;
-
-    using res_t = decltype(res);
-    static_assert(dp::parse_result<res_t>, "parse result");
-    static_assert(std::same_as<dp::parse_result_value_t<res_t>, char>,
-        "parse_result_value_t");
-    static_assert(std::same_as<dp::parse_result_error_t<res_t>,
-                      dp::parse_source_error_t<source_t>>,
-        "parse_result_error_t");
-
-    std::cout << *res << std::endl;
-}
 
 void test_accumulator() {
     constexpr auto pfun = [](std::string acc, char v) {
@@ -151,14 +100,8 @@ void test_parse() {
 int main(int, char**) {
     std::cout << std::boolalpha;
 
-    test_source();
-    test_source_result();
     test_accumulator();
     test_parse();
-
-#ifdef __clang_major__
-    std::cout << "__clang_major__" << __clang_major__ << std::endl;
-#endif
 
     return 0;
 }

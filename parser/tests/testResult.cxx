@@ -16,7 +16,7 @@
 
 namespace dp = parsey;
 
-constexpr inline static auto samples = std::tuple('a', 42, (char const*)"foo");
+constexpr static auto samples = std::tuple('a', 42, (char const*)"foo");
 using ResValueTypes = decltype(samples);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
 using TestErrorType = dp::default_parser_error;
@@ -63,7 +63,10 @@ TYPED_TEST_SUITE(ParseResult, TestValueTypes);
 TYPED_TEST(ParseResult, CtorValue) {
     using result_t = typename TestFixture::result_type;
     using value_t = dp::parse_result_value_t<result_t>;
+    value_t sample_val = std::get<value_t>(samples);
     constexpr ResultVisitorImpl<value_t> visitor;
+    auto err = dp::default_parser_error{"foo error"};
+    //testutil::TTrace<decltype(altvis_ret), decltype(visitor)> x;
     constexpr result_t res = ctor_sample_result<result_t, value_t>();
     ASSERT_TRUE(res);
     auto resv = *res;
@@ -73,7 +76,7 @@ TYPED_TEST(ParseResult, CtorValue) {
     static_assert(std::same_as<bool, decltype(rvisited)>, "visited result type");
     ASSERT_TRUE(rvisited);
     auto rv = dp::make_result_visitor<value_t, TestErrorType>(visitor);
-    ASSERT_TRUE(rv(std::get<value_t>(samples)));
+    ASSERT_TRUE(rv(sample_val));
 
     constexpr result_t res0 = dp::make_parse_result<typename TestFixture::error_type>(*res);
     ASSERT_TRUE(res0);

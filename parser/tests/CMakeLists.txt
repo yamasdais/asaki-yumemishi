@@ -37,9 +37,9 @@ target_link_libraries(runTest
     )
 
 if(MSVC)
-    add_compile_options(/W4)
+    add_compile_options(/W4 /WX)
 else()
-    add_compile_options(-Wall -Wextra -pedantic)
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
 gtest_discover_tests(runTest)

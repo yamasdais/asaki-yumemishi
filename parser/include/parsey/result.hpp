@@ -31,7 +31,7 @@ struct result;
 
 template <class RetT, parse_error Error, std::invocable<Error> ErrCnv>
 struct result_error_handler {
-    constexpr auto operator()(Error const&& err) const {
+    constexpr auto operator()(Error&& err) const {
         return result<RetT, Error>{ErrCnv{}(std::forward<Error>(err))};
     }
 };
@@ -87,6 +87,11 @@ struct result {
         return std::visit(std::forward<Func>(func), result_value);
     }
 
+    template <class Func>
+    requires std::invocable<Func, T const> && std::invocable<Func, Error const>
+    constexpr inline friend auto visit(Func&& func, result const& r) {
+        return std::visit(std::forward<Func>(func), r.result_value);
+    }
   private:
     result_type result_value;
 };
