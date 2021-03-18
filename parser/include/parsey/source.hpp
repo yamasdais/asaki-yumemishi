@@ -67,7 +67,8 @@ struct source {
 
     constexpr auto operator*() const noexcept(noexcept(*this->current)) {
         using ret_t = result<input_value_type, Error>;
-        return (*this) ? ret_t{*current} : ret_t{Error{"out of range"}};
+        return (*this) ? ret_t{*current}
+                       : ret_t{Error{"out of range", severity_t::end}};
     }
 
     constexpr source operator++(int) {

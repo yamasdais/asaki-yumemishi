@@ -85,6 +85,7 @@ TYPED_TEST(ParseSource, Increment) {
     v = *++src;
     ASSERT_FALSE(src);
     ASSERT_FALSE(visit(vis, v));
+    ASSERT_TRUE(v.error().severity() == dp::severity_t::end);
     ASSERT_THROW(++src, std::range_error);
 }
 

@@ -60,6 +60,25 @@ struct ParseResult : public ::testing::Test {
 
 TYPED_TEST_SUITE(ParseResult, TestValueTypes);
 
+TYPED_TEST(ParseResult, Utils) {
+    using result_t = typename TestFixture::result_type;
+    using value_t = dp::parse_result_value_t<result_t>;
+    using err_t = dp::parse_result_error_t<result_t>;
+    value_t sample_val = std::get<value_t>(samples);
+    auto v2r = [](value_t v) {
+        return dp::make_parse_result<err_t>(v);
+    };
+    auto e2r = [](err_t&& err) {
+        return dp::make_parse_result<value_t>(std::forward<err_t>(err));
+    };
+    auto e2rc = [](err_t const& err) {
+        return dp::make_parse_result<value_t>(err);
+    };
+    static_assert(dp::parse_value_to_result<decltype(v2r), value_t>, "parse_value_to_result");
+    static_assert(dp::parse_value_to_result<decltype(e2r), err_t&&>, "parse_value_to_result");
+    static_assert(dp::parse_value_to_result<decltype(e2rc), err_t const&>, "parse_value_to_result");
+}
+
 TYPED_TEST(ParseResult, CtorValue) {
     using result_t = typename TestFixture::result_type;
     using value_t = dp::parse_result_value_t<result_t>;
@@ -75,8 +94,8 @@ TYPED_TEST(ParseResult, CtorValue) {
     auto rvisited = res.fmap(visitor);
     static_assert(std::same_as<bool, decltype(rvisited)>, "visited result type");
     ASSERT_TRUE(rvisited);
-    auto rv = dp::make_result_visitor<value_t, TestErrorType>(visitor);
-    ASSERT_TRUE(rv(sample_val));
+    //auto rv = dp::make_result_visitor<value_t, TestErrorType>(visitor);
+    //ASSERT_TRUE(rv(sample_val));
 
     constexpr result_t res0 = dp::make_parse_result<typename TestFixture::error_type>(*res);
     ASSERT_TRUE(res0);

@@ -18,6 +18,10 @@ using get_tparam_t = typename detail::GetParamTypeImpl<I, std::remove_cvref_t<T>
 template <template <class...> class To, class From>
 using copy_tparam_t = typename detail::CopyParamTypesImpl<To, std::remove_cvref_t<From>>::type;
 
+template <class Func, class... Args>
+concept lambda_nocapture = std::invocable<Func, Args...>
+&& std::is_class_v<Func> && std::default_initializable<Func>;
+
 template <std::semiregular T, class Func>
 struct accumulator {
     using value_type = T;

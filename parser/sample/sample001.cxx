@@ -61,6 +61,22 @@ void test_accumulator() {
     std::cout << *fmpres << std::endl;
 }
 void test_parse() {
+    int cap_foo = 42;
+    auto lmb = [](){};
+    auto lmb_cap = [cap_foo](){ return cap_foo; };
+    using lmb_t = decltype(lmb);
+    using lmb_cap_t = decltype(lmb_cap);
+    using fp_t = decltype(test_accumulator);
+    static_assert(std::invocable<lmb_t>, "invocable");
+    static_assert(std::invocable<lmb_cap_t>, "invocable");
+    static_assert(std::invocable<fp_t>, "invocable");
+    static_assert(std::is_class_v<lmb_t>, "class");
+    static_assert(std::is_class_v<lmb_cap_t>, "class");
+    static_assert(!std::is_class_v<fp_t>, "not class");
+    static_assert(dp::lambda_nocapture<lmb_t>, "lambda nocapture");
+    static_assert(!dp::lambda_nocapture<lmb_cap_t>, "!lambda nocapture");
+    static_assert(!dp::lambda_nocapture<fp_t>, "!lambda_nocapture");
+    static_assert(dp::lambda_nocapture<std::identity, int>, "lambda nocapture");
     using source_t = dp::source<std::string_view>;
     source_t src(sv);
     source_t saved(sv);
