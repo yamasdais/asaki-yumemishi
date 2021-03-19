@@ -9,25 +9,9 @@
 #include <parsey/locator.hpp>
 #include <parsey/result.hpp>
 
+#include <parsey/fwd/source.hpp>
+
 namespace parsey {
-
-template <class Source>
-concept parse_source = requires(Source& src) {
-    typename Source::input_value_type;
-    typename Source::error_type;
-    typename Source::value_type;
-    { *src } -> std::convertible_to<result<typename Source::input_value_type,
-                    typename Source::error_type>>;
-    { ++src };
-}
-&&std::forward_iterator<Source>&& parse_error<typename Source::error_type>;
-
-template <parse_source T>
-using parse_source_error_t = typename T::error_type;
-template <parse_source T>
-using parse_source_input_value_t = typename T::input_value_type;
-template <parse_source T>
-using parse_source_result_t = typename T::value_type;
 
 template <std::ranges::forward_range Range,
     locator<std::iter_value_t<Range>> Locator =

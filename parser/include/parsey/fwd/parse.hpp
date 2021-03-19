@@ -3,8 +3,8 @@
 #include <concepts>
 
 #include <parsey/util.hpp>
-#include <parsey/source.hpp>
-#include <parsey/result.hpp>
+#include <parsey/fwd/result.hpp>
+#include <parsey/fwd/source.hpp>
 
 namespace parsey {
 
