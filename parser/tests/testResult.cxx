@@ -134,7 +134,9 @@ TYPED_TEST(ParseResult, VisitorValue) {
     constexpr result_t res = ctor_sample_result<result_t, value_t>();
     // attempt captured lambda
     constexpr auto handler = [sample_val](value_t val) {
-        return dp::result<bool, error_t>{sample_val == val};
+        return dp::result<bool, error_t>{
+            testutil::CheckEqualVal(sample_val, val)
+        };
     };
     constexpr auto visitor = dp::make_result_visitor(res, handler);
     using vis_t = std::remove_cvref_t<decltype(visitor)>;
