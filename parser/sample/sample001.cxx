@@ -38,45 +38,7 @@ struct CheckIterTraits {
     static_assert(std::same_as<Trait<L>, Trait<R>>);
 };
 
-void test_accumulator() {
-    constexpr auto pfun = [](std::string acc, char v) {
-        return std::move(acc.append(1, v));
-    };
-    constexpr auto pfun0 = [](std::string& acc, char v) {
-        acc.append(1, v);
-    };
-    static_assert(
-        std::invocable<decltype(pfun), std::string, char>, "invocable");
-    static_assert(
-        std::invocable<decltype(pfun0), std::string&, char>, "invocable");
-    static_assert(
-        std::same_as<std::invoke_result_t<decltype(pfun0), std::string&, char>,
-            void>,
-        "invoke_result_t");
-
-    auto f = dp::make_accumulator<std::basic_string, char>(pfun0);
-    f('a')('b');
-    std::cout << "accumulator: " << *f << std::endl;
-    auto fmpres = f.fmap<std::string>(std::identity{});
-    std::cout << *fmpres << std::endl;
-}
 void test_parse() {
-    int cap_foo = 42;
-    auto lmb = [](){};
-    auto lmb_cap = [cap_foo](){ return cap_foo; };
-    using lmb_t = decltype(lmb);
-    using lmb_cap_t = decltype(lmb_cap);
-    using fp_t = decltype(test_accumulator);
-    static_assert(std::invocable<lmb_t>, "invocable");
-    static_assert(std::invocable<lmb_cap_t>, "invocable");
-    static_assert(std::invocable<fp_t>, "invocable");
-    static_assert(std::is_class_v<lmb_t>, "class");
-    static_assert(std::is_class_v<lmb_cap_t>, "class");
-    static_assert(!std::is_class_v<fp_t>, "not class");
-    static_assert(dp::lambda_nocapture<lmb_t>, "lambda nocapture");
-    static_assert(!dp::lambda_nocapture<lmb_cap_t>, "!lambda nocapture");
-    static_assert(!dp::lambda_nocapture<fp_t>, "!lambda_nocapture");
-    static_assert(dp::lambda_nocapture<std::identity, int>, "lambda nocapture");
     using source_t = dp::source<std::string_view>;
     source_t src(sv);
     source_t saved(sv);
@@ -116,7 +78,6 @@ void test_parse() {
 int main(int, char**) {
     std::cout << std::boolalpha;
 
-    test_accumulator();
     test_parse();
 
     return 0;

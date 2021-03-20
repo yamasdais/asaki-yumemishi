@@ -1,20 +1,20 @@
 = Parsey
 
-Yet another Parsec style parser for C++.
-__This is not useful yet__
+Yet another parser combinator style parser for C++, respects Parsec(Haskell) and Sprache(C#)
+__There is nothing useful for other people yet__
 
 == Requirement
 
 === C++20 compiler
 
-==== Can compile
+==== I aim for compiling with following compilers
 * g++ 10
 * clang++-11
 * Visual C++ 2019
 
 == Build
 
-=== GCC
+=== GCC (or your 'cc' command)
 [source,shell]
 ----
 mkdir build; cd build
@@ -24,6 +24,10 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 === Clang
 [source,shell]
 ----
+vi clang.cmake  # specify clang++ compiler path
 mkdir clang.build; cd clang.build
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11 ..
+cmake -DCMAKE_BUILD_TYPE=Debug -C ../clang.cmake ..
 ----
+
+=== License
+Boost license.

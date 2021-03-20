@@ -9,7 +9,7 @@
 
 namespace parsey {
 
-// meta programming category
+// Category: meta programming
 
 
 template <class T, std::size_t I>
@@ -64,42 +64,11 @@ struct accumulator {
 };
 
 template <template <class...> class ParamT, class T>
-auto make_accumulator = [](auto&&func) requires std::invocable<decltype(func),
+constexpr auto make_accumulator = [](auto&&func) requires std::invocable<decltype(func),
                             ParamT<T>, T> || std::invocable < decltype(func),
      ParamT<T>
 &, T > {
     return accumulator(ParamT<T>{}, (decltype(func))func);
 };
 
-template <std::semiregular T, auto func>
-struct associator0 {
-    using function_type = decltype(func);
-    constexpr explicit associator0() = default;
-    constexpr explicit associator0(T&& v) noexcept
-        : val{std::forward<T>(v)} {}
-
-    template <class Arg>
-    constexpr void operator()(Arg v) requires(
-        std::invocable<function_type, T,
-            Arg> || std::invocable<function_type, T&, Arg>) {
-        if constexpr (std::invocable<function_type, T, Arg>) {
-            static_assert(
-                std::convertible_to<std::invoke_result_t<function_type, T, Arg>,
-                    T>,
-                "return type unmatch");
-            val = std::move(std::invoke(func, std::move(val), v));
-        } else {
-            std::invoke(func, val, v);
-        }
-    }
-
-    constexpr T& get() & noexcept { return val; }
-
-    constexpr T const& get() const& noexcept { return val; }
-
-    constexpr T get() && noexcept { return std::move(val); }
-
-  private:
-    T val;
-};
 }  // namespace parsey
