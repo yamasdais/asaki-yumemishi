@@ -37,4 +37,16 @@ concept parse_result_with = parse_result<Result>  // result
 template <class T, parse_error Error>
 requires(!parse_error<T>) struct result;
 
+template <parse_error Error>
+constexpr inline auto make_parse_result(auto value) requires(
+    !parse_error<std::remove_cvref_t<decltype(value)>>);
+
+template <class T>
+requires(!parse_error<T>) constexpr inline auto make_parse_result(
+    parse_error auto error);
+
+template <class T, std::invocable<T> Conv>
+struct result_value_handler;
+
+
 }  // namespace parsey
