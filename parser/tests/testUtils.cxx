@@ -80,7 +80,8 @@ TYPED_TEST(UtilAccumulator, Char2Str) {
     auto res = *appender;
     // clang++(and libstdc++-10) cannot compile this for statement
     //for (auto idx : std::views::iota(0ul, res.length())) {
-    for (auto idx = 0ul, end = res.length(); idx != end; ++idx) {
+    ASSERT_EQ(sizeof(chars) / sizeof(ch_t), res.length());
+    for (decltype(res.length()) idx = 0ul, end = res.length(); idx != end; ++idx) {
         ASSERT_EQ(chars[idx], res[idx]);
     }
 }
