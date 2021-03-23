@@ -48,3 +48,31 @@ TYPED_TEST(Parse0, Any) {
     ASSERT_TRUE(srcret);
     ASSERT_EQ(static_cast<ch_t>('b'), *srcret);
 }
+
+TYPED_TEST(Parse0, Satisfy) {
+    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    auto src = TestFixture::make_source();
+    using source_t = decltype(src);
+    ASSERT_TRUE(src);
+    auto lower = dp::satisfy("lower", [](std::integral auto ch) {
+        return dp::detail::isAlphaLower(ch);
+    });
+    auto upper = dp::satisfy("upper", [](std::integral auto ch) {
+        return dp::detail::isAlphaUpper(ch);
+    });
+    static_assert(dp::parser_with<decltype(lower), source_t>, "lower parser with");
+    static_assert(dp::parser_with<decltype(upper), source_t>, "upper parser with");
+    auto res = lower(src);
+    ASSERT_TRUE(res);
+    ASSERT_EQ(static_cast<ch_t>('a'), *res);
+    ASSERT_TRUE(src);
+    res = upper(src);
+    ASSERT_FALSE(res);
+    ASSERT_EQ(dp::severity_t::fail, res.error().severity());
+    ASSERT_TRUE(src);
+    ASSERT_EQ(static_cast<ch_t>('c'), **src);
+    res = lower(src);
+    ASSERT_TRUE(res);
+    ASSERT_EQ(static_cast<ch_t>('c'), *res);
+    ASSERT_FALSE(src);
+}

@@ -8,6 +8,9 @@
 
 namespace parsey {
 
+struct parser_tag {};
+struct scan_source_parser_tag : public parser_tag {};
+
 template <class Result, class T, class Source>
 concept parse_result_from =
     parse_source<Source>&& std::convertible_to<parse_result_value_t<Result>,

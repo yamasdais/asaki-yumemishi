@@ -22,6 +22,39 @@ template <class Func, class... Args>
 concept lambda_nocapture = std::invocable<Func, Args...>
 && std::is_class_v<Func> && std::default_initializable<Func>;
 
+template <class Func>
+struct invocable_holder {
+    constexpr invocable_holder(Func const& func)
+    : func{func} {}
+    constexpr invocable_holder(Func&& func)
+    : func{std::forward<Func>(func)} {}
+
+    template <class... Args>
+    requires std::invocable<Func, Args...>
+    constexpr auto operator()(Args&& ...args) const & {
+        return std::invoke(func, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    constexpr auto operator()(Args&& ...args) && {
+        return std::invoke(std::move(func), std::forward<Args>(args)...);
+    }
+  private:
+    Func func;
+};
+template <class Func>
+requires std::is_class_v<Func> && std::default_initializable<Func>
+struct invocable_holder<Func> {
+    constexpr invocable_holder(Func const&) {}
+    constexpr invocable_holder(Func&&) {}
+
+    template <class... Args>
+    requires std::invocable<Func, Args...>
+    constexpr auto operator()(Args&& ...args) const {
+        return std::invoke(Func{}, std::forward<Args>(args)...);
+    }
+};
+
 template <std::semiregular T, class Func>
 struct accumulator {
     using value_type = T;

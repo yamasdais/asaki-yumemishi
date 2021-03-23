@@ -9,7 +9,7 @@
 #include <parsey/locator.hpp>
 #include <parsey/result.hpp>
 
-#include <parsey/fwd/source.hpp>
+#include <parsey/detail/source.hpp>
 
 namespace parsey {
 
@@ -52,7 +52,7 @@ struct source {
     constexpr auto operator*() const noexcept(noexcept(*this->current)) {
         using ret_t = result<input_value_type, Error>;
         return (*this) ? ret_t{*current}
-                       : ret_t{Error{"out of range", severity_t::end}};
+                       : ret_t{Error{"end of range", severity_t::end}};
     }
 
     constexpr source operator++(int) {
@@ -78,6 +78,24 @@ struct source {
         return l.current - r.current;
     }
 
+    constexpr auto consume() {
+        auto ret = *(*this);
+        if (*this)
+            next();
+        return ret;
+    }
+
+    template <class Func>
+    requires std::invocable<Func, input_value_type> && std::invocable<Func,
+        error_type>
+    constexpr auto fmap(Func&& func) {
+        if (current == sentinel)
+            return std::invoke(std::forward<Func>(func), Error{"end of range", severity_t::end});
+        input_value_type const v = *current;
+        next();
+        return std::invoke(std::forward<Func>(func), std::move(v));
+    }
+
   private:
     constexpr void next() {
         if (current == sentinel) {
@@ -94,5 +112,15 @@ struct source {
     sentinel_type sentinel;
     Locator locator;
 };
+
+template <parse_source Source>
+constexpr auto make_source_result_visitor(auto&& func)
+    requires std::invocable<decltype(func),
+            parse_source_input_value_t<Source>>
+        && parse_result<std::invoke_result_t<decltype(func),
+           parse_source_input_value_t<Source>>> {
+    return detail::SourceResultVisitor<
+        std::remove_cvref_t<decltype(func)>, Source>{(decltype(func))func};
+}
 
 }  // namespace parsey

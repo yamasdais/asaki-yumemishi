@@ -12,16 +12,22 @@
 
 namespace parsey {
 
-struct parser {
-
-};
+constexpr inline static detail::satisfy_fn satisfy{};
 
 namespace pieces {
 constexpr inline static detail::any_fn any{};
 
+#if 1
 constexpr inline static auto lower = detail::liftPredImpl(
     [](std::integral auto ch) { return detail::isAlphaLower(ch); },
     "lower alphabet");
+#else
+constexpr inline static auto lower = satisfy(
+    "lower alphabet", [](std::integral auto ch) {
+        return detail::isAlphaLower(ch);
+    });
+#endif
+
 
 constexpr inline static auto upper = detail::liftPredImpl(
     [](std::integral auto ch) { return detail::isAlphaUpper(ch); },

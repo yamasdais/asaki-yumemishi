@@ -7,7 +7,8 @@ namespace parsey::detail {
 
 // Getting parameter type with the parameter index.
 // GetParametricType<type, index>
-// ex [type: std::string, index: 0] => char, because string is basic_string<char>
+// ex [type: std::string, index: 0] => char, because string is
+// basic_string<char>
 template <class... Args>
 struct TypeHolderImpl {};
 
@@ -31,7 +32,8 @@ struct GetParamTypeImpl<I, T<Head, Args...>> {
 template <template <class...> class To, class From>
 struct CopyParamTypesImpl;
 
-template <template <class...> class To, template <class...> class From, class... Args>
+template <template <class...> class To, template <class...> class From,
+    class... Args>
 struct CopyParamTypesImpl<To, From<Args...>> {
     using type = To<Args...>;
 };

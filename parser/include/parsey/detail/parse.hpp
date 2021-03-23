@@ -12,8 +12,25 @@
 
 namespace parsey::detail {
 
-struct ParserImpl {
+template <parse_source Source, class Visitor>
+requires std::invocable<Visitor, parse_source_input_value_t<Source>>
+&& parse_result<std::invoke_result_t<Visitor, parse_source_input_value_t<Source>>>
+&& std::invocable<Visitor, parse_source_error_t<Source>>
+&& parse_result<std::invoke_result_t<Visitor, parse_source_error_t<Source>>>
+struct PreparedSourceParser {
+    constexpr PreparedSourceParser(Visitor const& visitor)
+        : visitor{visitor} {}
+    constexpr PreparedSourceParser(Visitor&& visitor)
+        : visitor{std::forward<Visitor>(visitor)} {}
 
+    constexpr auto operator()(Source& source) const& {
+        return source.fmap(visitor);
+    }
+    constexpr auto operator()(Source& source) && {
+        return source.fmap(std::move(visitor));
+    }
+  protected:
+    Visitor visitor;
 };
 
 constexpr bool isAlphaLower(std::integral auto ch) noexcept {
@@ -24,12 +41,28 @@ constexpr bool isAlphaUpper(std::integral auto ch) noexcept {
 }
 
 struct any_fn {
+    using parser_concept = scan_source_parser_tag;
     template <parse_source Source>
     constexpr auto operator()(Source& src) const {
-        auto const val{*src};
-        if (val)
-            ++src;
-        return val;
+        return src.consume();
+    }
+};
+
+struct satisfy_fn {
+    template <class Func>
+    constexpr auto operator()(char const* message, Func&& func) const {
+        return [message, func = std::forward<Func>(func)]<parse_source Source>(
+            Source & src) requires parse_trait<Func, Source> && std::predicate<Func,
+            parse_source_input_value_t<Source>> {
+            using ret_t = result<parse_source_input_value_t<Source>,
+                parse_source_error_t<Source>>;
+            return src.fmap(make_source_result_visitor<Source>([message, func](
+                         parse_source_input_value_t<Source> const& val) {
+                return std::invoke(func, val)
+                         ? ret_t{val}
+                         : ret_t{parse_source_error_t<Source>{message}};
+            }));
+        };
     }
 };
 
@@ -67,8 +100,7 @@ struct foldAll_fn {
             Source & src) requires parser_with<ParserH, Source> && std::
             convertible_to<std::invoke_result_t<Func, Init,
                                parser_return_value_t<ParserH, Source>>,
-                Init>
-            &&(parser_with<ParserT, Source> && ...) {
+                Init> &&(parser_with<ParserT, Source> && ...) {
             return opparen_impl(src, func_, val, message, head_, prs_...);
         };
     }

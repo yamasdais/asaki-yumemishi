@@ -20,17 +20,14 @@ struct print_result {
     }
 };
 
-void test_paramType() {
-    std::tuple<int const, std::string, double> ttup;
-    using ttup_t = decltype(ttup);
-    using t0 = typename dp::detail::GetParamTypeImpl<0, ttup_t>::type;
-    using t1 = dp::get_tparam_t<ttup_t, 1>;
-    using t2 = dp::get_tparam_t<ttup_t, 2>;
-    static_assert(std::same_as<t0, int const>);
-    static_assert(std::same_as<t1, std::string>);
-    static_assert(std::same_as<t2, double>);
-    static_assert(
-        std::same_as<dp::get_tparam_t<std::string, 0>, char>);
+void sample_0() {
+    using namespace dp::pieces;
+    using source_t = dp::source<std::string_view>;
+    auto src = source_t(sv);
+    auto result = any(src);  // parse 'any' char from src, and bind the result.
+
+    std::cout << "result: " << *result << std::endl;
+    std::cout << "current source: " << **src << std::endl;
 }
 
 template <template <class> class Trait, class L, class R>
@@ -79,6 +76,7 @@ int main(int, char**) {
     std::cout << std::boolalpha;
 
     test_parse();
+    sample_0();
 
     return 0;
 }

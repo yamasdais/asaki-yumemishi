@@ -16,6 +16,9 @@ concept parse_source = requires(Source& src) {
     { *src } -> parse_result_with<typename Source::input_value_type,
                     typename Source::error_type>;
     { ++src };
+    { src.consume() } -> parse_result_with<
+        typename Source::input_value_type,
+        typename Source::error_type>;
 }
 &&std::forward_iterator<Source>&& parse_error<typename Source::error_type>;
 
