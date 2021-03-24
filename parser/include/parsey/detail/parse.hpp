@@ -29,9 +29,21 @@ struct PreparedSourceParser {
     constexpr auto operator()(Source& source) && {
         return source.fmap(std::move(visitor));
     }
+    constexpr auto const& prepare() const& {
+        return *this;
+    }
+    constexpr auto prepare() && {
+        return std::move(*this);
+    }
   protected:
     Visitor visitor;
 };
+template <parse_source Source>
+constexpr auto MakePreparedSourceParser(auto&& func)
+requires std::invocable<decltype(func), parse_source_input_value_t<Source>> {
+    return PreparedSourceParser<Source, std::remove_cvref_t<decltype(func)>>(
+        (decltype(func))func);
+}
 
 constexpr bool isAlphaLower(std::integral auto ch) noexcept {
     return 'a' <= ch && ch <= 'z';
@@ -41,7 +53,7 @@ constexpr bool isAlphaUpper(std::integral auto ch) noexcept {
 }
 
 struct any_fn {
-    using parser_concept = scan_source_parser_tag;
+    using parser_trait = scan_source_parser_tag;
     template <parse_source Source>
     constexpr auto operator()(Source& src) const {
         return src.consume();
@@ -49,19 +61,27 @@ struct any_fn {
 };
 
 struct satisfy_fn {
+    template <parse_source Source>
+    constexpr auto prepare(
+        char const* message, auto&& func) const requires parse_trait<decltype(func),
+        Source> && std::predicate<decltype(func), parse_source_input_value_t<Source>>
+    {
+        using ret_t = result<parse_source_input_value_t<Source>,
+            parse_source_error_t<Source>>;
+        return MakePreparedSourceParser<Source>(make_source_result_visitor<Source>(
+            [=](parse_source_input_value_t<Source> const& val) {
+                return std::invoke((decltype(func))func, val)
+                ? ret_t{val}
+                : ret_t{parse_source_error_t<Source>{message}};
+            }
+        ));
+    }
     template <class Func>
     constexpr auto operator()(char const* message, Func&& func) const {
-        return [message, func = std::forward<Func>(func)]<parse_source Source>(
+        return [this, message, func = std::forward<Func>(func)]<parse_source Source>(
             Source & src) requires parse_trait<Func, Source> && std::predicate<Func,
             parse_source_input_value_t<Source>> {
-            using ret_t = result<parse_source_input_value_t<Source>,
-                parse_source_error_t<Source>>;
-            return src.fmap(make_source_result_visitor<Source>([message, func](
-                         parse_source_input_value_t<Source> const& val) {
-                return std::invoke(func, val)
-                         ? ret_t{val}
-                         : ret_t{parse_source_error_t<Source>{message}};
-            }));
+            return this->prepare<Source>(message, func)(src);
         };
     }
 };

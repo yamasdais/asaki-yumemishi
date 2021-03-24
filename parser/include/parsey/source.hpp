@@ -91,9 +91,15 @@ struct source {
     constexpr auto fmap(Func&& func) {
         if (current == sentinel)
             return std::invoke(std::forward<Func>(func), Error{"end of range", severity_t::end});
+            #if 0
         input_value_type const v = *current;
         next();
         return std::invoke(std::forward<Func>(func), std::move(v));
+        #endif
+        auto ret = std::invoke(std::forward<Func>(func), *current);
+        if (ret)
+            next();
+        return ret;
     }
 
   private:
