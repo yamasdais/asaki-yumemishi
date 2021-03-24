@@ -107,7 +107,7 @@ TYPED_TEST(ParseSource, Increment) {
     v = *++src;
     ASSERT_FALSE(src);
     ASSERT_FALSE(visit(vis, v));
-    ASSERT_TRUE(v.error().severity() == dp::severity_t::end);
+    ASSERT_TRUE(v.error().status() == dp::error_status_t::end);
     ASSERT_THROW(++src, std::range_error);
 }
 
@@ -134,7 +134,7 @@ TYPED_TEST(ParseSource, Consume) {
     ASSERT_FALSE(src);
     res = *src;
     ASSERT_FALSE(res);
-    ASSERT_TRUE(res.error().severity() == dp::severity_t::end);
+    ASSERT_TRUE(res.error().status() == dp::error_status_t::end);
 }
 
 TYPED_TEST(ParseSource, Backtrack) {

@@ -29,12 +29,6 @@ struct PreparedSourceParser {
     constexpr auto operator()(Source& source) && {
         return source.fmap(std::move(visitor));
     }
-    constexpr auto const& prepare() const& {
-        return *this;
-    }
-    constexpr auto prepare() && {
-        return std::move(*this);
-    }
   protected:
     Visitor visitor;
 };
@@ -72,41 +66,51 @@ struct satisfy_fn {
             [=](parse_source_input_value_t<Source> const& val) {
                 return std::invoke((decltype(func))func, val)
                 ? ret_t{val}
-                : ret_t{parse_source_error_t<Source>{message}};
+                : ret_t{parse_source_error_t<Source>{message, error_status_t::fail}};
             }
         ));
     }
+    template <class Predic>
+    struct SatisfyImpl {
+        constexpr SatisfyImpl(char const* name, Predic const& predic)
+        : name{name}, predic{predic} {}
+        constexpr SatisfyImpl(char const* name, Predic&& predic)
+        : name{name}, predic{std::forward<Predic>(predic)} {}
+
+        template <parse_source Source>
+        requires parse_trait<Predic, Source> && std::predicate<Predic, parse_source_input_value_t<Source>>
+        constexpr auto prepare() const {
+            using ret_t = result<parse_source_input_value_t<Source>,
+                parse_source_error_t<Source>>;
+            return MakePreparedSourceParser<Source>(make_source_result_visitor<
+                Source>([name=this->name,predic=this->predic](parse_source_input_value_t<Source> const& val) {
+                return std::invoke(predic, val)
+                ? ret_t{val}
+                : ret_t{parse_source_error_t<Source>{name, error_status_t::fail}};
+            }));
+        }
+        template <parse_source Source>
+        requires parse_trait<Predic, Source> && std::predicate<Predic, parse_source_input_value_t<Source>>
+        constexpr auto operator()(Source& source) const {
+            return prepare<Source>()(source);
+        }
+
+      private:
+        char const* name;
+        Predic predic;
+    };
     template <class Func>
     constexpr auto operator()(char const* message, Func&& func) const {
+        return SatisfyImpl(message, std::forward<Func>(func));
+        #if 0
         return [this, message, func = std::forward<Func>(func)]<parse_source Source>(
             Source & src) requires parse_trait<Func, Source> && std::predicate<Func,
             parse_source_input_value_t<Source>> {
             return this->prepare<Source>(message, func)(src);
         };
+        #endif
     }
 };
-
-struct liftPred_fn {
-    template <class Func>
-    constexpr auto operator()(Func func, char const* message) const noexcept {
-        return [func = std::move(func), message]<parse_source Source>(
-            Source
-            & src) requires parse_trait<Func, Source> && std::predicate<Func,
-            parse_source_input_value_t<Source>> {
-            using ret_t = result<parse_source_input_value_t<Source>,
-                parse_source_error_t<Source>>;
-            auto const val{*src};
-
-            if (val) {
-                ++src;
-                if (!std::invoke(func, *val))
-                    return ret_t{parse_source_error_t<Source>{message}};
-            }
-            return val;
-        };
-    }
-};
-constexpr inline static liftPred_fn liftPredImpl{};
 
 struct foldAll_fn {
     template <class Func, class Init, class ParserH, class... ParserT>

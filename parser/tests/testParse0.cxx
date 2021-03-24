@@ -57,7 +57,7 @@ TYPED_TEST(Parse0, Satisfy) {
     auto lower = dp::satisfy("lower", [](std::integral auto ch) {
         return dp::detail::isAlphaLower(ch);
     });
-    auto upper = dp::satisfy("upper", [](std::integral auto ch) {
+    constexpr auto upper = dp::satisfy("upper", [](std::integral auto ch) {
         return dp::detail::isAlphaUpper(ch);
     });
     static_assert(dp::parser_with<decltype(lower), source_t>, "lower parser with");
@@ -68,7 +68,7 @@ TYPED_TEST(Parse0, Satisfy) {
     ASSERT_TRUE(src);
     res = upper(src);
     ASSERT_FALSE(res);
-    ASSERT_EQ(dp::severity_t::fail, res.error().severity());
+    ASSERT_EQ(dp::error_status_t::fail, res.error().status());
     ASSERT_TRUE(src);
     ASSERT_EQ(static_cast<ch_t>('b'), **src);
     res = lower(src);
@@ -87,15 +87,13 @@ TYPED_TEST(Parse0, PreparedSatisfy) {
     auto src = TestFixture::make_source();
     using source_t = decltype(src);
     ASSERT_TRUE(src);
-    constexpr auto lower = dp::satisfy.prepare<source_t>("low", [](dp::parse_source_input_value_t<source_t> ch) {
+    constexpr auto lower = dp::satisfy("low", [](dp::parse_source_input_value_t<source_t> ch) {
         return dp::detail::isAlphaLower(ch);
-    });
-    #if 0
+    }).template prepare<source_t>();
+    //constexpr auto o = lower.template prepare<source_t>();
     static_assert(dp::parser_with<decltype(lower), source_t>, "lower prepared parser with");
     auto res = lower(src);
     ASSERT_TRUE(res);
     ASSERT_EQ(static_cast<ch_t>('a'), *res);
     ASSERT_TRUE(src);
-    #endif
-
 }

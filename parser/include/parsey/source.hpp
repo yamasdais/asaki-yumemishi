@@ -52,7 +52,7 @@ struct source {
     constexpr auto operator*() const noexcept(noexcept(*this->current)) {
         using ret_t = result<input_value_type, Error>;
         return (*this) ? ret_t{*current}
-                       : ret_t{Error{"end of range", severity_t::end}};
+                       : ret_t{Error{"end of range", error_status_t::end}};
     }
 
     constexpr source operator++(int) {
@@ -90,12 +90,7 @@ struct source {
         error_type>
     constexpr auto fmap(Func&& func) {
         if (current == sentinel)
-            return std::invoke(std::forward<Func>(func), Error{"end of range", severity_t::end});
-            #if 0
-        input_value_type const v = *current;
-        next();
-        return std::invoke(std::forward<Func>(func), std::move(v));
-        #endif
+            return std::invoke(std::forward<Func>(func), Error{"end of range", error_status_t::end});
         auto ret = std::invoke(std::forward<Func>(func), *current);
         if (ret)
             next();

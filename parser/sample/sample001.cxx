@@ -51,7 +51,7 @@ void test_parse() {
     auto visitor = print_result<decltype(res)>{};
     res = dp::pieces::lower(saved);
     std::cout << "test saved source: " << *res << std::endl;
-    res = dp::pieces::letter('b')(saved);
+    res = dp::pieces::char1('b')(saved);
     std::cout << "test saved source: " << res.fmap(visitor) << std::endl;
     auto catchar = [](std::string init, char ch) {
         return init.append(1, ch);
