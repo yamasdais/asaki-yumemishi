@@ -19,11 +19,11 @@ template <std::ranges::forward_range Range,
     parse_error Error = default_parser_error>
 struct source {
     using range_type = Range;
-    using input_value_type = std::iter_value_t<Range>;
-    using value_type = result<input_value_type, Error>;
-    using error_type = Error;
     using iterator_type = std::ranges::iterator_t<Range>;
     using sentinel_type = std::ranges::sentinel_t<Range>;
+    using input_value_type = std::iter_value_t<iterator_type>;
+    using value_type = result<input_value_type, Error>;
+    using error_type = Error;
     using iterator_concept = std::forward_iterator_tag;
     // using range_iter_concept =
     //     typename std::iterator_traits<iterator_type>::iterator_concept;
@@ -88,7 +88,7 @@ struct source {
     template <class Func>
     requires std::invocable<Func, input_value_type> && std::invocable<Func,
         error_type>
-    constexpr auto fmap(Func&& func) {
+    constexpr auto visit(Func&& func) {
         if (current == sentinel)
             return std::invoke(std::forward<Func>(func), Error{"end of range", error_status_t::end});
         auto ret = std::invoke(std::forward<Func>(func), *current);

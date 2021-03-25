@@ -17,6 +17,8 @@ namespace dp = parsey;
 
 constexpr static auto sv = std::tuple{std::string_view{"abc"},
     std::wstring_view{L"abc"}, std::u8string_view{u8"abc"}};
+constexpr static auto sv_up = std::tuple{std::string_view{"ABC"},
+    std::wstring_view{L"ABC"}, std::u8string_view{u8"ABC"}};
 using ResValueTypes = decltype(sv);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
 using TestErrorType = dp::default_parser_error;
@@ -28,6 +30,9 @@ struct Parse0 : public ::testing::Test {
     using range_type = T;
     constexpr inline static source_type make_source() {
         return source_type(std::get<range_type>(sv));
+    }
+    constexpr inline static auto make_source_upper() {
+        return source_type(std::get<range_type>(sv_up));
     }
 };
 
@@ -96,4 +101,27 @@ TYPED_TEST(Parse0, PreparedSatisfy) {
     ASSERT_TRUE(res);
     ASSERT_EQ(static_cast<ch_t>('a'), *res);
     ASSERT_TRUE(src);
+}
+
+TYPED_TEST(Parse0, PreparedLower) {
+    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    auto src = TestFixture::make_source();
+    using source_t = decltype(src);
+    ASSERT_TRUE(src);
+    constexpr auto lower = dp::pieces::lower.template prepare<source_t>();
+    auto res = lower(src);
+    ASSERT_TRUE(res);
+    ASSERT_EQ(static_cast<ch_t>('a'), *res);
+    ASSERT_TRUE(src);
+    ASSERT_EQ(static_cast<ch_t>('b'), **src);
+}
+
+TYPED_TEST(Parse0, PreparedUpper) {
+    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    auto src = TestFixture::make_source_upper();
+    using source_t = decltype(src);
+    //ASSERT_TRUE(src);
+    //constexpr auto lower = dp::pieces::lower.template prepare<source_t>();
+    //auto res = lower(src);
+    //ASSERT_TRUE(res);
 }

@@ -8,22 +8,22 @@
 
 namespace parsey::detail {
 
-template <class Func, parse_source Source,
+template <class Visitor, parse_source Source,
             class InVal = parse_source_input_value_t<Source>,
-            class Result = std::invoke_result_t<Func, InVal>>
-    requires std::invocable<Func, parse_source_input_value_t<Source>>
+            class Result = std::invoke_result_t<Visitor, InVal>>
+    requires std::invocable<Visitor, parse_source_input_value_t<Source>>
         && parse_result<std::invoke_result_t<
-                Func, parse_source_input_value_t<Source>>>
+                Visitor, parse_source_input_value_t<Source>>>
 struct SourceResultVisitor
     : public ResultVisitorImpl<parse_result_value_t<Result>,
-        std::remove_cvref_t<Func>, parse_source_error_t<Source>> {
+        std::remove_cvref_t<Visitor>, parse_source_error_t<Source>> {
     using err_t = parse_source_error_t<Source>;
     using base_t = ResultVisitorImpl<parse_result_value_t<Result>,
-        std::remove_cvref_t<Func>, err_t>;
-    constexpr SourceResultVisitor(Func const& func)
+        std::remove_cvref_t<Visitor>, err_t>;
+    constexpr SourceResultVisitor(Visitor const& func)
         : base_t{func} {}
-    constexpr SourceResultVisitor(Func&& func)
-        : base_t{std::forward<Func>(func)} {}
+    constexpr SourceResultVisitor(Visitor&& func)
+        : base_t{std::forward<Visitor>(func)} {}
 
     using base_t::operator();
 };

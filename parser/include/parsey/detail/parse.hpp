@@ -24,10 +24,10 @@ struct PreparedSourceParser {
         : visitor{std::forward<Visitor>(visitor)} {}
 
     constexpr auto operator()(Source& source) const& {
-        return source.fmap(visitor);
+        return source.visit(visitor);
     }
     constexpr auto operator()(Source& source) && {
-        return source.fmap(std::move(visitor));
+        return source.visit(std::move(visitor));
     }
   protected:
     Visitor visitor;
@@ -55,21 +55,6 @@ struct any_fn {
 };
 
 struct satisfy_fn {
-    template <parse_source Source>
-    constexpr auto prepare(
-        char const* message, auto&& func) const requires parse_trait<decltype(func),
-        Source> && std::predicate<decltype(func), parse_source_input_value_t<Source>>
-    {
-        using ret_t = result<parse_source_input_value_t<Source>,
-            parse_source_error_t<Source>>;
-        return MakePreparedSourceParser<Source>(make_source_result_visitor<Source>(
-            [=](parse_source_input_value_t<Source> const& val) {
-                return std::invoke((decltype(func))func, val)
-                ? ret_t{val}
-                : ret_t{parse_source_error_t<Source>{message, error_status_t::fail}};
-            }
-        ));
-    }
     template <class Predic>
     struct SatisfyImpl {
         constexpr SatisfyImpl(char const* name, Predic const& predic)
@@ -99,16 +84,9 @@ struct satisfy_fn {
         char const* name;
         Predic predic;
     };
-    template <class Func>
-    constexpr auto operator()(char const* message, Func&& func) const {
-        return SatisfyImpl(message, std::forward<Func>(func));
-        #if 0
-        return [this, message, func = std::forward<Func>(func)]<parse_source Source>(
-            Source & src) requires parse_trait<Func, Source> && std::predicate<Func,
-            parse_source_input_value_t<Source>> {
-            return this->prepare<Source>(message, func)(src);
-        };
-        #endif
+    template <class Predic>
+    constexpr auto operator()(char const* message, Predic&& predic) const {
+        return SatisfyImpl(message, std::forward<Predic>(predic));
     }
 };
 

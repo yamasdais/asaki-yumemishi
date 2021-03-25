@@ -76,7 +76,7 @@ TYPED_TEST(ParseSource, Visitor) {
     auto vis = dp::make_source_result_visitor<source_t>(handleVal);
     static_assert(std::invocable<decltype(vis), value_t>, "visitor value");
     static_assert(std::invocable<decltype(vis), TestErrorType>, "visitor value");
-    auto const res = src.fmap(vis);
+    auto const res = src.visit(vis);
     static_assert(dp::parse_result<decltype(res)>, "parser result");
     ASSERT_TRUE(res);
     ASSERT_EQ(static_cast<value_t>('a'), *res);
