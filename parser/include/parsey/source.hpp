@@ -14,13 +14,13 @@
 namespace parsey {
 
 template <std::ranges::forward_range Range,
-    locator<std::iter_value_t<Range>> Locator =
-        index_locator<std::iter_value_t<Range>>,
+    locator<std::iter_value_t<std::ranges::iterator_t<Range const>>> Locator =
+        index_locator<std::iter_value_t<std::ranges::iterator_t<Range const>>>,
     parse_error Error = default_parser_error>
 struct source {
     using range_type = Range;
-    using iterator_type = std::ranges::iterator_t<Range>;
-    using sentinel_type = std::ranges::sentinel_t<Range>;
+    using iterator_type = std::ranges::iterator_t<Range const>;
+    using sentinel_type = std::ranges::sentinel_t<Range const>;
     using input_value_type = std::iter_value_t<iterator_type>;
     using value_type = result<input_value_type, Error>;
     using error_type = Error;

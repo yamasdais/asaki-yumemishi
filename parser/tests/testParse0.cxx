@@ -28,6 +28,7 @@ struct Parse0 : public ::testing::Test {
     using error_type = TestErrorType;
     using source_type = dp::source<T>;
     using range_type = T;
+    using iterator_t = std::ranges::iterator_t<T>;
     constexpr inline static source_type make_source() {
         return source_type(std::get<range_type>(sv));
     }
@@ -39,7 +40,7 @@ struct Parse0 : public ::testing::Test {
 TYPED_TEST_SUITE(Parse0, TestValueTypes);
 
 TYPED_TEST(Parse0, Any) {
-    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
     using namespace dp::pieces;
     auto src = TestFixture::make_source();
     ASSERT_TRUE(src);
@@ -55,7 +56,7 @@ TYPED_TEST(Parse0, Any) {
 }
 
 TYPED_TEST(Parse0, Satisfy) {
-    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
     auto src = TestFixture::make_source();
     using source_t = decltype(src);
     ASSERT_TRUE(src);
@@ -88,7 +89,7 @@ TYPED_TEST(Parse0, Satisfy) {
 }
 
 TYPED_TEST(Parse0, PreparedSatisfy) {
-    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
     auto src = TestFixture::make_source();
     using source_t = decltype(src);
     ASSERT_TRUE(src);
@@ -104,7 +105,7 @@ TYPED_TEST(Parse0, PreparedSatisfy) {
 }
 
 TYPED_TEST(Parse0, PreparedLower) {
-    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
     auto src = TestFixture::make_source();
     using source_t = decltype(src);
     ASSERT_TRUE(src);
@@ -117,7 +118,7 @@ TYPED_TEST(Parse0, PreparedLower) {
 }
 
 TYPED_TEST(Parse0, PreparedUpper) {
-    using ch_t = std::iter_value_t<typename TestFixture::range_type>;
+    using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
     auto src = TestFixture::make_source_upper();
     using source_t = decltype(src);
     //ASSERT_TRUE(src);

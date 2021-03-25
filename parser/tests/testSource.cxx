@@ -23,6 +23,7 @@ using TestErrorType = dp::default_parser_error;
 
 template <class T>
 struct ParseSource : public ::testing::Test {
+    using range_type = T;
     using error_type = TestErrorType;
     using source_type = dp::source<T>;
 };
@@ -162,4 +163,34 @@ TYPED_TEST(ParseSource, Backtrack) {
     sr = *++src;
     ASSERT_TRUE(src != cp0);
     ASSERT_EQ(expect_val_2nd, *sr);
+}
+
+TYPED_TEST(ParseSource, ViewedSource) {
+    using range_type = typename TestFixture::range_type;
+    using ch_t = std::iter_value_t<std::ranges::iterator_t<range_type>>;
+    // cannot compile this piped view on clang-11 ~ 13
+    #if 0
+    auto rng = std::get<range_type>(sv)
+        | std::views::transform([](ch_t ch) {
+        return static_cast<ch_t>(ch - 'a' + 'A');
+    });
+    using r_t = decltype(rng);
+    using iter_t = std::ranges::iterator_t<std::add_const_t<r_t>>;
+    using itrv_t = std::iter_value_t<std::ranges::iterator_t<r_t>>;
+    using source_t = dp::source<r_t>;
+    using loc_t = dp::index_locator<itrv_t>;
+    //testutil::TTrace<iter_t, decltype(std::ranges::cbegin(rng))> x;
+
+    auto src = source_t{rng};
+    ASSERT_TRUE(src);
+    ASSERT_EQ(static_cast<itrv_t>('A'), **src);
+    ++src;
+    ASSERT_TRUE(src);
+    ASSERT_EQ(static_cast<itrv_t>('B'), **src);
+    ++src;
+    ASSERT_TRUE(src);
+    ASSERT_EQ(static_cast<itrv_t>('C'), **src);
+    ++src;
+    ASSERT_FALSE(src);
+    #endif
 }
