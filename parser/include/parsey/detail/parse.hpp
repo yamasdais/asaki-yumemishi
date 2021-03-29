@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <utility>
+#include <tuple>
 #include <functional>
 
 #include <parsey/detail/util.hpp>
@@ -49,6 +50,12 @@ constexpr bool isAlphaUpper(std::integral auto ch) noexcept {
 struct any_fn {
     using parser_trait = scan_source_parser_tag;
     template <parse_source Source>
+    constexpr auto prepare() const {
+        return [](Source& source) {
+            return source.consume();
+        };
+    }
+    template <parse_source Source>
     constexpr auto operator()(Source& src) const {
         return src.consume();
     }
@@ -87,6 +94,61 @@ struct satisfy_fn {
     template <class Predic>
     constexpr auto operator()(char const* message, Predic&& predic) const {
         return SatisfyImpl(message, std::forward<Predic>(predic));
+    }
+};
+
+struct choice_fn {
+    template <parse_source Source, parser_with<Source> ...Parser>
+    requires (sizeof...(Parser) > 1)
+    struct ChoiceEval {
+        using tuple_type = std::tuple<Parser...>;
+        constexpr ChoiceEval(Parser... parsers)
+            : parsers(std::make_tuple(std::move(parsers)...)) {}
+        template <std::size_t Idx>
+        constexpr auto evaluate(Source& source) const {
+            auto result = std::get<Idx>(parsers)(source);
+            if constexpr (Idx + 1 == sizeof...(Parser))
+                return result;
+            else {
+                if (result)
+                    return result;
+                else
+                    return evaluate<Idx+1>(source);
+            }
+        }
+
+        constexpr auto operator()(Source& source) const {
+            return evaluate<0u>(source);
+        }
+
+        tuple_type parsers;
+    };
+
+    template <class... Parser>
+    struct ChoiceImpl {
+        constexpr ChoiceImpl(Parser... parsers)
+            : parsers{std::move(parsers)...} {}
+
+        template <parse_source Source>
+        requires (parser_with<Parser, Source> && ...)
+        constexpr auto prepare() const {
+            return std::apply([](Parser... parser) {
+                return ChoiceEval<Source, decltype(prepare_possibly<Source>(parser))...>(prepare_possibly<Source>(parser)...);
+            }, parsers);
+        }
+
+        template <parse_source Source>
+        constexpr auto operator()(Source& source) const {
+            return this->template prepare<Source>()(source);
+        }
+
+      private:
+        std::tuple<Parser...> parsers;
+    };
+
+    template <class... Parser>
+    constexpr auto operator()(Parser&&... parsers) const {
+        return ChoiceImpl{std::forward<Parser>(parsers)...};
     }
 };
 

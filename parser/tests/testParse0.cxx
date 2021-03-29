@@ -1,4 +1,3 @@
-
 #include <gtest/gtest.h>
 
 #include <string>
@@ -63,6 +62,7 @@ TYPED_TEST(Parse0, Satisfy) {
     auto lower = dp::satisfy("lower", [](std::integral auto ch) {
         return dp::detail::isAlphaLower(ch);
     });
+    static_assert(dp::parser_preparable_from<decltype(lower), source_t>, "preparable lower");
     constexpr auto upper = dp::satisfy("upper", [](std::integral auto ch) {
         return dp::detail::isAlphaUpper(ch);
     });
@@ -96,12 +96,18 @@ TYPED_TEST(Parse0, PreparedSatisfy) {
     constexpr auto lower = dp::satisfy("low", [](dp::parse_source_input_value_t<source_t> ch) {
         return dp::detail::isAlphaLower(ch);
     }).template prepare<source_t>();
+    constexpr auto upper = dp::prepare_possibly<source_t>(
+        dp::satisfy("upper", [](dp::parse_source_input_value_t<source_t> ch) {
+            return dp::detail::isAlphaUpper(ch);
+        }));
     //constexpr auto o = lower.template prepare<source_t>();
     static_assert(dp::parser_with<decltype(lower), source_t>, "lower prepared parser with");
     auto res = lower(src);
     ASSERT_TRUE(res);
     ASSERT_EQ(static_cast<ch_t>('a'), *res);
     ASSERT_TRUE(src);
+    res = upper(src);
+    ASSERT_FALSE(res);
 }
 
 TYPED_TEST(Parse0, PreparedLower) {

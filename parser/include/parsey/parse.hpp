@@ -31,6 +31,7 @@ constexpr inline static auto char1 = [](std::integral auto a_ch) {
 };
 
 // combinators
+constexpr inline static detail::choice_fn choice{};
 
 }  // namespace pieces
 

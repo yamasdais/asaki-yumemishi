@@ -29,4 +29,28 @@ template <class Parser, parse_source Source>
 requires parser_with<Parser, Source> using parser_return_value_t =
     parse_result_value_t<std::invoke_result_t<Parser, Source&>>;
 
+template <class Parse, class Source>
+concept parser_preparable_from = parser_with<Parse, Source>
+&& requires (Parse p, Source) {
+    {p.template prepare<Source>()} -> parser_with<Source>;
+};
+
+template <parse_source Source>
+constexpr auto prepare_parser(auto&& parser)
+requires parser_preparable_from<std::remove_cvref_t<decltype(parser)>, Source>
+{
+    return std::forward<decltype(parser)>(parser).template prepare<Source>();
 }
+
+template <parse_source Source>
+constexpr auto prepare_possibly(auto&& parser) {
+    using Parser = std::remove_cvref_t<decltype(parser)>;
+    static_assert(parser_with<Parser, Source>, "Invalid Parser with Source");
+    if constexpr (parser_preparable_from<Source, Parser>) {
+        return parepare_parser<Source>(std::forward<Parser>(parser));
+    } else {
+        return std::forward<Parser>(parser);
+    }
+}
+
+}  // namespace parsey
