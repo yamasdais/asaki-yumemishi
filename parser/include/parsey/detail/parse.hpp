@@ -19,16 +19,25 @@ requires std::invocable<Visitor, parse_source_input_value_t<Source>>
 && std::invocable<Visitor, parse_source_error_t<Source>>
 && parse_result<std::invoke_result_t<Visitor, parse_source_error_t<Source>>>
 struct PreparedSourceParser {
+    using result_t = std::invoke_result_t<Visitor, parse_source_input_value_t<Source>>;
     constexpr PreparedSourceParser(Visitor const& visitor)
         : visitor{visitor} {}
     constexpr PreparedSourceParser(Visitor&& visitor)
         : visitor{std::forward<Visitor>(visitor)} {}
 
+    constexpr result_t&& setLocatorToError(Source const& source, result_t&& result) const {
+        if constexpr (locatable_error_with<parse_result_error_t<result_t>, decltype(source.locate())>) {
+            if (!result)
+                result.error().setLocator(source.locate());
+        }
+        return std::move(result);
+    }
+
     constexpr auto operator()(Source& source) const& {
-        return source.visit(visitor);
+        return setLocatorToError(source, source.visit(visitor));
     }
     constexpr auto operator()(Source& source) && {
-        return source.visit(std::move(visitor));
+        return setLocatorToError(source, source.visit(std::move(visitor)));
     }
   protected:
     Visitor visitor;
@@ -147,6 +156,7 @@ struct choice_fn {
     };
 
     template <class... Parser>
+    requires (sizeof...(Parser) > 1)
     constexpr auto operator()(Parser&&... parsers) const {
         return ChoiceImpl{std::forward<Parser>(parsers)...};
     }
@@ -186,7 +196,7 @@ struct foldAll_fn {
             parser_return_value_t<ParserHead, Source>>;
         if (!ret)
             return make_parse_result<ret_t>(
-                parse_source_error_t<Source>{message});
+                make_error<parse_source_error_t<Source>>(message, error_status_t::fail, source.locate()));
 
         return opparen_impl(source, func, func(val, *ret), message, tail...);
     }

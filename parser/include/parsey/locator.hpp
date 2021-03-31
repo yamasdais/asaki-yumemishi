@@ -5,24 +5,12 @@
 #include <type_traits>
 #include <ostream>
 
-#include <parsey/util.hpp>
+#include <parsey/fwd/locator.hpp>
 
 namespace parsey {
 
-template <class T, class V>
-concept locator =
-    std::is_default_constructible_v<T> && std::is_copy_constructible_v<
-        T> && std::is_move_constructible_v<T> && requires(T& l, V v) {
-    l.increment(v);
-    std::as_const(l).position();
-};
-
 template <class T>
-requires locator<T, get_tparam_t<T, 0>>
-using locator_value_t = get_tparam_t<T, 0>;
-
-template <class T>
-concept printable_locator = locator<T, locator_value_t<T>> && requires(
+concept printable_locator = incremental_locator<T, locator_value_t<T>> && requires(
     T const& l, std::ostream& out) {
     { out << l } -> std::same_as<std::ostream&>;
 };

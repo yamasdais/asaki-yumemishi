@@ -13,7 +13,7 @@ concept parse_result = requires(T val) {
     { static_cast<bool>(val) } -> std::same_as<bool>;
     { !val } -> std::same_as<bool>;
     { *val };
-    { val.error() } -> parse_error;
+    { std::as_const(val).error() } -> parse_error;
 };
 
 template <class Func, class Arg>

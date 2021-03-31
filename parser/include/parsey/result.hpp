@@ -29,6 +29,7 @@ requires(!parse_error<T>) struct result {
     constexpr value_type operator*() const { return std::get<0>(result_value); }
 
     constexpr auto error() const { return std::get<1>(result_value); }
+    constexpr auto& error() { return std::get<1>(result_value); }
 
     template <class Func>
     requires requires(Func f, result_type r) { {std::visit(f, r)}; }

@@ -47,10 +47,10 @@ requires(!parse_error<T>)
     constexpr auto operator()(T&& value) const& {
         return std::invoke(value_handler, std::move(value));
     }
-    constexpr auto operator()(T const& value) const&& {
+    constexpr auto operator()(T const& value) && {
         return std::invoke(std::move(value_handler), value);
     }
-    constexpr auto operator()(T&& value) const&& {
+    constexpr auto operator()(T&& value) && {
         return std::invoke(std::move(value_handler), std::move(value));
     }
 

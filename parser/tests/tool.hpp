@@ -3,6 +3,7 @@
 #include <concepts>
 #include <gtest/gtest.h>
 
+#include <parsey/locator.hpp>
 #include <parsey/error.hpp>
 
 namespace testutil {
@@ -51,7 +52,7 @@ constexpr auto CheckEqualVal(T lv, T rv) {
 }
 
 // handle valid value
-template <class T, parsey::parse_error Error = parsey::default_parser_error>
+template <class T, parsey::parse_error Error = parsey::default_parser_error<parsey::index_locator<T>>>
 constexpr inline auto mk_result_pred = [](auto&& func) {
 	using Func = std::remove_cvref_t<decltype(func)>;
 	static_assert(std::predicate<Func, T>, "func must be a predicate");

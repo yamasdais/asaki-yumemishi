@@ -20,13 +20,14 @@ constexpr static auto sv_up = std::tuple{std::string_view{"ABC"},
     std::wstring_view{L"ABC"}, std::u8string_view{u8"ABC"}};
 using ResValueTypes = decltype(sv);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
-using TestErrorType = dp::default_parser_error;
+template <class V>
+using TestErrorType = dp::default_parser_error<dp::index_locator<V>>;
 
 template <class T>
 struct Parse0 : public ::testing::Test {
-    using error_type = TestErrorType;
-    using source_type = dp::source<T>;
     using range_type = T;
+    using error_type = TestErrorType<T>;
+    using source_type = dp::source<T>;
     using iterator_t = std::ranges::iterator_t<T>;
     constexpr inline static source_type make_source() {
         return source_type(std::get<range_type>(sv));

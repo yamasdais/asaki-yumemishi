@@ -19,7 +19,7 @@ TYPED_TEST(IndexLocator, Ctor) {
     // concept assertion
     static_assert(std::is_nothrow_default_constructible_v<locator_t>, "default constructible");
     static_assert(std::semiregular<locator_t>, "semiregular");
-    static_assert(dp::locator<locator_t, TypeParam>, "locator concept");
+    static_assert(dp::incremental_locator<locator_t, TypeParam>, "locator concept");
     static_assert(
         std::same_as<dp::locator_value_t<locator_t>, TypeParam>, "locator T");
 

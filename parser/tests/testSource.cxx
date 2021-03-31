@@ -19,12 +19,13 @@ constexpr static auto sv = std::tuple{std::string_view{"abc"},
     std::wstring_view{L"abc"}, std::u8string_view{u8"abc"}};
 using ResValueTypes = decltype(sv);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
-using TestErrorType = dp::default_parser_error;
+template <class V>
+using TestErrorType = dp::default_parser_error<dp::index_locator<V>>;
 
 template <class T>
 struct ParseSource : public ::testing::Test {
     using range_type = T;
-    using error_type = TestErrorType;
+    using error_type = TestErrorType<T>;
     using source_type = dp::source<T>;
 };
 
@@ -58,7 +59,7 @@ TYPED_TEST(ParseSource, CtorValue) {
     constexpr auto vis = testutil::mk_result_pred<value_t>(
         [expect_val](value_t sval) { return true; });
     static_assert(std::predicate<decltype(vis), value_t>, "predicate");
-    static_assert(std::predicate<decltype(vis), TestErrorType>, "predicate");
+    static_assert(std::predicate<decltype(vis), TestErrorType<value_t>>, "predicate");
     constexpr auto vis_res = visit(vis, v);
     ASSERT_TRUE(vis_res);
 }
@@ -68,7 +69,7 @@ TYPED_TEST(ParseSource, Visitor) {
     using range_t = typename source_t::range_type;
     using value_t = dp::parse_source_input_value_t<source_t>;
     auto handleVal = [](value_t const& v) {
-        return dp::result<value_t, TestErrorType>{v};
+        return dp::result<value_t, TestErrorType<value_t>>{v};
     };
     using func_t = std::remove_cvref_t<decltype(handleVal)>;
     source_t src{std::get<range_t>(sv)};
@@ -76,7 +77,7 @@ TYPED_TEST(ParseSource, Visitor) {
     //auto vis = dp::detail::SourceResultVisitor<func_t, source_t>(handleVal);
     auto vis = dp::make_source_result_visitor<source_t>(handleVal);
     static_assert(std::invocable<decltype(vis), value_t>, "visitor value");
-    static_assert(std::invocable<decltype(vis), TestErrorType>, "visitor value");
+    static_assert(std::invocable<decltype(vis), TestErrorType<value_t>>, "visitor value");
     auto const res = src.visit(vis);
     static_assert(dp::parse_result<decltype(res)>, "parser result");
     ASSERT_TRUE(res);

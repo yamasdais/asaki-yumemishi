@@ -22,11 +22,12 @@ constexpr static auto sv_digit = std::tuple{std::string_view{"123"},
     std::wstring_view{L"123"}, std::u8string_view{u8"123"}};
 using ResValueTypes = decltype(sv);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
-using TestErrorType = dp::default_parser_error;
+template <class V>
+using TestErrorType = dp::default_parser_error<dp::index_locator<V>>;
 
 template <class T>
 struct Parse1 : public ::testing::Test {
-    using error_type = TestErrorType;
+    using error_type = TestErrorType<T>;
     using source_type = dp::source<T>;
     using range_type = T;
     using iterator_t = std::ranges::iterator_t<T>;

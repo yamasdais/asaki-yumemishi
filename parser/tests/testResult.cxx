@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <parsey/result.hpp>
+#include <parsey/locator.hpp>
 #include <parsey/error.hpp>
 #include <parsey/util.hpp>
 
@@ -19,7 +20,8 @@ namespace dp = parsey;
 constexpr static auto samples = std::tuple('a', 42, (char const*)"foo");
 using ResValueTypes = decltype(samples);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
-using TestErrorType = dp::default_parser_error;
+template <class V>
+using TestErrorType = dp::default_parser_error<dp::index_locator<V>>;
 
 template <class T>
 constexpr auto get_sample_value() {
@@ -49,7 +51,7 @@ struct AsIsVisitor {};
 template <class... T>
 struct ResultVisitorImpl : public ParamVisitor<T>... {
     using ParamVisitor<T>::operator()...;
-    constexpr bool operator()(TestErrorType const& error) const {
+    constexpr bool operator()(dp::parse_error auto const& error) const {
         return false;
     }
 };
@@ -57,7 +59,7 @@ using ResultVisitor = dp::copy_tparam_t<ResultVisitorImpl, ResValueTypes>;
 
 template <class T>
 struct ParseResult : public ::testing::Test {
-    using error_type = TestErrorType;
+    using error_type = TestErrorType<T>;
     using result_type = dp::result<T, error_type>;
 };
 
@@ -90,7 +92,7 @@ TYPED_TEST(ParseResult, CtorValue) {
     using value_t = dp::parse_result_value_t<result_t>;
     value_t sample_val = std::get<value_t>(samples);
     constexpr ResultVisitorImpl<value_t> visitor;
-    auto err = dp::default_parser_error{"foo error"};
+    auto err = dp::default_parser_error<dp::index_locator<value_t>>{"foo error", dp::error_status_t::fail};
     // testutil::TTrace<decltype(altvis_ret), decltype(visitor)> x;
     constexpr result_t res = ctor_sample_result<result_t, value_t>();
     ASSERT_TRUE(res);
@@ -103,8 +105,6 @@ TYPED_TEST(ParseResult, CtorValue) {
     ASSERT_TRUE(rvisited);
     // visit with std::identity
     auto genvisit = visit([](auto const& v) { return result_t{v}; }, res);
-    // auto rv = dp::make_result_visitor<value_t, TestErrorType>(visitor);
-    // ASSERT_TRUE(rv(sample_val));
 
     constexpr result_t res0 =
         dp::make_parse_result<typename TestFixture::error_type>(*res);
@@ -117,12 +117,12 @@ TYPED_TEST(ParseResult, CtorError) {
     using value_t = dp::parse_result_value_t<result_t>;
     using error_t = dp::parse_result_error_t<result_t>;
     constexpr char const* msg = "test error message";
-    constexpr result_t res{error_t{msg}};
+    constexpr result_t res{error_t{msg, dp::error_status_t::fail}};
     constexpr ResultVisitorImpl<value_t> visitor;
     ASSERT_FALSE(res);
     auto rvisited = res.fmap(visitor);
     ASSERT_FALSE(rvisited);
-    constexpr result_t res0 = dp::make_parse_result<value_t>(error_t{msg});
+    constexpr result_t res0 = dp::make_parse_result<value_t>(error_t{msg, dp::error_status_t::fail});
     ASSERT_FALSE(res0);
 }
 
@@ -181,7 +181,7 @@ TYPED_TEST(ParseResult, VisitorError) {
     using value_t = dp::parse_result_value_t<result_t>;
     using error_t = dp::parse_result_error_t<result_t>;
     constexpr char const* msg = "test error message";
-    constexpr result_t res{error_t{msg}};
+    constexpr result_t res{error_t{msg, dp::error_status_t::fail}};
     constexpr auto nocap_handler = [](value_t const&) {
         return dp::result<bool, error_t>{true};
     };

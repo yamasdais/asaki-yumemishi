@@ -14,9 +14,9 @@
 namespace parsey {
 
 template <std::ranges::forward_range Range,
-    locator<std::iter_value_t<std::ranges::iterator_t<Range const>>> Locator =
+    incremental_locator<std::iter_value_t<std::ranges::iterator_t<Range const>>> Locator =
         index_locator<std::iter_value_t<std::ranges::iterator_t<Range const>>>,
-    parse_error Error = default_parser_error>
+    parse_error Error = default_parser_error<Locator>>
 struct source {
     using range_type = Range;
     using iterator_type = std::ranges::iterator_t<Range const>;
@@ -25,6 +25,7 @@ struct source {
     using value_type = result<input_value_type, Error>;
     using error_type = Error;
     using iterator_concept = std::forward_iterator_tag;
+    using locator_type = Locator;
     // using range_iter_concept =
     //     typename std::iterator_traits<iterator_type>::iterator_concept;
 
@@ -52,7 +53,7 @@ struct source {
     constexpr auto operator*() const noexcept(noexcept(*this->current)) {
         using ret_t = result<input_value_type, Error>;
         return (*this) ? ret_t{*current}
-                       : ret_t{Error{"end of range", error_status_t::end}};
+                       : ret_t{make_error<Error>("end of range", error_status_t::end, locator)};
     }
 
     constexpr source operator++(int) {
@@ -85,12 +86,14 @@ struct source {
         return ret;
     }
 
+    constexpr locator_type const& locate() const { return locator; }
+
     template <class Func>
     requires std::invocable<Func, input_value_type> && std::invocable<Func,
         error_type>
     constexpr auto visit(Func&& func) {
         if (current == sentinel)
-            return std::invoke(std::forward<Func>(func), Error{"end of range", error_status_t::end});
+            return std::invoke(std::forward<Func>(func), make_error<Error>("end of range", error_status_t::end, locator));
         auto ret = std::invoke(std::forward<Func>(func), *current);
         if (ret)
             next();
