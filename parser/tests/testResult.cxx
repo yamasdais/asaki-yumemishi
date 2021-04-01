@@ -69,7 +69,7 @@ TYPED_TEST_SUITE(ParseResult, TestValueTypes);
 TYPED_TEST(ParseResult, Utils) {
     //using result_t = typename TestFixture::result_type;
     using error_type = TestErrorType<typename TestFixture::value_type>;
-    using result_t = dp::result<TestFixture::value_type, error_type>;
+    using result_t = dp::result<typename TestFixture::value_type, error_type>;
     using value_t = dp::parse_result_value_t<result_t>;
     using err_t = dp::parse_result_error_t<result_t>;
     value_t sample_val = std::get<value_t>(samples);
@@ -93,7 +93,7 @@ TYPED_TEST(ParseResult, Utils) {
 TYPED_TEST(ParseResult, CtorValue) {
     //using result_t = typename TestFixture::result_type;
     using error_type = TestErrorType<typename TestFixture::value_type>;
-    using result_t = dp::result<TestFixture::value_type, error_type>;
+    using result_t = dp::result<typename TestFixture::value_type, error_type>;
     using value_t = dp::parse_result_value_t<result_t>;
     value_t sample_val = std::get<value_t>(samples);
     constexpr ResultVisitorImpl<value_t> visitor;
