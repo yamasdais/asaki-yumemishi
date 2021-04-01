@@ -36,10 +36,10 @@ struct default_parser_error {
         : message{message}
         , status_{status} {}
     constexpr explicit default_parser_error(
-        char const* message, error_status_t status, Locator const& locator) noexcept
+        char const* message, error_status_t status, Locator const& loc) noexcept
         : message{message}
         , status_{status}
-        , locator_{locator} {}
+        , locator_{loc} {}
 
     friend std::ostream& operator<<(
         std::ostream& out, default_parser_error const& err) {
@@ -53,8 +53,8 @@ struct default_parser_error {
         return locator_;
     }
 
-    constexpr void setLocator(Locator const& locator) {
-        locator_ = locator;
+    constexpr void setLocator(Locator const& loc) {
+        locator_ = loc;
     }
 
     char const* message;
