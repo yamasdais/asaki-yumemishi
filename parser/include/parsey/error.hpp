@@ -34,7 +34,8 @@ struct default_parser_error {
     constexpr explicit default_parser_error(
         char const* message, error_status_t status) noexcept
         : message{message}
-        , status_{status} {}
+        , status_{status}
+        , locator_{} {}
     constexpr explicit default_parser_error(
         char const* message, error_status_t status, Locator const& loc) noexcept
         : message{message}

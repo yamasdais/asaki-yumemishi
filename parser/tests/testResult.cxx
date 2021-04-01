@@ -59,6 +59,7 @@ using ResultVisitor = dp::copy_tparam_t<ResultVisitorImpl, ResValueTypes>;
 
 template <class T>
 struct ParseResult : public ::testing::Test {
+    using value_type = T;
     using error_type = TestErrorType<T>;
     using result_type = dp::result<T, error_type>;
 };
@@ -66,7 +67,9 @@ struct ParseResult : public ::testing::Test {
 TYPED_TEST_SUITE(ParseResult, TestValueTypes);
 
 TYPED_TEST(ParseResult, Utils) {
-    using result_t = typename TestFixture::result_type;
+    //using result_t = typename TestFixture::result_type;
+    using error_type = TestErrorType<typename TestFixture::value_type>;
+    using result_t = dp::result<TestFixture::value_type, error_type>;
     using value_t = dp::parse_result_value_t<result_t>;
     using err_t = dp::parse_result_error_t<result_t>;
     value_t sample_val = std::get<value_t>(samples);
@@ -88,21 +91,26 @@ TYPED_TEST(ParseResult, Utils) {
 }
 
 TYPED_TEST(ParseResult, CtorValue) {
-    using result_t = typename TestFixture::result_type;
+    //using result_t = typename TestFixture::result_type;
+    using error_type = TestErrorType<typename TestFixture::value_type>;
+    using result_t = dp::result<TestFixture::value_type, error_type>;
     using value_t = dp::parse_result_value_t<result_t>;
     value_t sample_val = std::get<value_t>(samples);
     constexpr ResultVisitorImpl<value_t> visitor;
     auto err = dp::default_parser_error<dp::index_locator<value_t>>{"foo error", dp::error_status_t::fail};
     // testutil::TTrace<decltype(altvis_ret), decltype(visitor)> x;
+    static_assert(std::invocable<ResultVisitorImpl<value_t>, value_t>, "invocable visitor");
     constexpr result_t res = ctor_sample_result<result_t, value_t>();
     ASSERT_TRUE(res);
     auto resv = *res;
     ASSERT_TRUE(ParamVisitor<value_t>{}(resv));
     // visitor
+#ifndef _MSC_VER
     constexpr auto rvisited = res.fmap(visitor);
     static_assert(std::same_as<bool, std::remove_cvref_t<decltype(rvisited)>>,
         "visited result type");
     ASSERT_TRUE(rvisited);
+#endif
     // visit with std::identity
     auto genvisit = visit([](auto const& v) { return result_t{v}; }, res);
 
@@ -120,8 +128,10 @@ TYPED_TEST(ParseResult, CtorError) {
     constexpr result_t res{error_t{msg, dp::error_status_t::fail}};
     constexpr ResultVisitorImpl<value_t> visitor;
     ASSERT_FALSE(res);
+#ifndef _MSC_VER
     auto rvisited = res.fmap(visitor);
     ASSERT_FALSE(rvisited);
+#endif
     constexpr result_t res0 = dp::make_parse_result<value_t>(error_t{msg, dp::error_status_t::fail});
     ASSERT_FALSE(res0);
 }
@@ -156,8 +166,10 @@ TYPED_TEST(ParseResult, VisitorValue) {
             dp::parse_result_error_t<vis_r_t>>,
         "visited result type");
     ASSERT_TRUE(res);
+#ifndef _MSC_VER
     auto visited_r = res.fmap(visitor);
     ASSERT_TRUE(*visited_r);
+#endif
 
     constexpr auto nocap_handler = [](value_t const&) {
         return dp::result<bool, error_t>{true};
