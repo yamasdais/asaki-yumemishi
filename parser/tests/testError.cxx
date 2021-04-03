@@ -17,7 +17,7 @@ TEST(Error, Ctor) {
 
     std::stringstream str;
     str << err;
-    ASSERT_TRUE(str.str() == message);
+    ASSERT_TRUE(str.str() == (std::string{"[0] "} + message));
 }
 
 TEST(Error, Locatable) {

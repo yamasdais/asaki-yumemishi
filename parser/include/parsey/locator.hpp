@@ -10,12 +10,6 @@
 namespace parsey {
 
 template <class T>
-concept printable_locator = incremental_locator<T, locator_value_t<T>> && requires(
-    T const& l, std::ostream& out) {
-    { out << l } -> std::same_as<std::ostream&>;
-};
-
-template <class T>
 struct index_locator {
     constexpr explicit index_locator(size_t index = 0u) noexcept
         : index{index} {}
@@ -30,8 +24,9 @@ struct index_locator {
         return index_locator{index + 1u};
     }
 
-    friend inline std::ostream& operator<<(
-        std::ostream& o, index_locator const& locator) {
+    template <std::integral Ch>
+    friend inline std::basic_ostream<Ch>& operator<<(
+        std::basic_ostream<Ch>& o, index_locator const& locator) {
         return o << locator.index;
     }
 

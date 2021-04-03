@@ -44,7 +44,11 @@ struct default_parser_error {
 
     friend std::ostream& operator<<(
         std::ostream& out, default_parser_error const& err) {
-        return out << err.message;
+        if constexpr (printable_locator<Locator, char>) {
+            return out << '[' << err.locate() << "] " << err.message;
+        } else {
+            return out << err.message;
+        }
     }
 
     constexpr error_status_t status() const noexcept {

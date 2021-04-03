@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <concepts>
+#include <sstream>
 
 #include <parsey/locator.hpp>
 
@@ -25,6 +26,11 @@ TYPED_TEST(IndexLocator, Ctor) {
 
     constexpr locator_t l;
     ASSERT_EQ(0, l.position());
+    static_assert(dp::printable_locator<locator_t, char>, "printable");
+    std::ostringstream out;
+    out << l;
+    auto posstr = out.str();
+    ASSERT_TRUE(posstr == "0");
 }
 
 TYPED_TEST(IndexLocator, Increment) {
@@ -37,4 +43,8 @@ TYPED_TEST(IndexLocator, Increment) {
     ASSERT_EQ(2, l.position());
     l.increment(static_cast<value_t>('b'));
     ASSERT_EQ(3, l.position());
+    std::ostringstream out;
+    out << l;
+    auto posstr = out.str();
+    ASSERT_TRUE(posstr == "3");
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <ostream>
 
 #include <parsey/util.hpp>
 
@@ -20,5 +21,11 @@ concept incremental_locator = locator<Locator> && requires(Locator& l, V v) {
 template <class T>
 requires incremental_locator<T, get_tparam_t<T, 0>>
 using locator_value_t = get_tparam_t<T, 0>;
+
+template <class T, class V>
+concept printable_locator = locator<T> && requires(
+    T const& l, std::basic_ostream<V>& out) {
+    { out << l } -> std::same_as<std::basic_ostream<V>&>;
+};
 
 }
