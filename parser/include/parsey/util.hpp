@@ -97,10 +97,9 @@ struct accumulator {
 };
 
 template <template <class...> class ParamT, class T>
-constexpr auto make_accumulator = [](auto&&func) requires std::invocable<decltype(func),
-                            ParamT<T>, T> || std::invocable < decltype(func),
-     ParamT<T>
-&, T > {
+constexpr auto make_accumulator = [](auto&&func)
+    requires std::invocable<decltype(func), ParamT<T>, T>
+          || std::invocable<decltype(func), ParamT<T>&, T> {
     return accumulator(ParamT<T>{}, (decltype(func))func);
 };
 

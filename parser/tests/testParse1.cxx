@@ -9,6 +9,7 @@
 #include <ranges>
 
 #include <parsey/parse.hpp>
+#include <parsey/util.hpp>
 
 #include "tool.hpp"
 
@@ -82,4 +83,24 @@ TYPED_TEST(Parse1, Choice) {
     ASSERT_TRUE(src);
     ASSERT_TRUE(*src);
     ASSERT_EQ(static_cast<ch_t>('1'), **src);
+}
+
+template <class C>
+struct strcatenator {
+    constexpr auto operator()(std::basic_string<C>& str, C ch) {
+        str.append(1, ch);
+    }
+};
+template <class C>
+using string_appender = parsey::accumulator<std::basic_string<C>, strcatenator<C>>;
+
+TYPED_TEST(Parse1, Times0) {
+    using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
+    auto src = TestFixture::make_source();
+    using source_t = decltype(src);
+    ASSERT_TRUE(src);
+    auto times = parsey::times<string_appender>("timesInf", parsey::pieces::lower, 1u).template prepare<source_t>();
+    auto res = times(src);
+    ASSERT_FALSE(src);
+
 }

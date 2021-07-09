@@ -26,7 +26,8 @@ concept parse_trait = parse_source<Source>&&
     std::invocable<Func, parse_source_input_value_t<Source>>;
 
 template <class Parser, parse_source Source>
-requires parser_with<Parser, Source> using parser_return_value_t =
+    requires parser_with<Parser, Source>
+using parser_return_value_t =
     parse_result_value_t<std::invoke_result_t<Parser, Source&>>;
 
 template <class Parse, class Source>

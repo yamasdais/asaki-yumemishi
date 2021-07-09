@@ -14,10 +14,10 @@
 namespace parsey::detail {
 
 template <parse_source Source, class Visitor>
-requires std::invocable<Visitor, parse_source_input_value_t<Source>>
-&& parse_result<std::invoke_result_t<Visitor, parse_source_input_value_t<Source>>>
-&& std::invocable<Visitor, parse_source_error_t<Source>>
-&& parse_result<std::invoke_result_t<Visitor, parse_source_error_t<Source>>>
+    requires std::invocable<Visitor, parse_source_input_value_t<Source>>
+    && parse_result<std::invoke_result_t<Visitor, parse_source_input_value_t<Source>>>
+    && std::invocable<Visitor, parse_source_error_t<Source>>
+    && parse_result<std::invoke_result_t<Visitor, parse_source_error_t<Source>>>
 struct PreparedSourceParser {
     using result_t = std::invoke_result_t<Visitor, parse_source_input_value_t<Source>>;
     constexpr PreparedSourceParser(Visitor const& visitor)
@@ -160,6 +160,87 @@ struct choice_fn {
     constexpr auto operator()(Parser&&... parsers) const {
         return ChoiceImpl{std::forward<Parser>(parsers)...};
     }
+};
+
+template <class...>
+struct FFFF;
+
+template <template <class...> class Aggregator>
+struct times_fn {
+    template <parse_source Source, class Parser>
+    struct PreparedTimesImpl {
+        constexpr PreparedTimesImpl(
+            Parser parser, std::size_t min, std::optional<std::size_t> max)
+            : parser_{std::move(parser)}
+            , minimum_{min}
+            , maximum_{std::move(max)} {}
+
+        constexpr auto operator()(Source& source) const {
+            //using value_t = parser_return_value_t<Parser, Source>;
+            //using agg_t = Aggregator<value_t>;
+            //using value_t = parse_result_value_t<result_t>;
+            using value_t = parser_return_value_t<Parser, Source>;
+            using result_t = std::invoke_result_t<Parser, Source&>;
+            using agg_t = Aggregator<value_t>;
+            using err_t = parse_result_error_t<result_t>;
+            using return_t = result<agg_t, err_t>;
+            std::size_t matched = 0u;
+            agg_t agg;
+#if 1
+            for (; !maximum_ || matched < maximum_.value(); ++matched) {
+                auto res = parser_(source);
+                if (res) {
+                    agg(*res);
+                } else {
+                    break;
+                }
+            }
+            if (matched < minimum_) {
+                return return_t{err_t{"matched count below minimum", error_status_t::fail, source.locate()}};
+            }
+            return return_t{std::move(agg)};
+#endif
+        }
+
+      private:
+        Parser parser_;
+        std::size_t minimum_;
+        std::optional<std::size_t> maximum_;
+    };
+
+    template <class Parser>
+    struct TimesImpl {
+        TimesImpl(Parser parser, std::size_t min,
+            std::optional<std::size_t> max)
+            : parser_{std::move(parser)}
+            , minimum_{min}
+            , maximum_{std::move(max)} {}
+
+        template <parse_source Source>
+            requires parser_with<Parser, Source>
+        constexpr auto prepare() const {
+            return PreparedTimesImpl<Source, Parser>{parser_, minimum_, maximum_};
+        }
+      private:
+        Parser parser_;
+        std::size_t minimum_;
+        std::optional<std::size_t> maximum_;
+    };
+
+    template <class Parser>
+    constexpr auto operator()(char const* message, 
+        Parser&& parser, std::size_t min = 0u, std::optional<std::size_t>&& max = {}) const {
+            return TimesImpl(std::forward<Parser>(parser), min, max);
+    }
+};
+
+struct satisfyAll_fn {
+
+template <class Applier, class... Parser>
+constexpr auto operator()(char const* message, Applier applier, Parser... parsers) {
+
+}
+
 };
 
 struct foldAll_fn {

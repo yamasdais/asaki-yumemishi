@@ -14,7 +14,12 @@ namespace parsey {
 
 constexpr inline static detail::satisfy_fn satisfy{};
 
-namespace pieces {
+template <template <class...> class Aggregator>
+constexpr inline static detail::times_fn<Aggregator> times{};
+
+}
+
+namespace parsey::pieces {
 
 constexpr inline static detail::any_fn any{};
 
@@ -33,6 +38,4 @@ constexpr inline static auto char1 = [](std::integral auto a_ch) {
 // combinators
 constexpr inline static detail::choice_fn choice{};
 
-}  // namespace pieces
-
-}  // namespace parsey
+}  // namespace parsey::pieces
