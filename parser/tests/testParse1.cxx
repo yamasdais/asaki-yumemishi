@@ -15,12 +15,19 @@
 
 namespace dp = parsey;
 
-constexpr static auto sv = std::tuple{std::string_view{"abc"},
-    std::wstring_view{L"abc"}, std::u8string_view{u8"abc"}};
-constexpr static auto sv_up = std::tuple{std::string_view{"ABC"},
-    std::wstring_view{L"ABC"}, std::u8string_view{u8"ABC"}};
-constexpr static auto sv_digit = std::tuple{std::string_view{"123"},
-    std::wstring_view{L"123"}, std::u8string_view{u8"123"}};
+constexpr static auto sv = std::tuple{
+    std::string_view{"abc"}, std::wstring_view{L"abc"}, std::u8string_view{u8"abc"}
+};
+constexpr static auto sv_up = std::tuple{
+    std::string_view{"ABC"}, std::wstring_view{L"ABC"}, std::u8string_view{u8"ABC"}
+};
+constexpr static auto sv_digit = std::tuple{
+    std::string_view{"123"}, std::wstring_view{L"123"}, std::u8string_view{u8"123"}
+};
+constexpr static auto sv_mixlu = std::tuple{
+    std::string_view{"ABCdef"}, std::wstring_view{L"ABCdef"}, std::u8string_view{u8"ABCdef"}
+};
+
 using ResValueTypes = decltype(sv);
 using TestValueTypes = dp::copy_tparam_t<::testing::Types, ResValueTypes>;
 template <class V>
@@ -41,6 +48,9 @@ struct Parse1 : public ::testing::Test {
     constexpr inline static auto make_source_digit() {
         return source_type(std::get<range_type>(sv_digit));
     }
+    constexpr inline static auto make_source_mixlu() {
+        return source_type(std::get<range_type>(sv_mixlu));
+	}
 };
 
 TYPED_TEST_SUITE(Parse1, TestValueTypes);
@@ -97,10 +107,13 @@ using string_appender = parsey::accumulator<std::basic_string<C>, strcatenator<C
 TYPED_TEST(Parse1, Times0) {
     using ch_t = std::iter_value_t<typename TestFixture::iterator_t>;
     auto src = TestFixture::make_source();
+    auto srctext = std::get<typename TestFixture::range_type>(sv);
     using source_t = decltype(src);
     ASSERT_TRUE(src);
     auto times = parsey::times<string_appender>("timesInf", parsey::pieces::lower, 1u).template prepare<source_t>();
     auto res = times(src);
+    ASSERT_TRUE(res);
     ASSERT_FALSE(src);
-
+    auto text = **res;
+    EXPECT_TRUE(srctext.compare(text) == 0);
 }

@@ -4,6 +4,7 @@
 #include <utility>
 #include <tuple>
 #include <functional>
+#include <optional>
 
 #include <parsey/detail/util.hpp>
 #include <parsey/source.hpp>
@@ -162,9 +163,6 @@ struct choice_fn {
     }
 };
 
-template <class...>
-struct FFFF;
-
 template <template <class...> class Aggregator>
 struct times_fn {
     template <parse_source Source, class Parser>
@@ -176,9 +174,6 @@ struct times_fn {
             , maximum_{std::move(max)} {}
 
         constexpr auto operator()(Source& source) const {
-            //using value_t = parser_return_value_t<Parser, Source>;
-            //using agg_t = Aggregator<value_t>;
-            //using value_t = parse_result_value_t<result_t>;
             using value_t = parser_return_value_t<Parser, Source>;
             using result_t = std::invoke_result_t<Parser, Source&>;
             using agg_t = Aggregator<value_t>;
@@ -186,7 +181,7 @@ struct times_fn {
             using return_t = result<agg_t, err_t>;
             std::size_t matched = 0u;
             agg_t agg;
-#if 1
+
             for (; !maximum_ || matched < maximum_.value(); ++matched) {
                 auto res = parser_(source);
                 if (res) {
@@ -199,7 +194,6 @@ struct times_fn {
                 return return_t{err_t{"matched count below minimum", error_status_t::fail, source.locate()}};
             }
             return return_t{std::move(agg)};
-#endif
         }
 
       private:
@@ -210,7 +204,7 @@ struct times_fn {
 
     template <class Parser>
     struct TimesImpl {
-        TimesImpl(Parser parser, std::size_t min,
+        constexpr TimesImpl(Parser parser, std::size_t min,
             std::optional<std::size_t> max)
             : parser_{std::move(parser)}
             , minimum_{min}
